@@ -241,5 +241,54 @@
         "doc": "Connivence array of all currently defined coredock options.\n~~~lua\n    Note that the top orientation has not been supported even within the private APIs for some time and may disappear from here in a future release unless another solution can be found.\n\n    options.orientation[]  -- an array of the orientation options available for `orientation`\n        top         -- put the dock at the top of the monitor\n        bottom      -- put the dock at the bottom of the monitor\n        left        -- put the dock at the left of the monitor\n        right       -- put the dock at the right of the monitor\n\n    Note that dock pinning has not been supported even within the private APIs for some time and may disappear from here in a future release unless another solution can be found.\n\n    options.pinning[]  -- an array of the pinning options available for `pinning`\n        start       -- pin the dock at the start of its orientation\n        middle      -- pin the dock at the middle of its orientation\n        end         -- pin the dock at the end of its orientation\n\n    Note that the suck animation is not displayed in the System Preferences panel correctly, but does remain in effect as long as you do not change this specific field while in the Preferences panel for the Dock.\n\n    options.effect[]   -- an array of the dock animation options for  `animation_effect`\n        genie       -- use the genie animation\n        scale       -- use the scale animation\n        suck        -- use the suck animation\n~~~"
       }
     ]
+  },
+  {
+    "name": "hs._asm.undocumented.spaces",
+    "doc": "This module provides the functionality, as it was in Hydra and Mjolnir, for `spaces`.\n\nThese functions utilize private API's within the OS X internals, and are known to have unpredictable behavior under Mavericks and Yosemite when \"Displays have separate Spaces\" is checked under the Mission Control system preferences.\n\nThis module is based primarily on code from the previous incarnation of Mjolnir by [Steven Degutis](https://github.com/sdegutis/).",
+    "items": [
+
+    ]
+  },
+  {
+    "name": "hs._asm.undocumented.spaces",
+    "doc": "This module provides the functionality, as it was in Hydra and Mjolnir, for `spaces`.\n\nThese functions utilize private API's within the OS X internals, and are known to have unpredictable behavior under Mavericks and Yosemite when \"Displays have separate Spaces\" is checked under the Mission Control system preferences.\n\nThis module is based primarily on code from the previous incarnation of Mjolnir by [Steven Degutis](https://github.com/sdegutis/).",
+    "items": [
+      {
+        "type": "Function",
+        "name": "count",
+        "def": "hs._asm.undocumented.spaces.count() -> number",
+        "doc": "The number of spaces you currently have."
+      },
+      {
+        "type": "Function",
+        "name": "currentSpace",
+        "def": "hs._asm.undocumented.spaces.currentSpace() -> number",
+        "doc": "The index of the space you're currently on, 1-indexed (as usual)."
+      },
+      {
+        "type": "Function",
+        "name": "moveToSpace",
+        "def": "hs._asm.undocumented.spaces.moveToSpace(number)",
+        "doc": "Switches to the space at the given index, 1-indexed (as usual)."
+      },
+      {
+        "type": "Function",
+        "name": "count",
+        "def": "hs._asm.undocumented.spaces.count() -> number",
+        "doc": "The number of spaces you currently have."
+      },
+      {
+        "type": "Function",
+        "name": "currentSpace",
+        "def": "hs._asm.undocumented.spaces.currentSpace() -> number",
+        "doc": "The index of the space you're currently on, 1-indexed (as usual)."
+      },
+      {
+        "type": "Function",
+        "name": "moveToSpace",
+        "def": "hs._asm.undocumented.spaces.moveToSpace(number)",
+        "doc": "Switches to the space at the given index, 1-indexed (as usual)."
+      }
+    ]
   }
 ]

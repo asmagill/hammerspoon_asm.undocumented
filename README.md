@@ -22,8 +22,9 @@ The following submodules are located in this repository for organizational purpo
 |_asm.undocumented.bluetooth | Git       | Toggle bluetooth power and discoverability.                                |
 |_asm.undocumented.cgsdebug  | Git       | Includes Hydra's hydra.shadow function and other _windowserver debug stuff |
 |_asm.undocumented.coredock  | Git       | Manipulate Dock features including position, tilesize, etc.                |
+|_asm.undocumented.spaces    | Git       | Access OS X Spaces functionality.                                          |
 
-I am uncertain at this time if I will be providing these and future modules via Luarocks... I am less than impressed with it's apparent flexibility concerning make files and local variances.  If there is interest in precompiled binaries for these modules, post an issue and I'll see what the interest level is.
+I am uncertain at this time if I will be providing these and future modules via Luarocks... I am less than impressed with it's apparent flexibility concerning makefiles and local variances.  If there is interest in precompiled binaries for these modules, post an issue and I'll see what the interest level is.
 
 ### Documentation
 
