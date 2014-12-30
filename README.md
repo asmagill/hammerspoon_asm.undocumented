@@ -3,7 +3,7 @@ _asm.undocumented
 
 Organizational space for Hammerspoon/Mjolnir modules using undocumented or Private APIs.  To the best of my knowledge, all other modules I've created use only standard, stock OSX API functionality.  Since a large number were ported from a previous project that led to [Mjolnir](https://github.com/sdegutis/mjolnir) and later [Hammerspoon](https://github.com/Hammerspoon/hammerspoon), I can't say that with absolute certainty, but it is certainly what I aim for.
 
-Any module I knowingly create which uses any undocumented or private API will be listed here.
+Any module I knowingly create which uses any undocumented or private API will be listed here.  For other modules, especially those which are not part of the core application (Hammerspoon) or already in Luarocks (Mjolnir), check https://github.com/asmagill/hammerspoon_asm.
 
 Because these use undocumented features, the mantra "Caveat Emptor" rings even more true than usual.  I make no claims or guarantees that these will work for you or that they will work with any past, present, or future version of OS X.  All I will state is that they do not crash on my primary machine, a MacBook Air running 10.10.X, and that they provide at least some of the desired functions (or else why bother?) for me.  I also try most of my modules under a VirtualBox Guest running 10.8, but not as rigorously or thoroughly.  Unless otherwise indicated, each module will run successfully under Hammerspoon or Mjolnir, and specific instructions for installing in your environment are provided in the subdirectories README.
 
