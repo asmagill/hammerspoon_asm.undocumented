@@ -1,5 +1,4 @@
 .gitignore
-/undocumented/
 /*/Mjolnir/
 /*/Hammerspoon/
 /*/init.lua
