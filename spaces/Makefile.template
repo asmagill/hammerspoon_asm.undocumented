@@ -6,7 +6,7 @@ LUAFILE  = init.lua
 SOFILE  := {SOFILE}
 
 CC=cc
-CFLAGS  += -Wall -Wextra -I ../../Pods/lua/src -I /usr/local/include/lua5.2 -fobjc-arc $(EXTRA_CFLAGS)
+CFLAGS  += -Wall -Wextra -I ../../Pods/lua/src -I /Applications/Hammerspoon.app/Contents/Resources/lua/ -fobjc-arc $(EXTRA_CFLAGS)
 LDFLAGS += -dynamiclib -undefined dynamic_lookup $(EXTRA_LDFLAGS)
 
 all: $(SOFILE)
