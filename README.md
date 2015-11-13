@@ -1,34 +1,49 @@
 _asm.undocumented
 =================
 
-Organizational space for Hammerspoon/Mjolnir modules using undocumented or Private APIs.  To the best of my knowledge, all other modules I've created use only standard, stock OSX API functionality.  Since a large number were ported from a previous project that led to [Mjolnir](https://github.com/sdegutis/mjolnir) and later [Hammerspoon](https://github.com/Hammerspoon/hammerspoon), I can't say that with absolute certainty, but it is certainly what I aim for.
+*NOTE: This repository no longer strives to support both Mjolnir and Hammerspoon.  The last version that should compile cleanly for use with Mjolnir can be found in the Mjolnir branch of this repository.*
 
-Any module I knowingly create which uses any undocumented or private API will be listed here.  For other modules, especially those which are not part of the core application (Hammerspoon) or already in Luarocks (Mjolnir), check https://github.com/asmagill/hammerspoon_asm.
+Organizational space for Hammerspoon modules using undocumented or Private APIs.
 
-Because these use undocumented features, the mantra "Caveat Emptor" rings even more true than usual.  I make no claims or guarantees that these will work for you or that they will work with any past, present, or future version of OS X.  All I will state is that they do not crash on my primary machine, a MacBook Air running 10.10.X, and that they provide at least some of the desired functions (or else why bother?) for me.  I also try most of my modules under a VirtualBox Guest running 10.8, but not as rigorously or thoroughly.  Unless otherwise indicated, each module will run successfully under Hammerspoon or Mjolnir, and specific instructions for installing in your environment are provided in the subdirectories README.
+Any module I knowingly create which uses any undocumented or private API will be listed here.  For other modules, especially those which are not part of the core Hammerspoon application please check https://github.com/asmagill/hammerspoon_asm.
+
+Because they use undocumented features, the mantra "Caveat Emptor" rings even more true than usual.  I make no claims or guarantees that these will work for you or that they will work with any past, present, or future version of OS X.  All I will state is that they do not crash on my primary machine, a MacBook Air running 10.10.X, and that they provide at least some of the desired functions (or else why bother?) for me.
 
 I hope they work for you as well, but re-read the above paragraph and the License, and decide for yourself.
-
-Most of these features currently come from one or both of the following sources:
-
- 1. [Undocumented Goodness](https://code.google.com/p/undocumented-goodness/)
- 2. [iTerm2's CGSInternal folder](https://github.com/gnachman/iterm2)
 
 ### Sub Modules (See folder README.md)
 The following submodules are located in this repository for organizational purposes.  Installation instructions for each will be given in the appropriate subdirectory.
 
-|Module                      | Available | Description                                                                |
-|:---------------------------|:---------:|:---------------------------------------------------------------------------|
-|_asm.undocumented.bluetooth | Git       | Toggle bluetooth power and discoverability.                                |
-|_asm.undocumented.cgsdebug  | Git       | Includes Hydra's hydra.shadow function and other _windowserver debug stuff |
-|_asm.undocumented.coredock  | Git       | Manipulate Dock features including position, tilesize, etc.                |
-|_asm.undocumented.spaces    | Git       | Access OS X Spaces functionality.                                          |
+|Module                      | Description                                                                         |
+|:---------------------------|:------------------------------------------------------------------------------------|
+| hs._asm.undocumented.bluetooth | Toggle bluetooth power and discoverability.                                     |
+| hs._asm.undocumented.cgsdebug  | Includes Hydra's hydra.shadow function and other _windowserver debug stuff |
+| hs._asm.undocumented.coredock  | Manipulate Dock features including position, tilesize, etc.                      |
+| hs._asm.undocumented.spaces    | Access OS X Spaces functionality.                                               |
+### Installation
+Each sub-module has compilation instructions in the accompanying README file.  Installing this way will ensure that you have the latest and greatest.
 
-I am uncertain at this time if I will be providing these and future modules via Luarocks... I am less than impressed with it's limited flexibility concerning makefiles and local variances.  If there is interest in precompiled binaries for these modules, post an issue and I'll see what the interest level is.
+At various points (i.e. when I feel like it or remember) I will add a precompiled release.  These will most likely contain all of the modules currently in this repository unless otherwise noted in the release notes.  You can always remove the ones you don't want, of course.
+
+Download the release from https://github.com/asmagill/hammerspoon_asm.undocumented/releases and issue the following commands:
+
+~~~sh
+$ cd ~/.hammerspoon
+$ tar -xzf ~/Downloads/undocumented-vX.Y.tar.gz
+~~~
+
+If you are upgrading an existing version, remember to fully stop and restart Hammerspoon to insure that the new version is the one being used.
 
 ### Documentation
 
-The json files provided at this level contain the documentation for all of these modules in a format suitable for use with Hammerspoon's `hs.doc.fromJSONFile(file)` function.  In the near future, I hope to extend this support to Mjolnir and provide a simple mechanism for combining multiple json files into one set of documents for use within the appropriate console and Dash docsets.
+For now, see the README.md in each folder.  Since the Hammerspoon document system supports external sources, I hope to one day add that to the modules as well.
+
+### More Information
+Most of the undocumented API information that is used within these modules I gleaned from one or more of the following sources:
+
+ 1. [Undocumented Goodness](https://code.google.com/p/undocumented-goodness/)
+ 2. [iTerm2's CGSInternal folder](https://github.com/gnachman/iterm2)
+ 3. [NUIKit/CGSInternal](https://github.com/NUIKit/CGSInternal)
 
 ### License
 

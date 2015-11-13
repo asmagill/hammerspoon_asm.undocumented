@@ -1,4 +1,4 @@
---- === {PATH}.{MODULE} ===
+--- === hs._asm.undocumented.bluetooth ===
 ---
 --- This submodule provides access to Bluetooth availability and its power state, and the ability to change it.
 ---
@@ -7,7 +7,7 @@
 ---I make no promises that these will work for you or work at all with any, past, current, or future versions of OS X.  I can confirm only that they didn't crash my machine during testing under 10.10. You have been warned.
 
 
-local module = require("{PATH}.{MODULE}.internal-{MODULE}")
+local module = require("hs._asm.undocumented.bluetooth.internal")
 
 -- private variables and methods -----------------------------------------
 

@@ -1,4 +1,4 @@
---- === {PATH}.{MODULE} ===
+--- === hs._asm.undocumented.spaces ===
 ---
 --- This module provides the functionality, as it was in Hydra and Mjolnir, for `spaces`.
 ---
@@ -6,7 +6,7 @@
 ---
 --- This module is based primarily on code from the previous incarnation of Mjolnir by [Steven Degutis](https://github.com/sdegutis/).
 
-local module = require("{PATH}.{MODULE}.internal-{MODULE}")
+local module = require("hs._asm.undocumented.spaces.internal")
 
 -- private variables and methods -----------------------------------------
 

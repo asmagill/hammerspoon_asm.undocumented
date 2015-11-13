@@ -1,9 +1,4 @@
 .gitignore
-/*/Mjolnir/
-/*/Hammerspoon/
-/*/init.lua
-/*/internal.m
-/*/Makefile.Hammerspoon
-/*/Makefile.Mjolnir
 /Makefile
 __*
+

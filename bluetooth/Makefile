@@ -1,65 +1,70 @@
 mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
 current_dir := $(notdir $(patsubst %/,%,$(dir $(mkfile_path))))
 
-CONTAINER = _asm.undocumented
-TARGET ?= Hammerspoon
 MODULE := $(current_dir)
+PREFIX ?= ~/.hammerspoon
+HS_APPLICATION ?= /Applications
 
-ifeq ($(TARGET), Hammerspoon)
-USERPATH = ~\/.hammerspoon
-L_PATH = hs.$(CONTAINER)
-endif
+OBJCFILE = ${wildcard *.m}
+LUAFILE  = ${wildcard *.lua}
+HEADERS  = ${wildcard *.h}
 
-ifeq ($(TARGET), Mjolnir)
-USERPATH = ~\/.mjolnir
-L_PATH = mjolnir.$(CONTAINER)
-endif
+SOFILE  := $(OBJCFILE:.m=.so)
+DEBUG_CFLAGS ?= -g
+DOC_FILE = hs._asm.undocumented.$(MODULE).json
 
-PREFIX ?= $(USERPATH)\/$(subst .,\/,$(L_PATH))
+# special vars for uninstall
+space :=
+space +=
+comma := ,
+ALLFILES := $(LUAFILE)
+ALLFILES += $(SOFILE)
 
-OBJCFILE = internal.m
-LUAFILE  = init.lua
-SOFILE  := internal-$(current_dir).so
+.SUFFIXES: .m .so
 
-target: clean $(LUAFILE) $(OBJCFILE) Makefile.$(TARGET)
-	mkdir -p $(TARGET)/$(current_dir)
-	cp Makefile.$(TARGET) $(TARGET)/$(current_dir)/Makefile
-	cp -a LICENSE $(LUAFILE) $(OBJCFILE) $(TARGET)/$(current_dir)
+#CC=cc
+CC=clang
+EXTRA_CFLAGS ?= -Wconversion -Wdeprecated -F$(HS_APPLICATION)/Hammerspoon.app/Contents/Frameworks
+CFLAGS  += $(DEBUG_CFLAGS) -fobjc-arc -DHS_EXTERNAL_MODULE -Wall -Wextra $(EXTRA_CFLAGS)
+LDFLAGS += -dynamiclib -undefined dynamic_lookup $(EXTRA_LDFLAGS)
 
-output:
-	@echo "TARGET   = $(TARGET)"
-	@echo "MODULE   = $(MODULE)"
-	@echo "L_PATH   = $(L_PATH)"
-	@echo "USERPATH = $(USERPATH)"
-	@echo "PREFIX   = $(PREFIX)"
-	@echo "OBJCFILE = $(OBJCFILE)"
-	@echo "LUAFILE  = $(LUAFILE)"
-	@echo "SOFILE   = $(SOFILE)"
+DOC_SOURCES = $(LUAFILE) $(OBJCFILE)
 
-$(OBJCFILE): template.m
-	sed -e 's/{TARGET}/$(TARGET)/g' \
-		-e 's/{MODULE}/$(MODULE)/g' \
-		-e 's/{PATH}/$(L_PATH)/g' \
-		template.m > $@
+all: verify $(SOFILE)
 
-$(LUAFILE): template.lua
-		sed -e 's/{MODULE}/$(MODULE)/g' \
-		-e 's/{PATH}/$(L_PATH)/g' \
-		template.lua > $@
+.m.so: $(HEADERS)
+	$(CC) $< $(CFLAGS) $(LDFLAGS) -o $@
 
-Makefile.$(TARGET): Makefile.template
-	sed -e 's/{MODULE}/$(MODULE)/g' \
-		-e 's/{SOFILE}/$(SOFILE)/g' \
-		-e 's/{PREFIX}/$(PREFIX)/g' \
-		Makefile.template > $@
+install: verify install-objc install-lua
 
-install: target
-	$(MAKE) -C $(TARGET)/$(current_dir) install
+verify: $(LUAFILE)
+	luac-5.3 -p $(LUAFILE) && echo "Passed"
 
-uninstall: target
-	$(MAKE) -C $(TARGET)/$(current_dir) uninstall
+install-objc: $(SOFILE)
+	mkdir -p $(PREFIX)/hs/_asm/undocumented/$(MODULE)
+	install -m 0644 $(SOFILE) $(PREFIX)/hs/_asm/undocumented/$(MODULE)
+	cp -vpR $(OBJCFILE:.m=.so.dSYM) $(PREFIX)/hs/_asm/undocumented/$(MODULE)
+
+install-lua: $(LUAFILE)
+	mkdir -p $(PREFIX)/hs/_asm/undocumented/$(MODULE)
+	install -m 0644 $(LUAFILE) $(PREFIX)/hs/_asm/undocumented/$(MODULE)
+
+docs: $(DOC_FILE)
+
+$(DOC_FILE): $(DOC_SOURCES)
+	find . -type f \( -name '*.lua' -o -name '*.m' \) -not -name 'template.*' -not -path './_*' -exec cat {} + | __doc_tools/gencomments | __doc_tools/genjson > $@
+
+install-docs: docs
+	mkdir -p $(PREFIX)/hs/_asm/undocumented/$(MODULE)
+	install -m 0644 $(DOC_FILE) $(PREFIX)/hs/_asm/undocumented/$(MODULE)
 
 clean:
-	rm -v -fr $(LUAFILE) $(OBJCFILE) Makefile.Hammerspoon Hammerspoon Makefile.Mjolnir Mjolnir
+	rm -v -rf $(SOFILE) *.dSYM $(DOC_FILE)
 
-.PHONY: target clean install uninstall output
+uninstall:
+	rm -v -f $(PREFIX)/hs/_asm/undocumented/$(MODULE)/{$(subst $(space),$(comma),$(ALLFILES))}
+	(pushd $(PREFIX)/hs/_asm/undocumented/$(MODULE)/ ; rm -v -fr $(OBJCFILE:.m=.so.dSYM) ; popd)
+	rm -v -f $(PREFIX)/hs/_asm/undocumented/$(MODULE)/$(DOC_FILE)
+	rmdir -p $(PREFIX)/hs/_asm/undocumented/$(MODULE) ; exit 0
+
+.PHONY: all clean uninstall verify docs install install-objc install-lua install-docs
