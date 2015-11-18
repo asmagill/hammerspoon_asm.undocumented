@@ -1,6 +1,8 @@
 _asm.undocumented.cgsdebug
 ==========================
 
+***NOTE: This module does not work under OS X 10.11 due to security restrictions added to limit which applications can make change requests to the window server.  I am looking for a work around, but it doesn't look promising.  Please file an issue if you are aware of a work around or have any ideas.***
+
 Functions to get and set undocumented options and features within OS X.  These are undocumented features from the "private" api's for Mac OS X and are not guaranteed to work with any particular version of OS X or at all.  This code was based primarily on code samples and segments found at (https://code.google.com/p/undocumented-goodness/) and (https://code.google.com/p/iterm2/source/browse/branches/0.10.x/CGSInternal/CGSDebug.h?r=2).
 
 This submodule provides access to CGSDebug related features.  Most notably, this contains the hydra.shadow(bool) functionality, and a specific function is provided for just that functionality.
