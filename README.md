@@ -19,7 +19,7 @@ The following submodules are located in this repository for organizational purpo
 | hs._asm.undocumented.bluetooth | Toggle bluetooth power and discoverability.                                     |
 | hs._asm.undocumented.cgsdebug  | Includes Hydra's hydra.shadow function and other _windowserver debug stuff |
 | hs._asm.undocumented.coredock  | Manipulate Dock features including position, tilesize, etc.                      |
-| hs._asm.undocumented.spaces    | Access OS X Spaces functionality.                                               |
+| [hs._asm.undocumented.spaces](https://github.com/asmagill/hs._asm.undocumented.spaces)    | Access OS X Spaces functionality.                                               |
 ### Installation
 Each sub-module has compilation instructions in the accompanying README file.  Installing this way will ensure that you have the latest and greatest.
 
