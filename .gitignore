@@ -1,4 +1,13 @@
-.gitignore
-/Makefile
+# ignore these at the top level only
+Makefile
 __*
+objc2
+replacements
+
+# ignore in sub-directories as well
+
+**/*.dSYM/
+**/*.so
+**/.gitignore
+**/.git
 
