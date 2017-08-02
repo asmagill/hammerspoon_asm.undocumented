@@ -14,7 +14,10 @@
           ""
         ],
         "def" : "hs._asm.undocumented.touchbar.new() -> touchbarObject | nil",
-        "desc" : "Creates a new touchbarObject representing a window which displays the Apple Touch Bar.",
+        "parameters" : [
+          " * None",
+          ""
+        ],
         "notes" : [
           " * The most common reason a touchbarObject cannot be created is if your macOS version is not new enough. Type the following into your Hammerspoon console to check: `require(\"hs._asm.undocumented.touchbar\").supported(true)`."
         ],
@@ -25,26 +28,23 @@
           ""
         ],
         "name" : "new",
-        "parameters" : [
-          " * None",
-          ""
-        ]
+        "desc" : "Creates a new touchbarObject representing a window which displays the Apple Touch Bar."
       },
       {
-        "doc" : "Get or set whether or not the Touch Bar can be used by applications.\n\nParameters:\n * `state` - an optional boolean specifying whether applications can put items into the touch bar (true) or if this is limited only to the system items (false).\n\nReturns:\n * if an argument is provided, returns a boolean indicating whether or not the change was successful; otherwise returns the current value\n\nNotes:\n * Checking the value of this function does not indicate whether or not the machine *can* support the Touch Bar but rather if it *is* supporting the Touch Bar; Use [hs._asm.undocumented.touchbar.supported](#supported) to check whether or not the machine *can* support the Touch Bar.\n\n * Setting this to false will remove all application items from the Touch Bar.\n\n * On a machine that does not have a physical Touch Bar, this will default to false until the first touch bar is created, after which it will default to true.\n * This function has not been tested on a MacBook Pro with an *actual* Touch Bar, so it is a guess that this will always default to true on such a machine.",
+        "doc" : "Get or set whether or not the Touch Bar can be used by applications.\n\nParameters:\n * `state` - an optional boolean specifying whether applications can put items into the touch bar (true) or if this is limited only to the system items (false).\n\nReturns:\n * if an argument is provided, returns a boolean indicating whether or not the change was successful; otherwise returns the current value\n\nNotes:\n * Checking the value of this function does not indicate whether or not the machine *can* support the Touch Bar but rather if it *is* supporting the Touch Bar; Use [hs._asm.undocumented.touchbar.supported](#supported) to check whether or not the machine *can* support the Touch Bar.\n\n * Setting this to false will remove all application items from the Touch Bar.",
         "stripped_doc" : [
           "Get or set whether or not the Touch Bar can be used by applications.",
           ""
         ],
         "def" : "hs._asm.undocumented.touchbar.enabled([state]) -> boolean",
-        "desc" : "Get or set whether or not the Touch Bar can be used by applications.",
+        "parameters" : [
+          " * `state` - an optional boolean specifying whether applications can put items into the touch bar (true) or if this is limited only to the system items (false).",
+          ""
+        ],
         "notes" : [
           " * Checking the value of this function does not indicate whether or not the machine *can* support the Touch Bar but rather if it *is* supporting the Touch Bar; Use [hs._asm.undocumented.touchbar.supported](#supported) to check whether or not the machine *can* support the Touch Bar.",
           "",
-          " * Setting this to false will remove all application items from the Touch Bar.",
-          "",
-          " * On a machine that does not have a physical Touch Bar, this will default to false until the first touch bar is created, after which it will default to true.",
-          " * This function has not been tested on a MacBook Pro with an *actual* Touch Bar, so it is a guess that this will always default to true on such a machine."
+          " * Setting this to false will remove all application items from the Touch Bar."
         ],
         "signature" : "hs._asm.undocumented.touchbar.enabled([state]) -> boolean",
         "type" : "Function",
@@ -53,10 +53,7 @@
           ""
         ],
         "name" : "enabled",
-        "parameters" : [
-          " * `state` - an optional boolean specifying whether applications can put items into the touch bar (true) or if this is limited only to the system items (false).",
-          ""
-        ]
+        "desc" : "Get or set whether or not the Touch Bar can be used by applications."
       },
       {
         "doc" : "Returns a boolean value indicathing whether or not the Apple Touch Bar is supported on this Macintosh.\n\nParameters:\n * `showLink` - a boolean, default false, specifying whether a dialog prompting the user to download the necessary update is presented if Apple Touch Bar support is not found in the current Operating System.\n\nReturns:\n * true if Apple Touch Bar support is found in the current Operating System or false if it is not.\n\nNotes:\n * the link in the prompt is https:\/\/support.apple.com\/kb\/dl1897",
@@ -65,7 +62,10 @@
           ""
         ],
         "def" : "hs._asm.undocumented.touchbar.supported([showLink]) -> boolean",
-        "desc" : "Returns a boolean value indicathing whether or not the Apple Touch Bar is supported on this Macintosh.",
+        "parameters" : [
+          " * `showLink` - a boolean, default false, specifying whether a dialog prompting the user to download the necessary update is presented if Apple Touch Bar support is not found in the current Operating System.",
+          ""
+        ],
         "notes" : [
           " * the link in the prompt is https:\/\/support.apple.com\/kb\/dl1897"
         ],
@@ -76,10 +76,7 @@
           ""
         ],
         "name" : "supported",
-        "parameters" : [
-          " * `showLink` - a boolean, default false, specifying whether a dialog prompting the user to download the necessary update is presented if Apple Touch Bar support is not found in the current Operating System.",
-          ""
-        ]
+        "desc" : "Returns a boolean value indicathing whether or not the Apple Touch Bar is supported on this Macintosh."
       }
     ],
     "Variable" : [
@@ -88,31 +85,347 @@
     "stripped_doc" : [
 
     ],
+    "desc" : "A module to display an on-screen representation of the Apple Touch Bar, even on machines which do not have the touch bar.",
+    "type" : "Module",
     "Deprecated" : [
 
     ],
-    "type" : "Module",
-    "desc" : "A module to display an on-screen representation of the Apple Touch Bar, even on machines which do not have the touch bar.",
     "Constructor" : [
 
     ],
     "doc" : "A module to display an on-screen representation of the Apple Touch Bar, even on machines which do not have the touch bar.\n\nThis code is based heavily on code found at https:\/\/github.com\/bikkelbroeders\/TouchBarDemoApp.  Unlike the code found at the provided link, this module only supports displaying the touch bar window on your computer screen - it does not support display on an attached iDevice.\n\nThis module requires that you are running macOS 10.12.1 build 16B2657 or greater.  Most people who have received the 10.12.1 update have an earlier build, which you can check by selecting \"About this Mac\" from the Apple menu and then clicking the mouse pointer on the version number displayed in the dialog box.  If you require an update, you can find it at https:\/\/support.apple.com\/kb\/dl1897.\n\nIf you wish to use this module in an environment where the end-user's machine may not have the correct macOS release version, you should always check the value of `hs._asm.undocumented.touchbar.supported` before trying to create the Touch Bar and provide your own fallback or message.  Failure to do so will cause your code to break to the Hammerspoon Console when you attempt to create and use the Touch Bar.",
+    "Method" : [
+      {
+        "doc" : "Toggle's the visibility of the touch bar window.\n\nParameters:\n * `duration` - an optional number, default 0.0, specifying the fade-in\/out time when changing the visibility of the touch bar window.\n\nReturns:\n * the touchbarObject",
+        "stripped_doc" : [
+          "Toggle's the visibility of the touch bar window.",
+          ""
+        ],
+        "def" : "hs._asm.undocumented.touchbar:toggle([duration]) -> touchbarObject",
+        "parameters" : [
+          " * `duration` - an optional number, default 0.0, specifying the fade-in\/out time when changing the visibility of the touch bar window.",
+          ""
+        ],
+        "notes" : [
+
+        ],
+        "signature" : "hs._asm.undocumented.touchbar:toggle([duration]) -> touchbarObject",
+        "type" : "Method",
+        "returns" : [
+          " * the touchbarObject"
+        ],
+        "name" : "toggle",
+        "desc" : "Toggle's the visibility of the touch bar window."
+      },
+      {
+        "doc" : "Moves the touch bar window so that it is centered directly underneath the mouse pointer.\n\nParameters:\n * None\n\nReturns:\n * the touchbarObject\n\nNotes:\n * This method mimics the display location as set by the sample code this module is based on.  See https:\/\/github.com\/bikkelbroeders\/TouchBarDemoApp for more information.\n * The touch bar position will be adjusted so that it is fully visible on the screen even if this moves it left or right from the mouse's current position.",
+        "stripped_doc" : [
+          "Moves the touch bar window so that it is centered directly underneath the mouse pointer.",
+          ""
+        ],
+        "def" : "hs._asm.undocumented.touchbar:atMousePosition() -> touchbarObject",
+        "parameters" : [
+          " * None",
+          ""
+        ],
+        "notes" : [
+          " * This method mimics the display location as set by the sample code this module is based on.  See https:\/\/github.com\/bikkelbroeders\/TouchBarDemoApp for more information.",
+          " * The touch bar position will be adjusted so that it is fully visible on the screen even if this moves it left or right from the mouse's current position."
+        ],
+        "signature" : "hs._asm.undocumented.touchbar:atMousePosition() -> touchbarObject",
+        "type" : "Method",
+        "returns" : [
+          " * the touchbarObject",
+          ""
+        ],
+        "name" : "atMousePosition",
+        "desc" : "Moves the touch bar window so that it is centered directly underneath the mouse pointer."
+      },
+      {
+        "doc" : "Moves the touch bar window to the top or bottom center of the main screen.\n\nParameters:\n * `top` - an optional boolean, default false, specifying whether the touch bar should be centered at the top (true) of the screen or at the bottom (false).\n\nReturns:\n * the touchbarObject",
+        "stripped_doc" : [
+          "Moves the touch bar window to the top or bottom center of the main screen.",
+          ""
+        ],
+        "def" : "hs._asm.undocumented.touchbar:centered([top]) -> touchbarObject",
+        "parameters" : [
+          " * `top` - an optional boolean, default false, specifying whether the touch bar should be centered at the top (true) of the screen or at the bottom (false).",
+          ""
+        ],
+        "notes" : [
+
+        ],
+        "signature" : "hs._asm.undocumented.touchbar:centered([top]) -> touchbarObject",
+        "type" : "Method",
+        "returns" : [
+          " * the touchbarObject"
+        ],
+        "name" : "centered",
+        "desc" : "Moves the touch bar window to the top or bottom center of the main screen."
+      },
+      {
+        "doc" : "Display the touch bar window with an optional fade-in delay.\n\nParameters:\n * `duration` - an optional number, default 0.0, specifying the fade-in time for the touch bar window.\n\nReturns:\n * the touchbarObject\n\nNotes:\n * This method does nothing if the window is already visible.",
+        "stripped_doc" : [
+          "Display the touch bar window with an optional fade-in delay.",
+          ""
+        ],
+        "def" : "hs._asm.undocumented.touchbar:show([duration]) -> touchbarObject",
+        "parameters" : [
+          " * `duration` - an optional number, default 0.0, specifying the fade-in time for the touch bar window.",
+          ""
+        ],
+        "notes" : [
+          " * This method does nothing if the window is already visible."
+        ],
+        "signature" : "hs._asm.undocumented.touchbar:show([duration]) -> touchbarObject",
+        "type" : "Method",
+        "returns" : [
+          " * the touchbarObject",
+          ""
+        ],
+        "name" : "show",
+        "desc" : "Display the touch bar window with an optional fade-in delay."
+      },
+      {
+        "doc" : "Display the touch bar window with an optional fade-out delay.\n\nParameters:\n * `duration` - an optional number, default 0.0, specifying the fade-out time for the touch bar window.\n\nReturns:\n * the touchbarObject\n\nNotes:\n * This method does nothing if the window is already hidden.\n * The value used in the sample code referenced in the module header is 0.1.",
+        "stripped_doc" : [
+          "Display the touch bar window with an optional fade-out delay.",
+          ""
+        ],
+        "def" : "hs._asm.undocumented.touchbar:hide([duration]) -> touchbarObject",
+        "parameters" : [
+          " * `duration` - an optional number, default 0.0, specifying the fade-out time for the touch bar window.",
+          ""
+        ],
+        "notes" : [
+          " * This method does nothing if the window is already hidden.",
+          " * The value used in the sample code referenced in the module header is 0.1."
+        ],
+        "signature" : "hs._asm.undocumented.touchbar:hide([duration]) -> touchbarObject",
+        "type" : "Method",
+        "returns" : [
+          " * the touchbarObject",
+          ""
+        ],
+        "name" : "hide",
+        "desc" : "Display the touch bar window with an optional fade-out delay."
+      },
+      {
+        "doc" : "Get or set the top-left of the touch bar window.\n\nParameters:\n * `point` - an optional table specifying where the top left of the touch bar window should be moved to.\n\nReturns:\n * if a value is provided, returns the touchbarObject; otherwise returns the current value.\n\nNotes:\n * A point table is a table with at least `x` and `y` key-value pairs which specify the coordinates on the computer screen where the window should be moved to.  Hammerspoon considers the upper left corner of the primary screen to be { x = 0.0, y = 0.0 }.",
+        "stripped_doc" : [
+          "Get or set the top-left of the touch bar window.",
+          ""
+        ],
+        "def" : "hs._asm.undocumented.touchbar:topLeft([point]) -> table | touchbarObject",
+        "parameters" : [
+          " * `point` - an optional table specifying where the top left of the touch bar window should be moved to.",
+          ""
+        ],
+        "notes" : [
+          " * A point table is a table with at least `x` and `y` key-value pairs which specify the coordinates on the computer screen where the window should be moved to.  Hammerspoon considers the upper left corner of the primary screen to be { x = 0.0, y = 0.0 }."
+        ],
+        "signature" : "hs._asm.undocumented.touchbar:topLeft([point]) -> table | touchbarObject",
+        "type" : "Method",
+        "returns" : [
+          " * if a value is provided, returns the touchbarObject; otherwise returns the current value.",
+          ""
+        ],
+        "name" : "topLeft",
+        "desc" : "Get or set the top-left of the touch bar window."
+      },
+      {
+        "doc" : "Gets the frame of the touch bar window\n\nParameters:\n * None\n\nReturns:\n * a frame table with key-value pairs specifying the top left corner of the touch bar window and its width and height.\n\nNotes:\n * A frame table is a table with at least `x`, `y`, `h` and `w` key-value pairs which specify the coordinates on the computer screen of the window and its width (w) and height(h).\n * This allows you to get the frame so that you can include its height and width in calculations - it does not allow you to change the size of the touch bar window itself.",
+        "stripped_doc" : [
+          "Gets the frame of the touch bar window",
+          ""
+        ],
+        "def" : "hs._asm.undocumented.touchbar:getFrame() -> table",
+        "parameters" : [
+          " * None",
+          ""
+        ],
+        "notes" : [
+          " * A frame table is a table with at least `x`, `y`, `h` and `w` key-value pairs which specify the coordinates on the computer screen of the window and its width (w) and height(h).",
+          " * This allows you to get the frame so that you can include its height and width in calculations - it does not allow you to change the size of the touch bar window itself."
+        ],
+        "signature" : "hs._asm.undocumented.touchbar:getFrame() -> table",
+        "type" : "Method",
+        "returns" : [
+          " * a frame table with key-value pairs specifying the top left corner of the touch bar window and its width and height.",
+          ""
+        ],
+        "name" : "getFrame",
+        "desc" : "Gets the frame of the touch bar window"
+      },
+      {
+        "doc" : "Returns a boolean indicating whether or not the touch bar window is current visible.\n\nParameters:\n * None\n\nReturns:\n * a boolean specifying whether the touch bar window is visible (true) or not (false).",
+        "stripped_doc" : [
+          "Returns a boolean indicating whether or not the touch bar window is current visible.",
+          ""
+        ],
+        "def" : "hs._asm.undocumented.touchbar:isVisible() -> boolean",
+        "parameters" : [
+          " * None",
+          ""
+        ],
+        "notes" : [
+
+        ],
+        "signature" : "hs._asm.undocumented.touchbar:isVisible() -> boolean",
+        "type" : "Method",
+        "returns" : [
+          " * a boolean specifying whether the touch bar window is visible (true) or not (false)."
+        ],
+        "name" : "isVisible",
+        "desc" : "Returns a boolean indicating whether or not the touch bar window is current visible."
+      },
+      {
+        "doc" : "Get or set the alpha value for the touch bar window when the mouse is not hovering over it.\n\nParameters:\n * alpha - an optional number between 0.0 and 1.0 inclusive specifying the alpha value for the touch bar window when the mouse is not over it.  Defaults to 0.5.\n\nReturns:\n * if a value is provided, returns the touchbarObject; otherwise returns the current value",
+        "stripped_doc" : [
+          "Get or set the alpha value for the touch bar window when the mouse is not hovering over it.",
+          ""
+        ],
+        "def" : "hs._asm.undocumented.touchbar:inactiveAlpha([alpha]) -> number | touchbarObject",
+        "parameters" : [
+          " * alpha - an optional number between 0.0 and 1.0 inclusive specifying the alpha value for the touch bar window when the mouse is not over it.  Defaults to 0.5.",
+          ""
+        ],
+        "notes" : [
+
+        ],
+        "signature" : "hs._asm.undocumented.touchbar:inactiveAlpha([alpha]) -> number | touchbarObject",
+        "type" : "Method",
+        "returns" : [
+          " * if a value is provided, returns the touchbarObject; otherwise returns the current value"
+        ],
+        "name" : "inactiveAlpha",
+        "desc" : "Get or set the alpha value for the touch bar window when the mouse is not hovering over it."
+      },
+      {
+        "doc" : "Get or set whether or not the touch bar window is movable by clicking on it and holding down the mouse button while moving the mouse.\n\nParameters:\n * `state` - an optional boolean which specifies whether the touch bar window is movable (true) or not (false).  Default false.\n\nReturns:\n * if an argument is provided, returns the touchbarObject; otherwise returns the current value.\n\nNotes:\n * While the touch bar is movable, actions which require moving the mouse while clicking on the touch bar are not accessible.\n * See also [hs._asm.undocumented.touchbar:acceptsMouseEvents](#acceptsMouseEvents).",
+        "stripped_doc" : [
+          "Get or set whether or not the touch bar window is movable by clicking on it and holding down the mouse button while moving the mouse.",
+          ""
+        ],
+        "def" : "hs._asm.undocumented.touchbar:movable([state]) -> boolean | touchbarObject",
+        "parameters" : [
+          " * `state` - an optional boolean which specifies whether the touch bar window is movable (true) or not (false).  Default false.",
+          ""
+        ],
+        "notes" : [
+          " * While the touch bar is movable, actions which require moving the mouse while clicking on the touch bar are not accessible.",
+          " * See also [hs._asm.undocumented.touchbar:acceptsMouseEvents](#acceptsMouseEvents)."
+        ],
+        "signature" : "hs._asm.undocumented.touchbar:movable([state]) -> boolean | touchbarObject",
+        "type" : "Method",
+        "returns" : [
+          " * if an argument is provided, returns the touchbarObject; otherwise returns the current value.",
+          ""
+        ],
+        "name" : "movable",
+        "desc" : "Get or set whether or not the touch bar window is movable by clicking on it and holding down the mouse button while moving the mouse."
+      },
+      {
+        "doc" : "Get or set whether or not the touch bar accepts mouse events.\n\nParameters:\n * `state` - an optional boolean which specifies whether the touch bar accepts mouse events (true) or not (false).  Default true.\n\nReturns:\n * if an argument is provided, returns the touchbarObject; otherwise returns the current value.\n\nNotes:\n * This method can be used to prevent mouse clicks in the touch bar from triggering the touch bar buttons.\n * This can be useful when [hs._asm.undocumented.touchbar:movable](#movable) is set to true to prevent accidentally triggering an action.",
+        "stripped_doc" : [
+          "Get or set whether or not the touch bar accepts mouse events.",
+          ""
+        ],
+        "def" : "hs._asm.undocumented.touchbar:acceptsMouseEvents([state]) -> boolean | touchbarObject",
+        "parameters" : [
+          " * `state` - an optional boolean which specifies whether the touch bar accepts mouse events (true) or not (false).  Default true.",
+          ""
+        ],
+        "notes" : [
+          " * This method can be used to prevent mouse clicks in the touch bar from triggering the touch bar buttons.",
+          " * This can be useful when [hs._asm.undocumented.touchbar:movable](#movable) is set to true to prevent accidentally triggering an action."
+        ],
+        "signature" : "hs._asm.undocumented.touchbar:acceptsMouseEvents([state]) -> boolean | touchbarObject",
+        "type" : "Method",
+        "returns" : [
+          " * if an argument is provided, returns the touchbarObject; otherwise returns the current value.",
+          ""
+        ],
+        "name" : "acceptsMouseEvents",
+        "desc" : "Get or set whether or not the touch bar accepts mouse events."
+      },
+      {
+        "doc" : "Get or set the background color for the touch bar window.\n\nParameters:\n * `color` - an optional color table as defined in `hs.drawing.color` specifying the background color for the touch bar window.  Defaults to black, i.e. `{ white = 0.0, alpha = 1.0 }`.\n\nReturns:\n * if an argument is provided, returns the touchbarObject; otherwise returns the current value.\n\nNotes:\n * The visual effect of this method is to change the border color around the touch bar -- the touch bar itself remains the color as defined by the application which is providing the current touch bar items for display.",
+        "stripped_doc" : [
+          "Get or set the background color for the touch bar window.",
+          ""
+        ],
+        "def" : "hs._asm.undocumented.touchbar:backgroundColor([color]) -> color | touchbarObject",
+        "parameters" : [
+          " * `color` - an optional color table as defined in `hs.drawing.color` specifying the background color for the touch bar window.  Defaults to black, i.e. `{ white = 0.0, alpha = 1.0 }`.",
+          ""
+        ],
+        "notes" : [
+          " * The visual effect of this method is to change the border color around the touch bar -- the touch bar itself remains the color as defined by the application which is providing the current touch bar items for display."
+        ],
+        "signature" : "hs._asm.undocumented.touchbar:backgroundColor([color]) -> color | touchbarObject",
+        "type" : "Method",
+        "returns" : [
+          " * if an argument is provided, returns the touchbarObject; otherwise returns the current value.",
+          ""
+        ],
+        "name" : "backgroundColor",
+        "desc" : "Get or set the background color for the touch bar window."
+      },
+      {
+        "doc" : "Sets the callback function for the touch bar window.\n\nParameters:\n * `fn` - a function to set as the callback for the touch bar window, or nil to remove the existing callback function.\n\nReturns:\n * the touchbarObject\n\nNotes:\n * The function should expect 2 arguments and return none.  The arguments will be one of the following:\n\n   * obj, \"didEnter\" - indicates that the mouse pointer has entered the window containing the touch bar\n     * `obj`     - the touchbarObject the callback is for\n     * `message` - the message to the callback, in this case \"didEnter\"\n\n   * obj, \"didExit\" - indicates that the mouse pointer has exited the window containing the touch bar\n     * `obj`     - the touchbarObject the callback is for\n     * `message` - the message to the callback, in this case \"didEnter\"",
+        "stripped_doc" : [
+          "Sets the callback function for the touch bar window.",
+          ""
+        ],
+        "def" : "hs._asm.undocumented.touchbar:setCallback(fn | nil) -> touchbarObject",
+        "parameters" : [
+          " * `fn` - a function to set as the callback for the touch bar window, or nil to remove the existing callback function.",
+          ""
+        ],
+        "notes" : [
+          " * The function should expect 2 arguments and return none.  The arguments will be one of the following:",
+          "",
+          "   * obj, \"didEnter\" - indicates that the mouse pointer has entered the window containing the touch bar",
+          "     * `obj`     - the touchbarObject the callback is for",
+          "     * `message` - the message to the callback, in this case \"didEnter\"",
+          "",
+          "   * obj, \"didExit\" - indicates that the mouse pointer has exited the window containing the touch bar",
+          "     * `obj`     - the touchbarObject the callback is for",
+          "     * `message` - the message to the callback, in this case \"didEnter\""
+        ],
+        "signature" : "hs._asm.undocumented.touchbar:setCallback(fn | nil) -> touchbarObject",
+        "type" : "Method",
+        "returns" : [
+          " * the touchbarObject",
+          ""
+        ],
+        "name" : "setCallback",
+        "desc" : "Sets the callback function for the touch bar window."
+      }
+    ],
+    "Command" : [
+
+    ],
+    "Field" : [
+
+    ],
     "items" : [
       {
-        "doc" : "Get or set whether or not the Touch Bar can be used by applications.\n\nParameters:\n * `state` - an optional boolean specifying whether applications can put items into the touch bar (true) or if this is limited only to the system items (false).\n\nReturns:\n * if an argument is provided, returns a boolean indicating whether or not the change was successful; otherwise returns the current value\n\nNotes:\n * Checking the value of this function does not indicate whether or not the machine *can* support the Touch Bar but rather if it *is* supporting the Touch Bar; Use [hs._asm.undocumented.touchbar.supported](#supported) to check whether or not the machine *can* support the Touch Bar.\n\n * Setting this to false will remove all application items from the Touch Bar.\n\n * On a machine that does not have a physical Touch Bar, this will default to false until the first touch bar is created, after which it will default to true.\n * This function has not been tested on a MacBook Pro with an *actual* Touch Bar, so it is a guess that this will always default to true on such a machine.",
+        "doc" : "Get or set whether or not the Touch Bar can be used by applications.\n\nParameters:\n * `state` - an optional boolean specifying whether applications can put items into the touch bar (true) or if this is limited only to the system items (false).\n\nReturns:\n * if an argument is provided, returns a boolean indicating whether or not the change was successful; otherwise returns the current value\n\nNotes:\n * Checking the value of this function does not indicate whether or not the machine *can* support the Touch Bar but rather if it *is* supporting the Touch Bar; Use [hs._asm.undocumented.touchbar.supported](#supported) to check whether or not the machine *can* support the Touch Bar.\n\n * Setting this to false will remove all application items from the Touch Bar.",
         "stripped_doc" : [
           "Get or set whether or not the Touch Bar can be used by applications.",
           ""
         ],
         "def" : "hs._asm.undocumented.touchbar.enabled([state]) -> boolean",
-        "desc" : "Get or set whether or not the Touch Bar can be used by applications.",
+        "parameters" : [
+          " * `state` - an optional boolean specifying whether applications can put items into the touch bar (true) or if this is limited only to the system items (false).",
+          ""
+        ],
         "notes" : [
           " * Checking the value of this function does not indicate whether or not the machine *can* support the Touch Bar but rather if it *is* supporting the Touch Bar; Use [hs._asm.undocumented.touchbar.supported](#supported) to check whether or not the machine *can* support the Touch Bar.",
           "",
-          " * Setting this to false will remove all application items from the Touch Bar.",
-          "",
-          " * On a machine that does not have a physical Touch Bar, this will default to false until the first touch bar is created, after which it will default to true.",
-          " * This function has not been tested on a MacBook Pro with an *actual* Touch Bar, so it is a guess that this will always default to true on such a machine."
+          " * Setting this to false will remove all application items from the Touch Bar."
         ],
         "signature" : "hs._asm.undocumented.touchbar.enabled([state]) -> boolean",
         "type" : "Function",
@@ -121,10 +434,7 @@
           ""
         ],
         "name" : "enabled",
-        "parameters" : [
-          " * `state` - an optional boolean specifying whether applications can put items into the touch bar (true) or if this is limited only to the system items (false).",
-          ""
-        ]
+        "desc" : "Get or set whether or not the Touch Bar can be used by applications."
       },
       {
         "doc" : "Creates a new touchbarObject representing a window which displays the Apple Touch Bar.\n\nParameters:\n * None\n\nReturns:\n * the touchbarObject or nil if one could not be created\n\nNotes:\n * The most common reason a touchbarObject cannot be created is if your macOS version is not new enough. Type the following into your Hammerspoon console to check: `require(\"hs._asm.undocumented.touchbar\").supported(true)`.",
@@ -133,7 +443,10 @@
           ""
         ],
         "def" : "hs._asm.undocumented.touchbar.new() -> touchbarObject | nil",
-        "desc" : "Creates a new touchbarObject representing a window which displays the Apple Touch Bar.",
+        "parameters" : [
+          " * None",
+          ""
+        ],
         "notes" : [
           " * The most common reason a touchbarObject cannot be created is if your macOS version is not new enough. Type the following into your Hammerspoon console to check: `require(\"hs._asm.undocumented.touchbar\").supported(true)`."
         ],
@@ -144,10 +457,7 @@
           ""
         ],
         "name" : "new",
-        "parameters" : [
-          " * None",
-          ""
-        ]
+        "desc" : "Creates a new touchbarObject representing a window which displays the Apple Touch Bar."
       },
       {
         "doc" : "Returns a boolean value indicathing whether or not the Apple Touch Bar is supported on this Macintosh.\n\nParameters:\n * `showLink` - a boolean, default false, specifying whether a dialog prompting the user to download the necessary update is presented if Apple Touch Bar support is not found in the current Operating System.\n\nReturns:\n * true if Apple Touch Bar support is found in the current Operating System or false if it is not.\n\nNotes:\n * the link in the prompt is https:\/\/support.apple.com\/kb\/dl1897",
@@ -156,7 +466,10 @@
           ""
         ],
         "def" : "hs._asm.undocumented.touchbar.supported([showLink]) -> boolean",
-        "desc" : "Returns a boolean value indicathing whether or not the Apple Touch Bar is supported on this Macintosh.",
+        "parameters" : [
+          " * `showLink` - a boolean, default false, specifying whether a dialog prompting the user to download the necessary update is presented if Apple Touch Bar support is not found in the current Operating System.",
+          ""
+        ],
         "notes" : [
           " * the link in the prompt is https:\/\/support.apple.com\/kb\/dl1897"
         ],
@@ -167,10 +480,7 @@
           ""
         ],
         "name" : "supported",
-        "parameters" : [
-          " * `showLink` - a boolean, default false, specifying whether a dialog prompting the user to download the necessary update is presented if Apple Touch Bar support is not found in the current Operating System.",
-          ""
-        ]
+        "desc" : "Returns a boolean value indicathing whether or not the Apple Touch Bar is supported on this Macintosh."
       },
       {
         "doc" : "Get or set whether or not the touch bar accepts mouse events.\n\nParameters:\n * `state` - an optional boolean which specifies whether the touch bar accepts mouse events (true) or not (false).  Default true.\n\nReturns:\n * if an argument is provided, returns the touchbarObject; otherwise returns the current value.\n\nNotes:\n * This method can be used to prevent mouse clicks in the touch bar from triggering the touch bar buttons.\n * This can be useful when [hs._asm.undocumented.touchbar:movable](#movable) is set to true to prevent accidentally triggering an action.",
@@ -179,7 +489,10 @@
           ""
         ],
         "def" : "hs._asm.undocumented.touchbar:acceptsMouseEvents([state]) -> boolean | touchbarObject",
-        "desc" : "Get or set whether or not the touch bar accepts mouse events.",
+        "parameters" : [
+          " * `state` - an optional boolean which specifies whether the touch bar accepts mouse events (true) or not (false).  Default true.",
+          ""
+        ],
         "notes" : [
           " * This method can be used to prevent mouse clicks in the touch bar from triggering the touch bar buttons.",
           " * This can be useful when [hs._asm.undocumented.touchbar:movable](#movable) is set to true to prevent accidentally triggering an action."
@@ -191,10 +504,7 @@
           ""
         ],
         "name" : "acceptsMouseEvents",
-        "parameters" : [
-          " * `state` - an optional boolean which specifies whether the touch bar accepts mouse events (true) or not (false).  Default true.",
-          ""
-        ]
+        "desc" : "Get or set whether or not the touch bar accepts mouse events."
       },
       {
         "doc" : "Moves the touch bar window so that it is centered directly underneath the mouse pointer.\n\nParameters:\n * None\n\nReturns:\n * the touchbarObject\n\nNotes:\n * This method mimics the display location as set by the sample code this module is based on.  See https:\/\/github.com\/bikkelbroeders\/TouchBarDemoApp for more information.\n * The touch bar position will be adjusted so that it is fully visible on the screen even if this moves it left or right from the mouse's current position.",
@@ -203,7 +513,10 @@
           ""
         ],
         "def" : "hs._asm.undocumented.touchbar:atMousePosition() -> touchbarObject",
-        "desc" : "Moves the touch bar window so that it is centered directly underneath the mouse pointer.",
+        "parameters" : [
+          " * None",
+          ""
+        ],
         "notes" : [
           " * This method mimics the display location as set by the sample code this module is based on.  See https:\/\/github.com\/bikkelbroeders\/TouchBarDemoApp for more information.",
           " * The touch bar position will be adjusted so that it is fully visible on the screen even if this moves it left or right from the mouse's current position."
@@ -215,10 +528,7 @@
           ""
         ],
         "name" : "atMousePosition",
-        "parameters" : [
-          " * None",
-          ""
-        ]
+        "desc" : "Moves the touch bar window so that it is centered directly underneath the mouse pointer."
       },
       {
         "doc" : "Get or set the background color for the touch bar window.\n\nParameters:\n * `color` - an optional color table as defined in `hs.drawing.color` specifying the background color for the touch bar window.  Defaults to black, i.e. `{ white = 0.0, alpha = 1.0 }`.\n\nReturns:\n * if an argument is provided, returns the touchbarObject; otherwise returns the current value.\n\nNotes:\n * The visual effect of this method is to change the border color around the touch bar -- the touch bar itself remains the color as defined by the application which is providing the current touch bar items for display.",
@@ -227,7 +537,10 @@
           ""
         ],
         "def" : "hs._asm.undocumented.touchbar:backgroundColor([color]) -> color | touchbarObject",
-        "desc" : "Get or set the background color for the touch bar window.",
+        "parameters" : [
+          " * `color` - an optional color table as defined in `hs.drawing.color` specifying the background color for the touch bar window.  Defaults to black, i.e. `{ white = 0.0, alpha = 1.0 }`.",
+          ""
+        ],
         "notes" : [
           " * The visual effect of this method is to change the border color around the touch bar -- the touch bar itself remains the color as defined by the application which is providing the current touch bar items for display."
         ],
@@ -238,10 +551,7 @@
           ""
         ],
         "name" : "backgroundColor",
-        "parameters" : [
-          " * `color` - an optional color table as defined in `hs.drawing.color` specifying the background color for the touch bar window.  Defaults to black, i.e. `{ white = 0.0, alpha = 1.0 }`.",
-          ""
-        ]
+        "desc" : "Get or set the background color for the touch bar window."
       },
       {
         "doc" : "Moves the touch bar window to the top or bottom center of the main screen.\n\nParameters:\n * `top` - an optional boolean, default false, specifying whether the touch bar should be centered at the top (true) of the screen or at the bottom (false).\n\nReturns:\n * the touchbarObject",
@@ -250,7 +560,10 @@
           ""
         ],
         "def" : "hs._asm.undocumented.touchbar:centered([top]) -> touchbarObject",
-        "desc" : "Moves the touch bar window to the top or bottom center of the main screen.",
+        "parameters" : [
+          " * `top` - an optional boolean, default false, specifying whether the touch bar should be centered at the top (true) of the screen or at the bottom (false).",
+          ""
+        ],
         "notes" : [
 
         ],
@@ -260,10 +573,7 @@
           " * the touchbarObject"
         ],
         "name" : "centered",
-        "parameters" : [
-          " * `top` - an optional boolean, default false, specifying whether the touch bar should be centered at the top (true) of the screen or at the bottom (false).",
-          ""
-        ]
+        "desc" : "Moves the touch bar window to the top or bottom center of the main screen."
       },
       {
         "doc" : "Gets the frame of the touch bar window\n\nParameters:\n * None\n\nReturns:\n * a frame table with key-value pairs specifying the top left corner of the touch bar window and its width and height.\n\nNotes:\n * A frame table is a table with at least `x`, `y`, `h` and `w` key-value pairs which specify the coordinates on the computer screen of the window and its width (w) and height(h).\n * This allows you to get the frame so that you can include its height and width in calculations - it does not allow you to change the size of the touch bar window itself.",
@@ -272,7 +582,10 @@
           ""
         ],
         "def" : "hs._asm.undocumented.touchbar:getFrame() -> table",
-        "desc" : "Gets the frame of the touch bar window",
+        "parameters" : [
+          " * None",
+          ""
+        ],
         "notes" : [
           " * A frame table is a table with at least `x`, `y`, `h` and `w` key-value pairs which specify the coordinates on the computer screen of the window and its width (w) and height(h).",
           " * This allows you to get the frame so that you can include its height and width in calculations - it does not allow you to change the size of the touch bar window itself."
@@ -284,10 +597,7 @@
           ""
         ],
         "name" : "getFrame",
-        "parameters" : [
-          " * None",
-          ""
-        ]
+        "desc" : "Gets the frame of the touch bar window"
       },
       {
         "doc" : "Display the touch bar window with an optional fade-out delay.\n\nParameters:\n * `duration` - an optional number, default 0.0, specifying the fade-out time for the touch bar window.\n\nReturns:\n * the touchbarObject\n\nNotes:\n * This method does nothing if the window is already hidden.\n * The value used in the sample code referenced in the module header is 0.1.",
@@ -296,7 +606,10 @@
           ""
         ],
         "def" : "hs._asm.undocumented.touchbar:hide([duration]) -> touchbarObject",
-        "desc" : "Display the touch bar window with an optional fade-out delay.",
+        "parameters" : [
+          " * `duration` - an optional number, default 0.0, specifying the fade-out time for the touch bar window.",
+          ""
+        ],
         "notes" : [
           " * This method does nothing if the window is already hidden.",
           " * The value used in the sample code referenced in the module header is 0.1."
@@ -308,10 +621,7 @@
           ""
         ],
         "name" : "hide",
-        "parameters" : [
-          " * `duration` - an optional number, default 0.0, specifying the fade-out time for the touch bar window.",
-          ""
-        ]
+        "desc" : "Display the touch bar window with an optional fade-out delay."
       },
       {
         "doc" : "Get or set the alpha value for the touch bar window when the mouse is not hovering over it.\n\nParameters:\n * alpha - an optional number between 0.0 and 1.0 inclusive specifying the alpha value for the touch bar window when the mouse is not over it.  Defaults to 0.5.\n\nReturns:\n * if a value is provided, returns the touchbarObject; otherwise returns the current value",
@@ -320,7 +630,10 @@
           ""
         ],
         "def" : "hs._asm.undocumented.touchbar:inactiveAlpha([alpha]) -> number | touchbarObject",
-        "desc" : "Get or set the alpha value for the touch bar window when the mouse is not hovering over it.",
+        "parameters" : [
+          " * alpha - an optional number between 0.0 and 1.0 inclusive specifying the alpha value for the touch bar window when the mouse is not over it.  Defaults to 0.5.",
+          ""
+        ],
         "notes" : [
 
         ],
@@ -330,10 +643,7 @@
           " * if a value is provided, returns the touchbarObject; otherwise returns the current value"
         ],
         "name" : "inactiveAlpha",
-        "parameters" : [
-          " * alpha - an optional number between 0.0 and 1.0 inclusive specifying the alpha value for the touch bar window when the mouse is not over it.  Defaults to 0.5.",
-          ""
-        ]
+        "desc" : "Get or set the alpha value for the touch bar window when the mouse is not hovering over it."
       },
       {
         "doc" : "Returns a boolean indicating whether or not the touch bar window is current visible.\n\nParameters:\n * None\n\nReturns:\n * a boolean specifying whether the touch bar window is visible (true) or not (false).",
@@ -342,7 +652,10 @@
           ""
         ],
         "def" : "hs._asm.undocumented.touchbar:isVisible() -> boolean",
-        "desc" : "Returns a boolean indicating whether or not the touch bar window is current visible.",
+        "parameters" : [
+          " * None",
+          ""
+        ],
         "notes" : [
 
         ],
@@ -352,10 +665,7 @@
           " * a boolean specifying whether the touch bar window is visible (true) or not (false)."
         ],
         "name" : "isVisible",
-        "parameters" : [
-          " * None",
-          ""
-        ]
+        "desc" : "Returns a boolean indicating whether or not the touch bar window is current visible."
       },
       {
         "doc" : "Get or set whether or not the touch bar window is movable by clicking on it and holding down the mouse button while moving the mouse.\n\nParameters:\n * `state` - an optional boolean which specifies whether the touch bar window is movable (true) or not (false).  Default false.\n\nReturns:\n * if an argument is provided, returns the touchbarObject; otherwise returns the current value.\n\nNotes:\n * While the touch bar is movable, actions which require moving the mouse while clicking on the touch bar are not accessible.\n * See also [hs._asm.undocumented.touchbar:acceptsMouseEvents](#acceptsMouseEvents).",
@@ -364,7 +674,10 @@
           ""
         ],
         "def" : "hs._asm.undocumented.touchbar:movable([state]) -> boolean | touchbarObject",
-        "desc" : "Get or set whether or not the touch bar window is movable by clicking on it and holding down the mouse button while moving the mouse.",
+        "parameters" : [
+          " * `state` - an optional boolean which specifies whether the touch bar window is movable (true) or not (false).  Default false.",
+          ""
+        ],
         "notes" : [
           " * While the touch bar is movable, actions which require moving the mouse while clicking on the touch bar are not accessible.",
           " * See also [hs._asm.undocumented.touchbar:acceptsMouseEvents](#acceptsMouseEvents)."
@@ -376,10 +689,7 @@
           ""
         ],
         "name" : "movable",
-        "parameters" : [
-          " * `state` - an optional boolean which specifies whether the touch bar window is movable (true) or not (false).  Default false.",
-          ""
-        ]
+        "desc" : "Get or set whether or not the touch bar window is movable by clicking on it and holding down the mouse button while moving the mouse."
       },
       {
         "doc" : "Sets the callback function for the touch bar window.\n\nParameters:\n * `fn` - a function to set as the callback for the touch bar window, or nil to remove the existing callback function.\n\nReturns:\n * the touchbarObject\n\nNotes:\n * The function should expect 2 arguments and return none.  The arguments will be one of the following:\n\n   * obj, \"didEnter\" - indicates that the mouse pointer has entered the window containing the touch bar\n     * `obj`     - the touchbarObject the callback is for\n     * `message` - the message to the callback, in this case \"didEnter\"\n\n   * obj, \"didExit\" - indicates that the mouse pointer has exited the window containing the touch bar\n     * `obj`     - the touchbarObject the callback is for\n     * `message` - the message to the callback, in this case \"didEnter\"",
@@ -388,7 +698,10 @@
           ""
         ],
         "def" : "hs._asm.undocumented.touchbar:setCallback(fn | nil) -> touchbarObject",
-        "desc" : "Sets the callback function for the touch bar window.",
+        "parameters" : [
+          " * `fn` - a function to set as the callback for the touch bar window, or nil to remove the existing callback function.",
+          ""
+        ],
         "notes" : [
           " * The function should expect 2 arguments and return none.  The arguments will be one of the following:",
           "",
@@ -407,10 +720,7 @@
           ""
         ],
         "name" : "setCallback",
-        "parameters" : [
-          " * `fn` - a function to set as the callback for the touch bar window, or nil to remove the existing callback function.",
-          ""
-        ]
+        "desc" : "Sets the callback function for the touch bar window."
       },
       {
         "doc" : "Display the touch bar window with an optional fade-in delay.\n\nParameters:\n * `duration` - an optional number, default 0.0, specifying the fade-in time for the touch bar window.\n\nReturns:\n * the touchbarObject\n\nNotes:\n * This method does nothing if the window is already visible.",
@@ -419,7 +729,10 @@
           ""
         ],
         "def" : "hs._asm.undocumented.touchbar:show([duration]) -> touchbarObject",
-        "desc" : "Display the touch bar window with an optional fade-in delay.",
+        "parameters" : [
+          " * `duration` - an optional number, default 0.0, specifying the fade-in time for the touch bar window.",
+          ""
+        ],
         "notes" : [
           " * This method does nothing if the window is already visible."
         ],
@@ -430,10 +743,7 @@
           ""
         ],
         "name" : "show",
-        "parameters" : [
-          " * `duration` - an optional number, default 0.0, specifying the fade-in time for the touch bar window.",
-          ""
-        ]
+        "desc" : "Display the touch bar window with an optional fade-in delay."
       },
       {
         "doc" : "Toggle's the visibility of the touch bar window.\n\nParameters:\n * `duration` - an optional number, default 0.0, specifying the fade-in\/out time when changing the visibility of the touch bar window.\n\nReturns:\n * the touchbarObject",
@@ -442,7 +752,10 @@
           ""
         ],
         "def" : "hs._asm.undocumented.touchbar:toggle([duration]) -> touchbarObject",
-        "desc" : "Toggle's the visibility of the touch bar window.",
+        "parameters" : [
+          " * `duration` - an optional number, default 0.0, specifying the fade-in\/out time when changing the visibility of the touch bar window.",
+          ""
+        ],
         "notes" : [
 
         ],
@@ -452,10 +765,7 @@
           " * the touchbarObject"
         ],
         "name" : "toggle",
-        "parameters" : [
-          " * `duration` - an optional number, default 0.0, specifying the fade-in\/out time when changing the visibility of the touch bar window.",
-          ""
-        ]
+        "desc" : "Toggle's the visibility of the touch bar window."
       },
       {
         "doc" : "Get or set the top-left of the touch bar window.\n\nParameters:\n * `point` - an optional table specifying where the top left of the touch bar window should be moved to.\n\nReturns:\n * if a value is provided, returns the touchbarObject; otherwise returns the current value.\n\nNotes:\n * A point table is a table with at least `x` and `y` key-value pairs which specify the coordinates on the computer screen where the window should be moved to.  Hammerspoon considers the upper left corner of the primary screen to be { x = 0.0, y = 0.0 }.",
@@ -464,7 +774,10 @@
           ""
         ],
         "def" : "hs._asm.undocumented.touchbar:topLeft([point]) -> table | touchbarObject",
-        "desc" : "Get or set the top-left of the touch bar window.",
+        "parameters" : [
+          " * `point` - an optional table specifying where the top left of the touch bar window should be moved to.",
+          ""
+        ],
         "notes" : [
           " * A point table is a table with at least `x` and `y` key-value pairs which specify the coordinates on the computer screen where the window should be moved to.  Hammerspoon considers the upper left corner of the primary screen to be { x = 0.0, y = 0.0 }."
         ],
@@ -475,326 +788,7 @@
           ""
         ],
         "name" : "topLeft",
-        "parameters" : [
-          " * `point` - an optional table specifying where the top left of the touch bar window should be moved to.",
-          ""
-        ]
-      }
-    ],
-    "Command" : [
-
-    ],
-    "Field" : [
-
-    ],
-    "Method" : [
-      {
-        "doc" : "Toggle's the visibility of the touch bar window.\n\nParameters:\n * `duration` - an optional number, default 0.0, specifying the fade-in\/out time when changing the visibility of the touch bar window.\n\nReturns:\n * the touchbarObject",
-        "stripped_doc" : [
-          "Toggle's the visibility of the touch bar window.",
-          ""
-        ],
-        "def" : "hs._asm.undocumented.touchbar:toggle([duration]) -> touchbarObject",
-        "desc" : "Toggle's the visibility of the touch bar window.",
-        "notes" : [
-
-        ],
-        "signature" : "hs._asm.undocumented.touchbar:toggle([duration]) -> touchbarObject",
-        "type" : "Method",
-        "returns" : [
-          " * the touchbarObject"
-        ],
-        "name" : "toggle",
-        "parameters" : [
-          " * `duration` - an optional number, default 0.0, specifying the fade-in\/out time when changing the visibility of the touch bar window.",
-          ""
-        ]
-      },
-      {
-        "doc" : "Moves the touch bar window so that it is centered directly underneath the mouse pointer.\n\nParameters:\n * None\n\nReturns:\n * the touchbarObject\n\nNotes:\n * This method mimics the display location as set by the sample code this module is based on.  See https:\/\/github.com\/bikkelbroeders\/TouchBarDemoApp for more information.\n * The touch bar position will be adjusted so that it is fully visible on the screen even if this moves it left or right from the mouse's current position.",
-        "stripped_doc" : [
-          "Moves the touch bar window so that it is centered directly underneath the mouse pointer.",
-          ""
-        ],
-        "def" : "hs._asm.undocumented.touchbar:atMousePosition() -> touchbarObject",
-        "desc" : "Moves the touch bar window so that it is centered directly underneath the mouse pointer.",
-        "notes" : [
-          " * This method mimics the display location as set by the sample code this module is based on.  See https:\/\/github.com\/bikkelbroeders\/TouchBarDemoApp for more information.",
-          " * The touch bar position will be adjusted so that it is fully visible on the screen even if this moves it left or right from the mouse's current position."
-        ],
-        "signature" : "hs._asm.undocumented.touchbar:atMousePosition() -> touchbarObject",
-        "type" : "Method",
-        "returns" : [
-          " * the touchbarObject",
-          ""
-        ],
-        "name" : "atMousePosition",
-        "parameters" : [
-          " * None",
-          ""
-        ]
-      },
-      {
-        "doc" : "Moves the touch bar window to the top or bottom center of the main screen.\n\nParameters:\n * `top` - an optional boolean, default false, specifying whether the touch bar should be centered at the top (true) of the screen or at the bottom (false).\n\nReturns:\n * the touchbarObject",
-        "stripped_doc" : [
-          "Moves the touch bar window to the top or bottom center of the main screen.",
-          ""
-        ],
-        "def" : "hs._asm.undocumented.touchbar:centered([top]) -> touchbarObject",
-        "desc" : "Moves the touch bar window to the top or bottom center of the main screen.",
-        "notes" : [
-
-        ],
-        "signature" : "hs._asm.undocumented.touchbar:centered([top]) -> touchbarObject",
-        "type" : "Method",
-        "returns" : [
-          " * the touchbarObject"
-        ],
-        "name" : "centered",
-        "parameters" : [
-          " * `top` - an optional boolean, default false, specifying whether the touch bar should be centered at the top (true) of the screen or at the bottom (false).",
-          ""
-        ]
-      },
-      {
-        "doc" : "Display the touch bar window with an optional fade-in delay.\n\nParameters:\n * `duration` - an optional number, default 0.0, specifying the fade-in time for the touch bar window.\n\nReturns:\n * the touchbarObject\n\nNotes:\n * This method does nothing if the window is already visible.",
-        "stripped_doc" : [
-          "Display the touch bar window with an optional fade-in delay.",
-          ""
-        ],
-        "def" : "hs._asm.undocumented.touchbar:show([duration]) -> touchbarObject",
-        "desc" : "Display the touch bar window with an optional fade-in delay.",
-        "notes" : [
-          " * This method does nothing if the window is already visible."
-        ],
-        "signature" : "hs._asm.undocumented.touchbar:show([duration]) -> touchbarObject",
-        "type" : "Method",
-        "returns" : [
-          " * the touchbarObject",
-          ""
-        ],
-        "name" : "show",
-        "parameters" : [
-          " * `duration` - an optional number, default 0.0, specifying the fade-in time for the touch bar window.",
-          ""
-        ]
-      },
-      {
-        "doc" : "Display the touch bar window with an optional fade-out delay.\n\nParameters:\n * `duration` - an optional number, default 0.0, specifying the fade-out time for the touch bar window.\n\nReturns:\n * the touchbarObject\n\nNotes:\n * This method does nothing if the window is already hidden.\n * The value used in the sample code referenced in the module header is 0.1.",
-        "stripped_doc" : [
-          "Display the touch bar window with an optional fade-out delay.",
-          ""
-        ],
-        "def" : "hs._asm.undocumented.touchbar:hide([duration]) -> touchbarObject",
-        "desc" : "Display the touch bar window with an optional fade-out delay.",
-        "notes" : [
-          " * This method does nothing if the window is already hidden.",
-          " * The value used in the sample code referenced in the module header is 0.1."
-        ],
-        "signature" : "hs._asm.undocumented.touchbar:hide([duration]) -> touchbarObject",
-        "type" : "Method",
-        "returns" : [
-          " * the touchbarObject",
-          ""
-        ],
-        "name" : "hide",
-        "parameters" : [
-          " * `duration` - an optional number, default 0.0, specifying the fade-out time for the touch bar window.",
-          ""
-        ]
-      },
-      {
-        "doc" : "Get or set the top-left of the touch bar window.\n\nParameters:\n * `point` - an optional table specifying where the top left of the touch bar window should be moved to.\n\nReturns:\n * if a value is provided, returns the touchbarObject; otherwise returns the current value.\n\nNotes:\n * A point table is a table with at least `x` and `y` key-value pairs which specify the coordinates on the computer screen where the window should be moved to.  Hammerspoon considers the upper left corner of the primary screen to be { x = 0.0, y = 0.0 }.",
-        "stripped_doc" : [
-          "Get or set the top-left of the touch bar window.",
-          ""
-        ],
-        "def" : "hs._asm.undocumented.touchbar:topLeft([point]) -> table | touchbarObject",
-        "desc" : "Get or set the top-left of the touch bar window.",
-        "notes" : [
-          " * A point table is a table with at least `x` and `y` key-value pairs which specify the coordinates on the computer screen where the window should be moved to.  Hammerspoon considers the upper left corner of the primary screen to be { x = 0.0, y = 0.0 }."
-        ],
-        "signature" : "hs._asm.undocumented.touchbar:topLeft([point]) -> table | touchbarObject",
-        "type" : "Method",
-        "returns" : [
-          " * if a value is provided, returns the touchbarObject; otherwise returns the current value.",
-          ""
-        ],
-        "name" : "topLeft",
-        "parameters" : [
-          " * `point` - an optional table specifying where the top left of the touch bar window should be moved to.",
-          ""
-        ]
-      },
-      {
-        "doc" : "Gets the frame of the touch bar window\n\nParameters:\n * None\n\nReturns:\n * a frame table with key-value pairs specifying the top left corner of the touch bar window and its width and height.\n\nNotes:\n * A frame table is a table with at least `x`, `y`, `h` and `w` key-value pairs which specify the coordinates on the computer screen of the window and its width (w) and height(h).\n * This allows you to get the frame so that you can include its height and width in calculations - it does not allow you to change the size of the touch bar window itself.",
-        "stripped_doc" : [
-          "Gets the frame of the touch bar window",
-          ""
-        ],
-        "def" : "hs._asm.undocumented.touchbar:getFrame() -> table",
-        "desc" : "Gets the frame of the touch bar window",
-        "notes" : [
-          " * A frame table is a table with at least `x`, `y`, `h` and `w` key-value pairs which specify the coordinates on the computer screen of the window and its width (w) and height(h).",
-          " * This allows you to get the frame so that you can include its height and width in calculations - it does not allow you to change the size of the touch bar window itself."
-        ],
-        "signature" : "hs._asm.undocumented.touchbar:getFrame() -> table",
-        "type" : "Method",
-        "returns" : [
-          " * a frame table with key-value pairs specifying the top left corner of the touch bar window and its width and height.",
-          ""
-        ],
-        "name" : "getFrame",
-        "parameters" : [
-          " * None",
-          ""
-        ]
-      },
-      {
-        "doc" : "Returns a boolean indicating whether or not the touch bar window is current visible.\n\nParameters:\n * None\n\nReturns:\n * a boolean specifying whether the touch bar window is visible (true) or not (false).",
-        "stripped_doc" : [
-          "Returns a boolean indicating whether or not the touch bar window is current visible.",
-          ""
-        ],
-        "def" : "hs._asm.undocumented.touchbar:isVisible() -> boolean",
-        "desc" : "Returns a boolean indicating whether or not the touch bar window is current visible.",
-        "notes" : [
-
-        ],
-        "signature" : "hs._asm.undocumented.touchbar:isVisible() -> boolean",
-        "type" : "Method",
-        "returns" : [
-          " * a boolean specifying whether the touch bar window is visible (true) or not (false)."
-        ],
-        "name" : "isVisible",
-        "parameters" : [
-          " * None",
-          ""
-        ]
-      },
-      {
-        "doc" : "Get or set the alpha value for the touch bar window when the mouse is not hovering over it.\n\nParameters:\n * alpha - an optional number between 0.0 and 1.0 inclusive specifying the alpha value for the touch bar window when the mouse is not over it.  Defaults to 0.5.\n\nReturns:\n * if a value is provided, returns the touchbarObject; otherwise returns the current value",
-        "stripped_doc" : [
-          "Get or set the alpha value for the touch bar window when the mouse is not hovering over it.",
-          ""
-        ],
-        "def" : "hs._asm.undocumented.touchbar:inactiveAlpha([alpha]) -> number | touchbarObject",
-        "desc" : "Get or set the alpha value for the touch bar window when the mouse is not hovering over it.",
-        "notes" : [
-
-        ],
-        "signature" : "hs._asm.undocumented.touchbar:inactiveAlpha([alpha]) -> number | touchbarObject",
-        "type" : "Method",
-        "returns" : [
-          " * if a value is provided, returns the touchbarObject; otherwise returns the current value"
-        ],
-        "name" : "inactiveAlpha",
-        "parameters" : [
-          " * alpha - an optional number between 0.0 and 1.0 inclusive specifying the alpha value for the touch bar window when the mouse is not over it.  Defaults to 0.5.",
-          ""
-        ]
-      },
-      {
-        "doc" : "Get or set whether or not the touch bar window is movable by clicking on it and holding down the mouse button while moving the mouse.\n\nParameters:\n * `state` - an optional boolean which specifies whether the touch bar window is movable (true) or not (false).  Default false.\n\nReturns:\n * if an argument is provided, returns the touchbarObject; otherwise returns the current value.\n\nNotes:\n * While the touch bar is movable, actions which require moving the mouse while clicking on the touch bar are not accessible.\n * See also [hs._asm.undocumented.touchbar:acceptsMouseEvents](#acceptsMouseEvents).",
-        "stripped_doc" : [
-          "Get or set whether or not the touch bar window is movable by clicking on it and holding down the mouse button while moving the mouse.",
-          ""
-        ],
-        "def" : "hs._asm.undocumented.touchbar:movable([state]) -> boolean | touchbarObject",
-        "desc" : "Get or set whether or not the touch bar window is movable by clicking on it and holding down the mouse button while moving the mouse.",
-        "notes" : [
-          " * While the touch bar is movable, actions which require moving the mouse while clicking on the touch bar are not accessible.",
-          " * See also [hs._asm.undocumented.touchbar:acceptsMouseEvents](#acceptsMouseEvents)."
-        ],
-        "signature" : "hs._asm.undocumented.touchbar:movable([state]) -> boolean | touchbarObject",
-        "type" : "Method",
-        "returns" : [
-          " * if an argument is provided, returns the touchbarObject; otherwise returns the current value.",
-          ""
-        ],
-        "name" : "movable",
-        "parameters" : [
-          " * `state` - an optional boolean which specifies whether the touch bar window is movable (true) or not (false).  Default false.",
-          ""
-        ]
-      },
-      {
-        "doc" : "Get or set whether or not the touch bar accepts mouse events.\n\nParameters:\n * `state` - an optional boolean which specifies whether the touch bar accepts mouse events (true) or not (false).  Default true.\n\nReturns:\n * if an argument is provided, returns the touchbarObject; otherwise returns the current value.\n\nNotes:\n * This method can be used to prevent mouse clicks in the touch bar from triggering the touch bar buttons.\n * This can be useful when [hs._asm.undocumented.touchbar:movable](#movable) is set to true to prevent accidentally triggering an action.",
-        "stripped_doc" : [
-          "Get or set whether or not the touch bar accepts mouse events.",
-          ""
-        ],
-        "def" : "hs._asm.undocumented.touchbar:acceptsMouseEvents([state]) -> boolean | touchbarObject",
-        "desc" : "Get or set whether or not the touch bar accepts mouse events.",
-        "notes" : [
-          " * This method can be used to prevent mouse clicks in the touch bar from triggering the touch bar buttons.",
-          " * This can be useful when [hs._asm.undocumented.touchbar:movable](#movable) is set to true to prevent accidentally triggering an action."
-        ],
-        "signature" : "hs._asm.undocumented.touchbar:acceptsMouseEvents([state]) -> boolean | touchbarObject",
-        "type" : "Method",
-        "returns" : [
-          " * if an argument is provided, returns the touchbarObject; otherwise returns the current value.",
-          ""
-        ],
-        "name" : "acceptsMouseEvents",
-        "parameters" : [
-          " * `state` - an optional boolean which specifies whether the touch bar accepts mouse events (true) or not (false).  Default true.",
-          ""
-        ]
-      },
-      {
-        "doc" : "Get or set the background color for the touch bar window.\n\nParameters:\n * `color` - an optional color table as defined in `hs.drawing.color` specifying the background color for the touch bar window.  Defaults to black, i.e. `{ white = 0.0, alpha = 1.0 }`.\n\nReturns:\n * if an argument is provided, returns the touchbarObject; otherwise returns the current value.\n\nNotes:\n * The visual effect of this method is to change the border color around the touch bar -- the touch bar itself remains the color as defined by the application which is providing the current touch bar items for display.",
-        "stripped_doc" : [
-          "Get or set the background color for the touch bar window.",
-          ""
-        ],
-        "def" : "hs._asm.undocumented.touchbar:backgroundColor([color]) -> color | touchbarObject",
-        "desc" : "Get or set the background color for the touch bar window.",
-        "notes" : [
-          " * The visual effect of this method is to change the border color around the touch bar -- the touch bar itself remains the color as defined by the application which is providing the current touch bar items for display."
-        ],
-        "signature" : "hs._asm.undocumented.touchbar:backgroundColor([color]) -> color | touchbarObject",
-        "type" : "Method",
-        "returns" : [
-          " * if an argument is provided, returns the touchbarObject; otherwise returns the current value.",
-          ""
-        ],
-        "name" : "backgroundColor",
-        "parameters" : [
-          " * `color` - an optional color table as defined in `hs.drawing.color` specifying the background color for the touch bar window.  Defaults to black, i.e. `{ white = 0.0, alpha = 1.0 }`.",
-          ""
-        ]
-      },
-      {
-        "doc" : "Sets the callback function for the touch bar window.\n\nParameters:\n * `fn` - a function to set as the callback for the touch bar window, or nil to remove the existing callback function.\n\nReturns:\n * the touchbarObject\n\nNotes:\n * The function should expect 2 arguments and return none.  The arguments will be one of the following:\n\n   * obj, \"didEnter\" - indicates that the mouse pointer has entered the window containing the touch bar\n     * `obj`     - the touchbarObject the callback is for\n     * `message` - the message to the callback, in this case \"didEnter\"\n\n   * obj, \"didExit\" - indicates that the mouse pointer has exited the window containing the touch bar\n     * `obj`     - the touchbarObject the callback is for\n     * `message` - the message to the callback, in this case \"didEnter\"",
-        "stripped_doc" : [
-          "Sets the callback function for the touch bar window.",
-          ""
-        ],
-        "def" : "hs._asm.undocumented.touchbar:setCallback(fn | nil) -> touchbarObject",
-        "desc" : "Sets the callback function for the touch bar window.",
-        "notes" : [
-          " * The function should expect 2 arguments and return none.  The arguments will be one of the following:",
-          "",
-          "   * obj, \"didEnter\" - indicates that the mouse pointer has entered the window containing the touch bar",
-          "     * `obj`     - the touchbarObject the callback is for",
-          "     * `message` - the message to the callback, in this case \"didEnter\"",
-          "",
-          "   * obj, \"didExit\" - indicates that the mouse pointer has exited the window containing the touch bar",
-          "     * `obj`     - the touchbarObject the callback is for",
-          "     * `message` - the message to the callback, in this case \"didEnter\""
-        ],
-        "signature" : "hs._asm.undocumented.touchbar:setCallback(fn | nil) -> touchbarObject",
-        "type" : "Method",
-        "returns" : [
-          " * the touchbarObject",
-          ""
-        ],
-        "name" : "setCallback",
-        "parameters" : [
-          " * `fn` - a function to set as the callback for the touch bar window, or nil to remove the existing callback function.",
-          ""
-        ]
+        "desc" : "Get or set the top-left of the touch bar window."
       }
     ],
     "name" : "hs._asm.undocumented.touchbar"

@@ -9,7 +9,7 @@
 // #define INCLUDE_DUMP_THREAD
 
 static const char *USERDATA_TAG = "hs._asm.undocumented.touchbar" ;
-static int        refTable      = LUA_NOREF;
+static int        refTable      = LUA_NOREF ;
 static int        initialDFRStatus ;
 
 #define get_objectFromUserdata(objType, L, idx, tag) (objType*)*((void**)luaL_checkudata(L, idx, tag))
@@ -24,11 +24,12 @@ static inline NSRect RectWithFlippedYCoordinate(NSRect theRect) {
 }
 
 // Part of SkyLight private Framework
-extern CGDisplayStreamRef SLSDFRDisplayStreamCreate(void *, dispatch_queue_t, CGDisplayStreamFrameAvailableHandler);
+extern CGDisplayStreamRef SLSDFRDisplayStreamCreate(void *, dispatch_queue_t, CGDisplayStreamFrameAvailableHandler) ;
 // part of DFRFoundation private framework
-extern BOOL DFRSetStatus(int);
-extern int  DFRGetStatus();
-extern BOOL DFRFoundationPostEventWithMouseActivity(NSEventType type, NSPoint p);
+extern BOOL   DFRSetStatus(int) ;
+extern int    DFRGetStatus() ;
+extern BOOL   DFRFoundationPostEventWithMouseActivity(NSEventType type, NSPoint p) ;
+extern CGSize DFRGetScreenSize() ;
 
 @interface ASMTouchBarView : NSView
 @property CGDisplayStreamRef stream ;
@@ -43,20 +44,23 @@ extern BOOL DFRFoundationPostEventWithMouseActivity(NSEventType type, NSPoint p)
 @implementation ASMTouchBarView {}
 
 - (instancetype) init {
-    self = [super init];
+    self = [super init] ;
     if(self != nil) {
         _passMouseEvents = YES ;
-        _displayView = [NSView new];
-        _displayView.frame = NSMakeRect(5, 5, 1085, 30);
-        _displayView.wantsLayer = YES;
-        [self addSubview:_displayView];
+        _displayView = [NSView new] ;
+
+        CGSize tbScreenSize = DFRGetScreenSize() ;
+
+        _displayView.frame = NSMakeRect(5, 5, tbScreenSize.width, tbScreenSize.height) ;
+        _displayView.wantsLayer = YES ;
+        [self addSubview:_displayView] ;
 
         _stream = SLSDFRDisplayStreamCreate(NULL, dispatch_get_main_queue(), ^(CGDisplayStreamFrameStatus status,
                                                                                __unused uint64_t displayTime,
                                                                                IOSurfaceRef frameSurface,
                                                                                __unused CGDisplayStreamUpdateRef updateRef) {
-            if (status != kCGDisplayStreamFrameStatusFrameComplete) return;
-            self->_displayView.layer.contents = (__bridge id)(frameSurface);
+            if (status != kCGDisplayStreamFrameStatusFrameComplete) return ;
+            self->_displayView.layer.contents = (__bridge id)(frameSurface) ;
             // thread dump shows that we're invoked from within the SkyLight private framework
 #ifdef INCLUDE_DUMP_THREAD
             if (self->_dumpThread) {
@@ -64,13 +68,13 @@ extern BOOL DFRFoundationPostEventWithMouseActivity(NSEventType type, NSPoint p)
                 self->_dumpThread = NO ;
             }
 #endif
-        });
+        }) ;
 
         // Enables applications to put things into the touch bar
-        DFRSetStatus(2);
+        DFRSetStatus(2) ;
 
         // Likewise, CGDisplayStreamStop will pause updates
-        CGDisplayStreamStart(_stream);
+        CGDisplayStreamStart(_stream) ;
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wassign-enum"
@@ -87,26 +91,26 @@ extern BOOL DFRFoundationPostEventWithMouseActivity(NSEventType type, NSPoint p)
         _dumpThread = NO ;
 #endif
 
-    return self;
+    return self ;
 }
 
 - (void)commonMouseEvent:(NSEvent *)event {
     if (_passMouseEvents) {
-        NSPoint location = [_displayView convertPoint:[event locationInWindow] fromView:nil];
-        DFRFoundationPostEventWithMouseActivity(event.type, location);
+        NSPoint location = [_displayView convertPoint:[event locationInWindow] fromView:nil] ;
+        DFRFoundationPostEventWithMouseActivity(event.type, location) ;
     }
 }
 
 - (void)mouseDown:(NSEvent *)event {
-    [self commonMouseEvent:event];
+    [self commonMouseEvent:event] ;
 }
 
 - (void)mouseUp:(NSEvent *)event {
-    [self commonMouseEvent:event];
+    [self commonMouseEvent:event] ;
 }
 
 - (void)mouseDragged:(NSEvent *)event {
-    [self commonMouseEvent:event];
+    [self commonMouseEvent:event] ;
 }
 
 - (void)stopStreaming {
@@ -120,7 +124,7 @@ extern BOOL DFRFoundationPostEventWithMouseActivity(NSEventType type, NSPoint p)
 @end
 
 @interface NSWindow (Private)
-- (void )_setPreventsActivation:(bool)preventsActivation;
+- (void )_setPreventsActivation:(bool)preventsActivation ;
 @end
 
 @interface ASMTouchBarWindow : NSWindow
@@ -132,7 +136,7 @@ extern BOOL DFRFoundationPostEventWithMouseActivity(NSEventType type, NSPoint p)
 @implementation ASMTouchBarWindow
 
 - (instancetype)init {
-    self = [super init];
+    self = [super init] ;
     if(self != nil) {
         _inactiveAlpha = .5 ;
         _callbackRef   = LUA_NOREF ;
@@ -155,21 +159,23 @@ extern BOOL DFRFoundationPostEventWithMouseActivity(NSEventType type, NSPoint p)
         [self standardWindowButton:NSWindowFullScreenButton].hidden  = YES ;
         [self standardWindowButton:NSWindowZoomButton].hidden        = YES ;
         [self standardWindowButton:NSWindowMiniaturizeButton].hidden = YES ;
-        [self _setPreventsActivation:YES];
-        [self setFrame:NSMakeRect(0, 0, 1085 + 10, 30 + 10) display:YES] ;
+        [self _setPreventsActivation:YES] ;
 
-        self.contentView                = [ASMTouchBarView new];
+        ASMTouchBarView *tbView = [ASMTouchBarView new] ;
+        CGSize tbScreenSize = DFRGetScreenSize() ;
+        [self setFrame:NSMakeRect(0, 0, tbScreenSize.width + 10, tbScreenSize.height + 10) display:YES] ;
+        self.contentView                = tbView ;
     }
 
-    return self;
+    return self ;
 }
 
 - (BOOL)canBecomeMainWindow {
-    return NO;
+    return NO ;
 }
 
 - (BOOL)canBecomeKeyWindow {
-    return NO;
+    return NO ;
 }
 
 - (void)callbackWith:(NSString *)message {
@@ -232,9 +238,6 @@ static int touchbar_new(__unused lua_State *L) {
 ///  * Checking the value of this function does not indicate whether or not the machine *can* support the Touch Bar but rather if it *is* supporting the Touch Bar; Use [hs._asm.undocumented.touchbar.supported](#supported) to check whether or not the machine *can* support the Touch Bar.
 ///
 ///  * Setting this to false will remove all application items from the Touch Bar.
-///
-///  * On a machine that does not have a physical Touch Bar, this will default to false until the first touch bar is created, after which it will default to true.
-///  * This function has not been tested on a MacBook Pro with an *actual* Touch Bar, so it is a guess that this will always default to true on such a machine.
 static int touchbar_enabled(lua_State *L) {
     LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TBOOLEAN | LS_TOPTIONAL, LS_TBREAK] ;
@@ -252,6 +255,14 @@ static int touchbar_enabled(lua_State *L) {
     }
     return 1 ;
 }
+
+// static int touchbar_screenSize(lua_State __unused *L) {
+//     LuaSkin *skin = [LuaSkin shared] ;
+//     [skin checkArgs:LS_TBREAK] ;
+//     CGSize toolbarSize = DFRGetScreenSize() ;
+//     [skin pushNSSize:NSSizeFromCGSize(toolbarSize)] ;
+//     return 1 ;
+// }
 
 #pragma mark - Module Methods
 
@@ -279,34 +290,15 @@ static int touchbar_show(lua_State *L) {
         [(ASMTouchBarView *)touchbar.contentView startStreaming] ;
         [touchbar setIsVisible:YES] ;
         if (duration > 0.0) {
-            [NSAnimationContext beginGrouping];
-            [[NSAnimationContext currentContext] setDuration:duration];
-            [[touchbar animator] setAlphaValue:1.0];
-            [NSAnimationContext endGrouping];
+            [NSAnimationContext beginGrouping] ;
+            [[NSAnimationContext currentContext] setDuration:duration] ;
+            [[touchbar animator] setAlphaValue:1.0] ;
+            [NSAnimationContext endGrouping] ;
         }
     }
     lua_pushvalue(L, 1) ;
     return 1 ;
 }
-
-static int touchbar_rotate(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
-    [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TNUMBER | LS_TOPTIONAL, LS_TBREAK] ;
-    ASMTouchBarWindow *touchbar = [skin toNSObjectAtIndex:1] ;
-
-    if (lua_gettop(L) == 1) {
-        lua_pushnumber(L, ((ASMTouchBarView *)touchbar.contentView).frameCenterRotation) ;
-    } else {
-        ((ASMTouchBarView *)touchbar.contentView).frameCenterRotation = lua_tonumber(L, 2) ;
-        lua_pushvalue(L, 1) ;
-    }
-    return 1 ;
-}
-
-// TODO: add - (void)scaleUnitSquareToSize:(NSSize)newUnitSize
-//       figure out how to calculate window size for both this and above
-//       can we figure out size from stream?
-//       during __gc do we need to remove callback from dispatch queue?
 
 /// hs._asm.undocumented.touchbar:hide([duration]) -> touchbarObject
 /// Method
@@ -337,7 +329,7 @@ static int touchbar_hide(lua_State *L) {
                 if(touchbar.alphaValue == 0.0) {
                     [touchbar setIsVisible:NO] ;
                 }
-            }];
+            }] ;
         } else {
             touchbar.alphaValue = 0.0 ;
             [touchbar setIsVisible:NO] ;
@@ -360,7 +352,7 @@ static int touchbar_hide(lua_State *L) {
 /// Notes:
 ///  * A point table is a table with at least `x` and `y` key-value pairs which specify the coordinates on the computer screen where the window should be moved to.  Hammerspoon considers the upper left corner of the primary screen to be { x = 0.0, y = 0.0 }.
 static int touchbar_topLeft(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared];
+    LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TTABLE | LS_TOPTIONAL, LS_TBREAK] ;
     ASMTouchBarWindow *touchbar = [skin toNSObjectAtIndex:1] ;
 
@@ -371,10 +363,10 @@ static int touchbar_topLeft(lua_State *L) {
         NSPoint point  = [skin tableToPointAtIndex:2] ;
         frame.origin.x = point.x ;
         frame.origin.y = point.y ;
-        [touchbar setFrame:RectWithFlippedYCoordinate(frame) display:YES animate:NO];
-        lua_pushvalue(L, 1);
+        [touchbar setFrame:RectWithFlippedYCoordinate(frame) display:YES animate:NO] ;
+        lua_pushvalue(L, 1) ;
     }
-    return 1;
+    return 1 ;
 }
 
 /// hs._asm.undocumented.touchbar:getFrame() -> table
@@ -391,7 +383,7 @@ static int touchbar_topLeft(lua_State *L) {
 ///  * A frame table is a table with at least `x`, `y`, `h` and `w` key-value pairs which specify the coordinates on the computer screen of the window and its width (w) and height(h).
 ///  * This allows you to get the frame so that you can include its height and width in calculations - it does not allow you to change the size of the touch bar window itself.
 static int touchbar_getFrame(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared];
+    LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBREAK] ;
     ASMTouchBarWindow *touchbar = [skin toNSObjectAtIndex:1] ;
 
@@ -399,7 +391,7 @@ static int touchbar_getFrame(lua_State *L) {
     if (lua_gettop(L) == 1) {
         [skin pushNSRect:frame] ;
     }
-    return 1;
+    return 1 ;
 }
 
 /// hs._asm.undocumented.touchbar:isVisible() -> boolean
@@ -412,11 +404,11 @@ static int touchbar_getFrame(lua_State *L) {
 /// Returns:
 ///  * a boolean specifying whether the touch bar window is visible (true) or not (false).
 static int touchbar_isVisible(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared];
+    LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBREAK] ;
     ASMTouchBarWindow *touchbar = [skin toNSObjectAtIndex:1] ;
     lua_pushboolean(L, touchbar.visible) ;
-    return 1;
+    return 1 ;
 }
 
 /// hs._asm.undocumented.touchbar:inactiveAlpha([alpha]) -> number | touchbarObject
@@ -429,14 +421,14 @@ static int touchbar_isVisible(lua_State *L) {
 /// Returns:
 ///  * if a value is provided, returns the touchbarObject; otherwise returns the current value
 static int touchbar_inactiveAlpha(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared];
+    LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TNUMBER | LS_TOPTIONAL, LS_TBREAK] ;
     ASMTouchBarWindow *touchbar = [skin toNSObjectAtIndex:1] ;
 
     if (lua_gettop(L) == 1) {
         lua_pushnumber(L, touchbar.inactiveAlpha) ;
     } else {
-        CGFloat newAlpha = luaL_checknumber(L, 2);
+        CGFloat newAlpha = luaL_checknumber(L, 2) ;
         touchbar.inactiveAlpha = ((newAlpha < 0.0) ? 0.0 : ((newAlpha > 1.0) ? 1.0 : newAlpha)) ;
         touchbar.alphaValue = [touchbar.contentView hitTest:[NSEvent mouseLocation]] ? 1.0 : touchbar.inactiveAlpha ;
         lua_pushvalue(L, 1) ;
@@ -458,7 +450,7 @@ static int touchbar_inactiveAlpha(lua_State *L) {
 ///  * While the touch bar is movable, actions which require moving the mouse while clicking on the touch bar are not accessible.
 ///  * See also [hs._asm.undocumented.touchbar:acceptsMouseEvents](#acceptsMouseEvents).
 static int touchbar_movable(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared];
+    LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBOOLEAN | LS_TOPTIONAL, LS_TBREAK] ;
     ASMTouchBarWindow *touchbar = [skin toNSObjectAtIndex:1] ;
 
@@ -485,7 +477,7 @@ static int touchbar_movable(lua_State *L) {
 ///  * This method can be used to prevent mouse clicks in the touch bar from triggering the touch bar buttons.
 ///  * This can be useful when [hs._asm.undocumented.touchbar:movable](#movable) is set to true to prevent accidentally triggering an action.
 static int touchbar_acceptsMouseEvents(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared];
+    LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBOOLEAN | LS_TOPTIONAL, LS_TBREAK] ;
     ASMTouchBarWindow *touchbar = [skin toNSObjectAtIndex:1] ;
 
@@ -511,7 +503,7 @@ static int touchbar_acceptsMouseEvents(lua_State *L) {
 /// Notes:
 ///  * The visual effect of this method is to change the border color around the touch bar -- the touch bar itself remains the color as defined by the application which is providing the current touch bar items for display.
 static int touchbar_backgroundColor(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared];
+    LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TTABLE | LS_TOPTIONAL, LS_TBREAK] ;
     ASMTouchBarWindow *touchbar = [skin toNSObjectAtIndex:1] ;
 
@@ -576,7 +568,7 @@ static int touchbar_setCallback(lua_State *L) {
 
 #ifdef INCLUDE_DUMP_THREAD
 static int touchbar_dumpThread(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared];
+    LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBOOLEAN | LS_TOPTIONAL, LS_TBREAK] ;
     ASMTouchBarWindow *touchbar = [skin toNSObjectAtIndex:1] ;
 
@@ -590,6 +582,9 @@ static int touchbar_dumpThread(lua_State *L) {
 }
 #endif
 
+//       during __gc do we need to remove callback from dispatch queue?
+
+
 #pragma mark - Module Constants
 
 #pragma mark - Lua<->NSObject Conversion Functions
@@ -597,13 +592,13 @@ static int touchbar_dumpThread(lua_State *L) {
 // delegates and blocks.
 
 static int pushASMTouchBarWindow(lua_State *L, id obj) {
-    ASMTouchBarWindow *value = obj;
+    ASMTouchBarWindow *value = obj ;
     value.selfRefCount++ ;
-    void** valuePtr = lua_newuserdata(L, sizeof(ASMTouchBarWindow *));
-    *valuePtr = (__bridge_retained void *)value;
-    luaL_getmetatable(L, USERDATA_TAG);
-    lua_setmetatable(L, -2);
-    return 1;
+    void** valuePtr = lua_newuserdata(L, sizeof(ASMTouchBarWindow *)) ;
+    *valuePtr = (__bridge_retained void *)value ;
+    luaL_getmetatable(L, USERDATA_TAG) ;
+    lua_setmetatable(L, -2) ;
+    return 1 ;
 }
 
 id toASMTouchBarWindowFromLua(lua_State *L, int idx) {
@@ -680,7 +675,6 @@ static const luaL_Reg userdata_metaLib[] = {
     {"backgroundColor",    touchbar_backgroundColor},
     {"setCallback",        touchbar_setCallback},
     {"acceptsMouseEvents", touchbar_acceptsMouseEvents},
-    {"rotation",           touchbar_rotate},
 
 #ifdef INCLUDE_DUMP_THREAD
     {"dumpThread",         touchbar_dumpThread},
@@ -689,21 +683,22 @@ static const luaL_Reg userdata_metaLib[] = {
     {"__eq",               userdata_eq},
     {"__gc",               userdata_gc},
     {NULL,                 NULL}
-};
+} ;
 
 // Functions for returned object when module loads
 static luaL_Reg moduleLib[] = {
     {"new",     touchbar_new},
     {"enabled", touchbar_enabled},
+//     {"size",    touchbar_screenSize},
 
     {NULL,        NULL}
-};
+} ;
 
 // Metatable for module, if needed
 static const luaL_Reg module_metaLib[] = {
     {"__gc", meta_gc},
     {NULL,   NULL}
-};
+} ;
 
 // NOTE: ** Make sure to change luaopen_..._internal **
 int luaopen_hs__asm_undocumented_touchbar_internal(lua_State* __unused L) {
@@ -711,15 +706,18 @@ int luaopen_hs__asm_undocumented_touchbar_internal(lua_State* __unused L) {
     refTable = [skin registerLibraryWithObject:USERDATA_TAG
                                      functions:moduleLib
                                  metaFunctions:module_metaLib
-                               objectFunctions:userdata_metaLib];
+                               objectFunctions:userdata_metaLib] ;
 
 // On the assumption that when this module first loads, this will be 0 on machines without
 // a touch bar and 2 on machines with a touch bar, save what it actually is for the meta_gc
     initialDFRStatus = DFRGetStatus() ;
 
-    [skin registerPushNSHelper:pushASMTouchBarWindow         forClass:"ASMTouchBarWindow"];
-    [skin registerLuaObjectHelper:toASMTouchBarWindowFromLua forClass:"ASMTouchBarWindow"
-                                                  withUserdataMapping:USERDATA_TAG];
+    // Makes DFRGetScreenSize return the correct values
+    DFRSetStatus(2) ;
 
-    return 1;
+    [skin registerPushNSHelper:pushASMTouchBarWindow         forClass:"ASMTouchBarWindow"] ;
+    [skin registerLuaObjectHelper:toASMTouchBarWindowFromLua forClass:"ASMTouchBarWindow"
+                                                  withUserdataMapping:USERDATA_TAG] ;
+
+    return 1 ;
 }

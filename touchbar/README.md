@@ -80,9 +80,6 @@ Notes:
 
  * Setting this to false will remove all application items from the Touch Bar.
 
- * On a machine that does not have a physical Touch Bar, this will default to false until the first touch bar is created, after which it will default to true.
- * This function has not been tested on a MacBook Pro with an *actual* Touch Bar, so it is a guess that this will always default to true on such a machine.
-
 - - -
 
 <a name="new"></a>
