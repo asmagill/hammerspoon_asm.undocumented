@@ -39,6 +39,49 @@ static int refTable = LUA_NOREF;
 
 static const NSArray *pathStageNames ;
 
+/// hs._asm.undocumented.touchdevice.touchData
+/// Field
+/// The table representing a touch as returned by the callback functions.  Because this module relies on an undocumented framework, these descriptions are based on the collection of observations made by a variety of people and shared on the internet -- nothing in here is guaranteed.  If you have corrected information or observe something in variance with what is documented here, please submit an issue with as much detail as possible.
+///
+/// The table will contain the following key-value pairs:
+///   * `frame`            - an integer specifying the observation frame this touch belongs to
+///   * `timestamp`        - a number representing the timestamp for the touch data in seconds; the epoch (0.0 point) is uncertain, but for a given device, the number will always be increasing throughout the detection of touches for the device.
+///   * `pathIndex`        - an integer representing the path through the various stages for a touch; as long as a specific touch has not been broken (i.e. reached the "notTracking" stage), it's path ID will remain constant even though it's relative position in the table of touches returned in a frame callback may differ.
+///   * `stage`            - a string representing the stage of the touch.  May be one of the following values:
+///     * `notTracking`   - The touch has completed and no further path updates with this pathIndex will occur
+///     * `startInRange`  - This is a newly detected touch
+///     * `hoverInRange`  - The touch is hovering slightly above the touch device; not always observed in a full touch path.
+///     * `makeTouch`     - The touch has actually made full contact with the touch device; not always observed in a full touch path.
+///     * `touching`      - The touch is established. The touch will be in this stage for the majority of its lifetime.
+///     * `breakTouch`    - The touch has been lifted from the touch device.
+///     * `lingerInRange` - The touch has been lifted but is still within the range of hover detection.
+///     * `outOfRange`    - The touch has moved out of range; This may occur because the touch has ended and will be followed by a `notTracking` message or it can occur if the touch moves out of the touch sensitive area of the device; if the touch returns to the touch sensitive area quickly enough, the touch may continue with `touching` messages.  Otherwise a new touch with a new `pathIndex` and `fingerID` will be generated if the touch returns.
+///   * `fingerID`         - an integer which appears to be related to the location of the touch device where the touch was first detected; however this is not known for certain.  Like pathIndex, this number will remain constant through the lifetime of a specific touch.
+///   * `handID`           - an integer, usually 1, of uncertain purpose; it appears to have to do with finger grouping, but has not been observed consistently enough with a differing value to determine conclusively
+///   * `normalizedVector` - a table representing the current postion and velocity of the touch normalized so that all values are numbers between 0.0 and 1.0
+///     * `position` - a table representing the position of the touch
+///       * `x` - a number from 0.0 (the left) to 1.0 (the right) indicating the horizontal position of the touch relative to the touch sensitive surface area of the touch device.
+///       * `y` - a number from 0.0 (the bottom) to 1.0 (the top) indicating the vertical position of the touch relative to the touch sensitive surface area of the touch device.
+///     * `velocity` - a table representing the current velocity of the changes to the touch
+///       * `x` - a number from -1.0 to 1.0 representing the rate and direction of change to the horizontal position of the touch
+///       * `y` - a number from -1.0 to 1.0 representing the rate and direction of change to the vertical position of the touch
+///   * `zTotal`           - a number between 0.0 and 1.0 representing a general measure of the surface area covered by the touch; this can be used as an approximation of pressure as more of the finger will be touching as pressure increases.
+///   * `zPressure`        - on force touch devices, this number appears to represent the relative pressure being applied with the touch; on non-force touch devices this number is 0.0.
+///   * `angle`            - a number representing the angle of the touch ellipse
+///   * `majorAxis`        - a number representing the major axis of the touch ellipse
+///   * `minorAxis`        - a number representing the minor axis of the touch ellipse
+///   * `absoluteVector`   - a table representing the current position and velocity of the touch.  Note that the possible range for the values available in this table appears to be device dependent and does not appear to be related in an obvious way to the devices surface dimensions as returned by [hs._asm.undocumented.touchdevice:surfaceDimensions](#surfaceDimensions).
+///     * `position` - a table representing the position of the touch
+///       * `x` - a number indicating the horizontal position of the touch. This number will be negative if the touch is in the left half of the touch sensitive surface area and positive if it is in the right half.
+///       * `y` - a number indicating the vertical position of the touch.  This number starts at 0 at the bottom of the device and increases positively as the touch approaches the top.
+///     * `velocity` - a table representing the current velocity of the changes to the touch
+///       * `x` - a number representing the rate and direction of change to the horizontal position of the touch
+///       * `y` - a number representing the rate and direction of change to the vertical position of the touch
+///   * `zDensity`         - a number representing the density of the touch; in my observations this will fluctuate greatly for fingers but be more constant for a stylus, so it may be useful for gauging what the source of the touch is from.
+///
+///   * `_field14`         - an integer; currently the purpose of this field in the touch structure is unknown; at present only a value of 0 has been observed.
+///   * `_field15`         - an integer; currently the purpose of this field in the touch structure is unknown; at present only a value of 0 has been observed.
+
 static int pushMTTouch(lua_State *L, MTTouch *touch) {
     LuaSkin *skin = [LuaSkin shared] ;
     lua_newtable(L) ;
@@ -531,6 +574,19 @@ static int touchdevice_powerControlSupported(lua_State *L) {
     return 1 ;
 }
 
+/// hs._asm.undocumented.touchdevice:productName() -> string
+/// Method
+/// Returns the product name for the touch device as it is registered with the IOKit HID subsystem
+///
+/// Parameters:
+///  * None
+///
+/// Returns:
+///  * a string specifying the product name for the touch device represented by the touchdeviceObject as registered with the IOKit HID subsystem.
+///
+/// Notes:
+///  * this information is purely informational and may be useful in differentiating multiple devices attached to the same machine
+///  * some devices return a name corresponding to the marketting name for the device while others return a name created by the macOS generated when the device is first paired with the machine, usually the user's login name followed by "Mouse" or "Trackpad".  At this time, it is unknown if there is an independant way to determine which pattern a given device's product name will follow or if there is a way to return the marketting name for an otherwise named device; if someone more familiar with IOKit, especially with regards to HID devices has any thoughts on the matter, please submit an issue for consideration.
 static int touchdevice_productName(lua_State *L) {
     LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBREAK] ;
@@ -548,12 +604,25 @@ static int touchdevice_productName(lua_State *L) {
     return 1 ;
 }
 
+/// hs._asm.undocumented.touchdevice:sensorDimensions([inHmm]) -> sizeTable
+/// Method
+/// Returns the dimensions of the space on the touch device that can detect a touch
+///
+/// Parameters:
+///  * `inHmm` - a boolean, default true, specifying whether the dimensions should be returned in hundredths of a millimeter (true) or as rows and columns (false)
+///
+/// Returns:
+///  * a size table containing the sensor area dimensions where the height is the value assigned to the `h` key and the width is assigned to the `w` key.
+///
+/// Notes:
+///  * At present, the usefulness of the row/column dimension values is currently unknown and it is being provided for information purposes only
+///    * The row/column values seem to correspond to a grid used by the MultitouchSupport framework to differentiate between nearby touches and the exact size of each "cell" appears to be device dependent as the ratios between rows and columns versus the height and width as returned in hundredths of a millimeter is not consistent across devices.
 static int touchdevice_sensorDimensions(lua_State *L) {
     LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBOOLEAN | LS_TOPTIONAL, LS_TBREAK] ;
     ASMTouchDevice *obj = [skin toNSObjectAtIndex:1] ;
     MTDeviceRef device = obj.touchDevice ;
-    BOOL inHmm = (lua_gettop(L) == 2) ? (BOOL)lua_toboolean(L, 2) : NO ;
+    BOOL inHmm = (lua_gettop(L) == 2) ? (BOOL)lua_toboolean(L, 2) : YES ;
     int width, height ;
     OSStatus s = inHmm ? MTDeviceGetSensorSurfaceDimensions(device, &width, &height) :
                          MTDeviceGetSensorDimensions(device, &width, &height) ;
@@ -568,6 +637,18 @@ static int touchdevice_sensorDimensions(lua_State *L) {
     return 1 ;
 }
 
+/// hs._asm.undocumented.touchdevice:familyID() -> integer
+/// Method
+/// Returns an integer specifying the device family id for the touch device represented by the touchdeviceObject
+///
+/// Parameters:
+///  * None
+///
+/// Returns:
+///  * an integer specifying the device family id for the touch device represented by the touchdeviceObject
+///
+/// Notes:
+///  * At present, the usefulness of this information is currently unknown and it is being provided for information purposes only.
 static int touchdevice_familyID(lua_State *L) {
     LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBREAK] ;
@@ -583,6 +664,18 @@ static int touchdevice_familyID(lua_State *L) {
     return 1 ;
 }
 
+/// hs._asm.undocumented.touchdevice:version() -> integer
+/// Method
+/// Returns an integer specifying the bcdVersion for the touch device represented by the touchdeviceObject
+///
+/// Parameters:
+///  * None
+///
+/// Returns:
+///  * an integer specifying the bcdVersion for the touch device represented by the touchdeviceObject
+///
+/// Notes:
+///  * At present, the usefulness of this information is currently unknown and it is being provided for information purposes only.
 static int touchdevice_version(lua_State *L) {
     LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBREAK] ;
@@ -598,6 +691,18 @@ static int touchdevice_version(lua_State *L) {
     return 1 ;
 }
 
+/// hs._asm.undocumented.touchdevice:driverType() -> integer
+/// Method
+/// Returns an integer specifying the driver type for the touch device represented by the touchdeviceObject
+///
+/// Parameters:
+///  * None
+///
+/// Returns:
+///  * an integer specifying the driver type for the touch device represented by the touchdeviceObject
+///
+/// Notes:
+///  * At present, the usefulness of this information is currently unknown and it is being provided for information purposes only.
 static int touchdevice_driverType(lua_State *L) {
     LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBREAK] ;
@@ -613,6 +718,19 @@ static int touchdevice_driverType(lua_State *L) {
     return 1 ;
 }
 
+/// hs._asm.undocumented.touchdevice:supportsSilentClick() -> boolean
+/// Method
+/// Returns a boolean specifying whether or not the touch device represented by the touchdeviceObject supports silent click
+///
+/// Parameters:
+///  * None
+///
+/// Returns:
+///  * a boolean specifying whether or not the touch device represented by the touchdeviceObject supports silent click
+///
+/// Notes:
+///  * This method will return true for non force-touch devices -- they do not have a simulated click sound associated with mouse clicks so they are considered "silent" by the MultitouchSupport framework already.
+///  * Some force touch devices do not support disabling this simulated sound and will return false with this method; this seems to mostly apply to newer Mac Pro laptops, though an exhaustive list is beyond the scope of this documentation.  If you are uncertain about your force touch device, check Trackpad in System Preferences -- if you see an option for "Silent clicking" then this method should return true for your force touch device.
 static int touchdevice_supportsSilentClick(lua_State *L) {
     LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBREAK] ;
@@ -628,6 +746,18 @@ static int touchdevice_supportsSilentClick(lua_State *L) {
     return 1 ;
 }
 
+/// hs._asm.undocumented.touchdevice:GUID() -> string
+/// Method
+/// Returns a string specifying the GUID for the touch device represented by the touchdeviceObject
+///
+/// Parameters:
+///  * None
+///
+/// Returns:
+///  * a string specifying the GUID for the touch device represented by the touchdeviceObject
+///
+/// Notes:
+///  * At present, the usefulness of this information is currently unknown and it is being provided for information purposes only.
 static int touchdevice_GUID(lua_State *L) {
     LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBREAK] ;
@@ -649,6 +779,28 @@ static int touchdevice_GUID(lua_State *L) {
     return 1 ;
 }
 
+/// hs._asm.undocumented.touchdevice:forceResponseEnabled([state]) -> touchdeviceObject | boolean
+/// Method
+/// Get or set whether applying pressure to a force touch capable device will generate a mouse click or force touch
+///
+/// Parameters:
+///  * `state` - an optional boolean specifying whether the force touch capable touch device will generate mouse clicks and force touches (true) or not (false).
+///
+/// Returns:
+///  * if an argument is provided, returns the touchdeviceObject, otherwise returns the current value
+///
+/// Notes:
+///  * When used with a non force touch device, the results of using this method are undefined - some will apparently change their value in response to this method while others will not; however the mouse click ability of the touch device will not be affected.
+///
+///  * When used with a force touch capable device, setting this value to false will prevent the device from being able to generate mouse clicks; multi touch gestures and mouse movement is unaffected however.
+///  * This can be used to make such a device act more like a drawing tablet where the pressure can be used as a Z-axis without fear that a mouse click will change application focus or have other effects.
+///  * ***WARNING*** - if you disable mouse clicks for a device with this method, it is re-enabled upon garbage collection of the userdata representing the touch device. This means:
+///    * You must retain the userdata in a global variable (or local variable with an upvalue reference within a global function or table) for at least as long as you wish for mouse clicks to be suppressed.
+///    * If you have multiple userdata objects for the *same* touch device created independently (with separate [hs._asm.undocumented.touchdevice.default](#default) or [hs._asm.undocumented.touchdevice.forDeviceID](#forDeviceID) function invocations), when any of them go out of scope and is garbage collected, mouse clicks will be re-enabled for the device.
+///    * If Hammerspoon crashes or exits unexpectedly, it is likely that garbage collection will not occur.  In this case, you will have to restart Hammerspoon and use this method to re-enable mouse clicks or disconnect and reconnect your device (if it is external) or restart your machine (if it is not) to return the device to normal functionality.
+///  * For these reasons, it is recommended that you only disable force response for as short a period as you require and the re-enable them so that everything remains in a predictable state.
+///
+///  * If you wish to suspend mouse gestures as well, you can use `hs.execute("killall -STOP Dock")`.  Note however that this disables gestures for *ALL* touch devices and also disables application switching from the keyboard as well (you can still click on an another applications windows with another mouse device though). You can resume normal operation of the gestures and keyboard shortcuts with `hs.execute("killall -CONT Dock")`. It is unknown what other processes suspending the Dock in this way may cause, so do so at your own risk.
 static int touchdevice_forceResponseEnabled(lua_State *L) {
     LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBOOLEAN | LS_TOPTIONAL, LS_TBREAK] ;
@@ -898,8 +1050,9 @@ static int userdata_gc(lua_State* L) {
             MTUnregisterPathCallbackWithRefcon(obj.touchDevice, pathCallbackFunction) ;
             MTUnregisterContactFrameCallback(obj.touchDevice, frameCallbackFunction) ;
             if (MTDeviceIsRunning(obj.touchDevice)) MTDeviceStop(obj.touchDevice) ;
-            uint64_t deviceID ;
-            MTDeviceGetDeviceID(obj.touchDevice, &deviceID) ;
+            if (!MTDeviceGetSystemForceResponseEnabled(obj.touchDevice)) {
+                MTDeviceSetSystemForceResponseEnabled(obj.touchDevice, YES) ;
+            }
             MTDeviceRelease(obj.touchDevice) ;
             obj = nil ;
         }

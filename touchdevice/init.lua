@@ -11,6 +11,8 @@
 ---  * ...and I'm sure others that have slipped my mind.
 ---
 --- If you feel that I have missed a particular site that should be referenced, or know of a site with additional information that can clarify or expand this module or any of its functions -- many of the informational methods are not fully understood and clarification would be greatly appreciated -- please do not hesitate to submit an issue or pull request at https://github.com/asmagill/hammerspoon_asm.undocumented for consideration.
+---
+--- Because this module relies on an undocumented framework, this documentation is based on the collection of observations made by a variety of people and shared on the internet and is a best guess -- nothing in here is guaranteed.  If you have more accurate information or observe something in variance with what is documented here, please submit an issue with as much detail as possible.
 
 -- pacakge.loadlib("/System/Library/PrivateFrameworks/MultitouchSupport.framework/MultitouchSupport", "*")
 
@@ -48,7 +50,7 @@ local inspect = require("hs.inspect")
 ---
 --- Notes:
 ---  * The returned table uses the `hs.inspect` module as a `__tostring` metamethod allowing you to display it easily in the Hammerspoon console.
----  * This method is provided as a convenience -- because it invokes a method for each key in the table, when speed is a concern, you should invoke the specific method for the specific information that you require.
+---  * This method is provided as a convenience -- because it invokes a method for each key in the table, when speed is a concern, you should invoke the individual methods for the specific information that you require.
 objectMT.details = function(self)
     local detailTable = {
         deviceID                = self:deviceID(),
@@ -68,13 +70,10 @@ objectMT.details = function(self)
         serialNumber            = self:serialNumber(),
         version                 = self:version(),
         productName             = self:productName(),
+        forceResponseEnabled    = self:forceResponseEnabled(),
+        supportsSilentClick     = self:supportsSilentClick(),
+        supportsActuation       = self:supportsActuation(),
     }
---     if detailTable.supportsForce then
-        detailTable.forceResponseEnabled = self:forceResponseEnabled()
-        detailTable.supportsSilentClick  = self:supportsSilentClick()
-        detailTable.supportsActuation    = self:supportsActuation()
---     end
-
     return setmetatable(detailTable, { __tostring = inspect })
 end
 
