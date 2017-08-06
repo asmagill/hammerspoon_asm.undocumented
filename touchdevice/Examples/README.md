@@ -26,7 +26,7 @@ p.start(2) -- for the second device reported by `hs._asm.undocumented.touchdevic
 ### rawFrameInfo
 
 ~~~lua
-p = dofile("rawFrameInfo.lua")
+f = dofile("rawFrameInfo.lua")
 ~~~
 
 This callback shows all of the current touches at a point in time.
@@ -38,6 +38,6 @@ This will display a panel which displays the information returned to the frame c
 If you wish to test additional devices (if you have multiple multi touch devices), you can type in the following:
 
 ~~~lua
-p.stop() -- or click on the red dot in the upper left corner of the displayed information panel.
-p.start(2) -- for the second device reported by `hs._asm.undocumented.touchdevice.devices()`, etc.
+f.stop() -- or click on the red dot in the upper left corner of the displayed information panel.
+f.start(2) -- for the second device reported by `hs._asm.undocumented.touchdevice.devices()`, etc.
 ~~~
