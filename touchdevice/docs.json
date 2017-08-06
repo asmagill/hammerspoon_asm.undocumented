@@ -81,7 +81,7 @@
     "stripped_doc" : [
 
     ],
-    "desc" : "This modules provides functionality for detecting and using touch information from Multi-Touch devices attached to your Mac.",
+    "desc" : "This module provides functionality for detecting and using touch information from Multi-Touch devices attached to your Mac.",
     "Deprecated" : [
 
     ],
@@ -1536,7 +1536,7 @@
         ]
       }
     ],
-    "doc" : "This modules provides functionality for detecting and using touch information from Multi-Touch devices attached to your Mac.\n\nMost of the functions and methods provided here rely on undocumented or private functionality provided by the MultitouchSupport framework.  As such thi module is considered experimental and may break at any time should Apple make changes to the framework.\n\nPortions of this module have been influenced or inspired by code found at the following addresses:\n * https:\/\/github.com\/INRIA\/libpointing\/blob\/master\/pointing\/input\/osx\/osxPrivateMultitouchSupport.h\n * https:\/\/github.com\/calftrail\/Touch\n * https:\/\/github.com\/jnordberg\/FingerMgmt\n * ...and I'm sure others that have slipped my mind.\n\nIf you feel that I have missed a particular site that should be referenced, or know of a site with additional information that can clarify or expand this module or any of its functions -- many of the informational methods are not fully understood and clarification would be greatly appreciated -- please do not hesitate to submit an issue or pull request at https:\/\/github.com\/asmagill\/hammerspoon_asm.undocumented for consideration.\n\nBecause this module relies on an undocumented framework, this documentation is based on the collection of observations made by a variety of people and shared on the internet and is a best guess -- nothing in here is guaranteed.  If you have more accurate information or observe something in variance with what is documented here, please submit an issue with as much detail as possible.",
+    "doc" : "This module provides functionality for detecting and using touch information from Multi-Touch devices attached to your Mac.\n\nMost of the functions and methods provided here rely on undocumented or private functionality provided by the MultitouchSupport framework.  As such thi module is considered experimental and may break at any time should Apple make changes to the framework.\n\nPortions of this module have been influenced or inspired by code found at the following addresses:\n * https:\/\/github.com\/INRIA\/libpointing\/blob\/master\/pointing\/input\/osx\/osxPrivateMultitouchSupport.h\n * https:\/\/github.com\/calftrail\/Touch\n * https:\/\/github.com\/jnordberg\/FingerMgmt\n * ...and I'm sure others that have slipped my mind.\n\nIf you feel that I have missed a particular site that should be referenced, or know of a site with additional information that can clarify or expand this module or any of its functions -- many of the informational methods are not fully understood and clarification would be greatly appreciated -- please do not hesitate to submit an issue or pull request at https:\/\/github.com\/asmagill\/hammerspoon_asm.undocumented for consideration.\n\nBecause this module relies on an undocumented framework, this documentation is based on the collection of observations made by a variety of people and shared on the internet and is a best guess -- nothing in here is guaranteed.  If you have more accurate information or observe something in variance with what is documented here, please submit an issue with as much detail as possible.",
     "name" : "hs._asm.undocumented.touchdevice"
   },
   {
@@ -1605,7 +1605,7 @@
     "stripped_doc" : [
 
     ],
-    "desc" : "Some experimentation with force touch devices.",
+    "desc" : "Some experimentation with force touch devices. Currently this submodule doesn't utilize undocumented methods, but is included here because of the related nature of its function.  It is also hoped that a deeper investigation of the MultitouchSupport framework may lead to more interesting uses for haptic feedback.",
     "Deprecated" : [
 
     ],
@@ -1675,7 +1675,7 @@
         ]
       }
     ],
-    "doc" : "Some experimentation with force touch devices.\n\nRequires 10.11 or later.\nBased in part on code from https:\/\/eternalstorms.wordpress.com\/2015\/11\/16\/how-to-detect-force-touch-capable-devices-on-the-mac\/ and https:\/\/github.com\/eternalstorms\/NSBeginAlertSheet-using-Blocks",
+    "doc" : "Some experimentation with force touch devices. Currently this submodule doesn't utilize undocumented methods, but is included here because of the related nature of its function.  It is also hoped that a deeper investigation of the MultitouchSupport framework may lead to more interesting uses for haptic feedback.\n\nRequires 10.11 or later.\nBased in part on code from https:\/\/eternalstorms.wordpress.com\/2015\/11\/16\/how-to-detect-force-touch-capable-devices-on-the-mac\/ and https:\/\/github.com\/eternalstorms\/NSBeginAlertSheet-using-Blocks",
     "name" : "hs._asm.undocumented.touchdevice.forcetouch"
   }
 ]
