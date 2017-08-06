@@ -1,7 +1,7 @@
 hs._asm.undocumented.touchdevice
 ================================
 
-This modules provides functionality for detecting and using touch information from Multi-Touch devices attached to your Mac.
+This module provides functionality for detecting and using touch information from Multi-Touch devices attached to your Mac.
 
 Most of the functions and methods provided here rely on undocumented or private functionality provided by the MultitouchSupport framework.  As such thi module is considered experimental and may break at any time should Apple make changes to the framework.
 
@@ -646,31 +646,10 @@ The table will contain the following key-value pairs:
 hs._asm.undocumented.touchdevice.forcetouch
 ===========================================
 
-Some experimentation with force touch devices.
+Some experimentation with force touch devices. Currently this submodule doesn't utilize undocumented methods, but is included here because of the related nature of its function.  It is also hoped that a deeper investigation of the MultitouchSupport framework may lead to more interesting uses for haptic feedback.
 
 Requires 10.11 or later.
 Based in part on code from https://eternalstorms.wordpress.com/2015/11/16/how-to-detect-force-touch-capable-devices-on-the-mac/ and https://github.com/eternalstorms/NSBeginAlertSheet-using-Blocks
-
-
-### Installation
-
-A precompiled version of this module can be found in this directory with a name along the lines of `forcetouch-v0.x.tar.gz`. This can be installed by downloading the file and then expanding it as follows:
-
-~~~sh
-$ cd ~/.hammerspoon # or wherever your Hammerspoon init.lua file is located
-$ tar -xzf ~/Downloads/forcetouch-v0.x.tar.gz # or wherever your downloads are located
-~~~
-
-If you wish to build this module yourself, and have XCode installed on your Mac, the best way (you are welcome to clone the entire repository if you like, but no promises on the current state of anything else) is to download `init.lua`, `internal.m`, and `Makefile` (at present, nothing else is required) into a directory of your choice and then do the following:
-
-~~~sh
-$ cd wherever-you-downloaded-the-files
-$ [HS_APPLICATION=/Applications] [PREFIX=~/.hammerspoon] make docs install
-~~~
-
-If your Hammerspoon application is located in `/Applications`, you can leave out the `HS_APPLICATION` environment variable, and if your Hammerspoon files are located in their default location, you can leave out the `PREFIX` environment variable.  For most people it will be sufficient to just type `make docs install`.
-
-As always, whichever method you chose, if you are updating from an earlier version it is recommended to fully quit and restart Hammerspoon after installing this module to ensure that the latest version of the module is loaded into memory.
 
 ### Usage
 ~~~lua

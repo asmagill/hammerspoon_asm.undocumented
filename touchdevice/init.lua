@@ -1,6 +1,6 @@
 --- === hs._asm.undocumented.touchdevice ===
 ---
---- This modules provides functionality for detecting and using touch information from Multi-Touch devices attached to your Mac.
+--- This module provides functionality for detecting and using touch information from Multi-Touch devices attached to your Mac.
 ---
 --- Most of the functions and methods provided here rely on undocumented or private functionality provided by the MultitouchSupport framework.  As such thi module is considered experimental and may break at any time should Apple make changes to the framework.
 ---

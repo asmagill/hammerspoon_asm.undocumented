@@ -4,7 +4,7 @@
 
 /// === hs._asm.undocumented.touchdevice.forcetouch ===
 ///
-/// Some experimentation with force touch devices.
+/// Some experimentation with force touch devices. Currently this submodule doesn't utilize undocumented methods, but is included here because of the related nature of its function.  It is also hoped that a deeper investigation of the MultitouchSupport framework may lead to more interesting uses for haptic feedback.
 ///
 /// Requires 10.11 or later.
 /// Based in part on code from https://eternalstorms.wordpress.com/2015/11/16/how-to-detect-force-touch-capable-devices-on-the-mac/ and https://github.com/eternalstorms/NSBeginAlertSheet-using-Blocks
