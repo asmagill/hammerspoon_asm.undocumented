@@ -815,6 +815,24 @@ static int touchdevice_forceResponseEnabled(lua_State *L) {
     return 1 ;
 }
 
+/// hs._asm.undocumented.touchdevice:frameCallback([fn]) -> touchdeviceObject | fn
+/// Method
+/// Get or set the frame callback function for the touch device represented by the touchdevice object
+///
+/// Parameters:
+///  * `fn` - an optional function or nil to set (or remove) the frame callback function for the touch device.
+///
+/// Returns:
+///  * if an argument is provided, returns the touchdeviceObject; otherwise returns the current value which may be a function or nil if no frame callback is currently assigned.
+///
+/// Notes:
+///  * The frame callback appears to represent a point in time and contains touch data for all touches currently active for the device
+///
+///  * the callback function should expect 4 arguments and return none.  The arguments will be as follows:
+///    * `self`      - the touch device object for which the callback is being invoked for
+///    * `touch`     - a table containing an array of touch tables as described in [hs._asm.undocumented.touchdevice.touchData](#touchData) for each of the current touches detected by the touch device.
+///    * `timestamp` - a number specifying the timestamp for the frame.
+///    * `frame`     - an integer specifying the frame ID
 static int touchdevice_frameCallback(lua_State *L) {
     LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TFUNCTION | LS_TNIL | LS_TOPTIONAL, LS_TBREAK] ;
@@ -844,6 +862,24 @@ static int touchdevice_frameCallback(lua_State *L) {
     return 1 ;
 }
 
+/// hs._asm.undocumented.touchdevice:pathCallback([fn]) -> touchdeviceObject | fn
+/// Method
+/// Get or set the path callback function for the touch device represented by the touchdevice object
+///
+/// Parameters:
+///  * `fn` - an optional function or nil to set (or remove) the path callback function for the touch device.
+///
+/// Returns:
+///  * if an argument is provided, returns the touchdeviceObject; otherwise returns the current value which may be a function or nil if no path callback is currently assigned.
+///
+/// Notes:
+///  * The path callback appears to represent the changing data for a specific touch.  Use the `pathIndex` and `stage` as described in [hs._asm.undocumented.touchdevice.touchData](#touchData) to link callbacks when tracking a specific touch.
+///
+///  * the callback function should expect 4 arguments and return none.  The arguments will be as follows:
+///    * `self`      - the touch device object for which the callback is being invoked for
+///    * `pathIndex` - an integer specifying the pathIndex for the touch.
+///    * `stage`     - a string representing the current stage of the touch. Will be one of "notTracking", "startInRange", "hoverInRange", "makeTouch", "touching", "breakTouch", "lingerInRange", or "outOfRange".
+///    * `touch`     - a touch tables as described in [hs._asm.undocumented.touchdevice.touchData](#touchData) for the specific touch
 static int touchdevice_pathCallback(lua_State *L) {
     LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TFUNCTION | LS_TNIL | LS_TOPTIONAL, LS_TBREAK] ;
@@ -873,6 +909,15 @@ static int touchdevice_pathCallback(lua_State *L) {
     return 1 ;
 }
 
+/// hs._asm.undocumented.touchdevice:start() -> touchdeviceObject
+/// Method
+/// Begin tracking touch data from the touch device.
+///
+/// Parameters:
+///  * None
+///
+/// Returns:
+///  * the touchdeviceObject
 static int touchdevice_start(lua_State *L) {
     LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBOOLEAN | LS_TOPTIONAL, LS_TBREAK] ;
@@ -893,6 +938,15 @@ static int touchdevice_start(lua_State *L) {
     return 1 ;
 }
 
+/// hs._asm.undocumented.touchdevice:stop() -> touchdeviceObject
+/// Method
+/// Stop tracking touch data from the touch device.
+///
+/// Parameters:
+///  * None
+///
+/// Returns:
+///  * the touchdeviceObject
 static int touchdevice_stop(lua_State *L) {
     LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBREAK] ;
@@ -1097,6 +1151,8 @@ static const luaL_Reg userdata_metaLib[] = {
 
 #if defined(INCLUDE_QUESTIONABLE_METHODS)
     {"enableDebugCallbacks",  touchdevice_enableDebugCallbacks},
+
+// Not supported by my devices, so can't test; query methods always return 0
     {"powerEnabled",          touchdevice_powerEnabled},
     {"minDigitizerPressure",  touchdevice_minDigitizerPressure},
     {"maxDigitizerPressure",  touchdevice_maxDigitizerPressure},

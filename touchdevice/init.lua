@@ -74,6 +74,11 @@ objectMT.details = function(self)
         supportsSilentClick     = self:supportsSilentClick(),
         supportsActuation       = self:supportsActuation(),
     }
+
+    if objectMT.minDigitizerPressure   then detailTable.minDigitizerPressure   = self:minDigitizerPressure()   end
+    if objectMT.maxDigitizerPressure   then detailTable.maxDigitizerPressure   = self:maxDigitizerPressure()   end
+    if objectMT.digitizerPressureRange then detailTable.digitizerPressureRange = self:digitizerPressureRange() end
+
     return setmetatable(detailTable, { __tostring = inspect })
 end
 
