@@ -1,9 +1,8 @@
-#import <Cocoa/Cocoa.h>
-// #import <Carbon/Carbon.h>
-#import <LuaSkin/LuaSkin.h>
+@import Cocoa ;
+@import LuaSkin ;
 #import "coredock.h"
 
-int refTable ;
+static int refTable = LUA_NOREF ;
 
 /// hs._asm.undocumented.coredock.tileSize([size]) -> float
 /// Function
@@ -18,14 +17,14 @@ static int coredock_tilesize(lua_State* L) {
     [[LuaSkin shared] checkArgs:LS_TNUMBER | LS_TOPTIONAL, LS_TBREAK] ;
 
     if (!lua_isnone(L, 1)) {
-        float tileSize = (float) luaL_checknumber(L, -1);
+        float tileSize = (float) luaL_checknumber(L, -1) ;
         if (tileSize >= 0 && tileSize <= 1)
-            CoreDockSetTileSize(tileSize);
+            CoreDockSetTileSize(tileSize) ;
         else
-            return luaL_error(L,"tilesize must be a number between 0.0 and 1.0");
+            return luaL_error(L,"tilesize must be a number between 0.0 and 1.0") ;
     }
-    lua_pushnumber(L, (float) CoreDockGetTileSize());
-    return 1;
+    lua_pushnumber(L, (lua_Number)CoreDockGetTileSize()) ;
+    return 1 ;
 }
 
 /// hs._asm.undocumented.coredock.magnificationSize([size]) -> float
@@ -41,25 +40,25 @@ static int coredock_magnification_size(lua_State* L) {
     [[LuaSkin shared] checkArgs:LS_TNUMBER | LS_TOPTIONAL, LS_TBREAK] ;
 
     if (!lua_isnone(L, 1)) {
-        float magSize = (float) luaL_checknumber(L, -1);
+        float magSize = (float) luaL_checknumber(L, -1) ;
         if (magSize >= 0 && magSize <= 1)
-            CoreDockSetMagnificationSize(magSize);
+            CoreDockSetMagnificationSize(magSize) ;
         else
-            return luaL_error(L,"magnification_size must be a number between 0.0 and 1.0");
+            return luaL_error(L,"magnification_size must be a number between 0.0 and 1.0") ;
     }
-    lua_pushnumber(L, (float) CoreDockGetMagnificationSize());
-    return 1;
+    lua_pushnumber(L, (lua_Number)CoreDockGetMagnificationSize()) ;
+    return 1 ;
 }
 
 // /// hs._asm.undocumented.coredock.oandp(orientation, pinning)
 // /// Function
 // /// Sets the Dock orientation and pinning simultaneously to the placement indicated by orientation and pinning.
 // static int coredock_oandp(lua_State* L) {
-//     CoreDockOrientation ourOrientation = luaL_checkinteger(L, -2);
-//     CoreDockPinning     ourPinning = luaL_checkinteger(L, -1);
+//     CoreDockOrientation ourOrientation = luaL_checkinteger(L, -2) ;
+//     CoreDockPinning     ourPinning = luaL_checkinteger(L, -1) ;
 //
-//     CoreDockSetOrientationAndPinning(ourOrientation, ourPinning);
-//     return 0;
+//     CoreDockSetOrientationAndPinning(ourOrientation, ourPinning) ;
+//     return 0 ;
 // }
 
 /// hs._asm.undocumented.coredock.orientation([orientation]) -> orientation
@@ -78,15 +77,15 @@ static int coredock_orientation(lua_State* L) {
     [[LuaSkin shared] checkArgs:LS_TNUMBER | LS_TOPTIONAL, LS_TBREAK] ;
 
     if (!lua_isnone(L, 1)) {
-        CoreDockOrientation ourOrientation = (CoreDockOrientation)luaL_checkinteger(L, -1);
-        CoreDockPinning ourPinning = 0;
-        CoreDockSetOrientationAndPinning(ourOrientation, ourPinning);
+        CoreDockOrientation ourOrientation = (CoreDockOrientation)(luaL_checkinteger(L, -1)) ;
+        CoreDockPinning ourPinning = kCoreDockPinningIgnore ;
+        CoreDockSetOrientationAndPinning(ourOrientation, ourPinning) ;
     }
-    CoreDockOrientation ourOrientation;
-    CoreDockPinning     ourPinning;
-    CoreDockGetOrientationAndPinning(&ourOrientation, &ourPinning);
-    lua_pushinteger(L, (int) ourOrientation);
-    return 1;
+    CoreDockOrientation ourOrientation ;
+    CoreDockPinning     ourPinning ;
+    CoreDockGetOrientationAndPinning(&ourOrientation, &ourPinning) ;
+    lua_pushinteger(L, (int) ourOrientation) ;
+    return 1 ;
 }
 
 /// hs._asm.undocumented.coredock.pinning([pinning]) -> pinning
@@ -105,15 +104,15 @@ static int coredock_pinning(lua_State* L) {
     [[LuaSkin shared] checkArgs:LS_TNUMBER | LS_TOPTIONAL, LS_TBREAK] ;
 
     if (!lua_isnone(L, 1)) {
-        CoreDockOrientation ourOrientation = 0;
-        CoreDockPinning ourPinning = (CoreDockPinning)luaL_checkinteger(L, -1);
-        CoreDockSetOrientationAndPinning(ourOrientation, ourPinning);
+        CoreDockOrientation ourOrientation = kCoreDockOrientationIgnore ;
+        CoreDockPinning ourPinning = (CoreDockPinning)(luaL_checkinteger(L, -1)) ;
+        CoreDockSetOrientationAndPinning(ourOrientation, ourPinning) ;
     }
-    CoreDockOrientation ourOrientation;
-    CoreDockPinning     ourPinning;
-    CoreDockGetOrientationAndPinning(&ourOrientation, &ourPinning);
-    lua_pushinteger(L, (int) ourPinning);
-    return 1;
+    CoreDockOrientation ourOrientation ;
+    CoreDockPinning     ourPinning ;
+    CoreDockGetOrientationAndPinning(&ourOrientation, &ourPinning) ;
+    lua_pushinteger(L, (int) ourPinning) ;
+    return 1 ;
 }
 
 
@@ -130,10 +129,10 @@ static int coredock_magnification(lua_State* L) {
     [[LuaSkin shared] checkArgs:LS_TBOOLEAN | LS_TOPTIONAL, LS_TBREAK] ;
 
     if (!lua_isnone(L, 1)) {
-        CoreDockSetMagnificationEnabled((Boolean) lua_toboolean(L, -1));
+        CoreDockSetMagnificationEnabled((Boolean) lua_toboolean(L, -1)) ;
     }
-    if (CoreDockIsMagnificationEnabled()) lua_pushboolean(L, YES); else lua_pushboolean(L, NO);
-    return 1;
+    if (CoreDockIsMagnificationEnabled()) lua_pushboolean(L, YES) ; else lua_pushboolean(L, NO) ;
+    return 1 ;
 }
 
 /// hs._asm.undocumented.coredock.autoHide([state]) -> bool
@@ -149,10 +148,10 @@ static int coredock_autohide(lua_State* L) {
     [[LuaSkin shared] checkArgs:LS_TBOOLEAN | LS_TOPTIONAL, LS_TBREAK] ;
 
     if (!lua_isnone(L, 1)) {
-        CoreDockSetAutoHideEnabled((Boolean) lua_toboolean(L, -1));
+        CoreDockSetAutoHideEnabled((Boolean) lua_toboolean(L, -1)) ;
     }
-    if (CoreDockGetAutoHideEnabled()) lua_pushboolean(L, YES); else lua_pushboolean(L, NO);
-    return 1;
+    if (CoreDockGetAutoHideEnabled()) lua_pushboolean(L, YES) ; else lua_pushboolean(L, NO) ;
+    return 1 ;
 }
 
 /// hs._asm.undocumented.coredock.animationEffect([effect]) -> effect
@@ -168,13 +167,13 @@ static int coredock_animationeffect(lua_State* L) {
     [[LuaSkin shared] checkArgs:LS_TNUMBER | LS_TOPTIONAL, LS_TBREAK] ;
 
     if (!lua_isnone(L, 1)) {
-        CoreDockEffect ourEffect = (CoreDockEffect)luaL_checkinteger(L, -1);
-        CoreDockSetEffect(ourEffect);
+        CoreDockEffect ourEffect = (CoreDockEffect)(luaL_checkinteger(L, -1)) ;
+        CoreDockSetEffect(ourEffect) ;
     }
-    CoreDockEffect  ourEffect;
-    CoreDockGetEffect(&ourEffect);
-    lua_pushinteger(L, (int) ourEffect);
-    return 1;
+    CoreDockEffect  ourEffect ;
+    CoreDockGetEffect(&ourEffect) ;
+    lua_pushinteger(L, (int) ourEffect) ;
+    return 1 ;
 }
 
 /// hs._asm.undocumented.coredock.options[]
@@ -205,21 +204,21 @@ static int coredock_animationeffect(lua_State* L) {
 static void coredock_options (lua_State *L) {
     lua_newtable(L) ;
         lua_newtable(L) ;
-            lua_pushinteger(L, kCoreDockOrientationTop);    lua_setfield(L, -2, "top") ;
-            lua_pushinteger(L, kCoreDockOrientationBottom); lua_setfield(L, -2, "bottom") ;
-            lua_pushinteger(L, kCoreDockOrientationLeft);   lua_setfield(L, -2, "left") ;
-            lua_pushinteger(L, kCoreDockOrientationRight);  lua_setfield(L, -2, "right") ;
-        lua_setfield(L, -2, "orientation");
+            lua_pushinteger(L, kCoreDockOrientationTop) ;    lua_setfield(L, -2, "top") ;
+            lua_pushinteger(L, kCoreDockOrientationBottom) ; lua_setfield(L, -2, "bottom") ;
+            lua_pushinteger(L, kCoreDockOrientationLeft) ;   lua_setfield(L, -2, "left") ;
+            lua_pushinteger(L, kCoreDockOrientationRight) ;  lua_setfield(L, -2, "right") ;
+        lua_setfield(L, -2, "orientation") ;
         lua_newtable(L) ;
-            lua_pushinteger(L, kCoreDockPinningStart);  lua_setfield(L, -2, "start") ;
-            lua_pushinteger(L, kCoreDockPinningMiddle); lua_setfield(L, -2, "middle") ;
-            lua_pushinteger(L, kCoreDockPinningEnd);    lua_setfield(L, -2, "end") ;
-        lua_setfield(L, -2, "pinning");
+            lua_pushinteger(L, kCoreDockPinningStart) ;  lua_setfield(L, -2, "start") ;
+            lua_pushinteger(L, kCoreDockPinningMiddle) ; lua_setfield(L, -2, "middle") ;
+            lua_pushinteger(L, kCoreDockPinningEnd) ;    lua_setfield(L, -2, "end") ;
+        lua_setfield(L, -2, "pinning") ;
         lua_newtable(L) ;
-            lua_pushinteger(L, kCoreDockEffectGenie);   lua_setfield(L, -2, "genie") ;
-            lua_pushinteger(L, kCoreDockEffectScale);   lua_setfield(L, -2, "scale") ;
-            lua_pushinteger(L, kCoreDockEffectSuck);    lua_setfield(L, -2, "suck") ;
-        lua_setfield(L, -2, "effect");
+            lua_pushinteger(L, kCoreDockEffectGenie) ;   lua_setfield(L, -2, "genie") ;
+            lua_pushinteger(L, kCoreDockEffectScale) ;   lua_setfield(L, -2, "scale") ;
+            lua_pushinteger(L, kCoreDockEffectSuck) ;    lua_setfield(L, -2, "suck") ;
+        lua_setfield(L, -2, "effect") ;
 }
 
 static const luaL_Reg moduleLib[] = {
@@ -231,11 +230,11 @@ static const luaL_Reg moduleLib[] = {
     {"magnification",       coredock_magnification},
     {"magnificationSize",   coredock_magnification_size},
     {NULL,                  NULL}
-};
+} ;
 
 int luaopen_hs__asm_undocumented_coredock_internal(lua_State* L) {
     refTable = [[LuaSkin shared] registerLibrary:moduleLib metaFunctions:nil] ;
 
     coredock_options(L) ; lua_setfield(L, -2, "options") ;
-    return 1;
+    return 1 ;
 }

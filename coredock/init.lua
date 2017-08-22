@@ -8,68 +8,24 @@
 ---
 --- Note that the top orientation and dock pinning has not been supported even within the private APIs for some time and may disappear from here in a future release unless another solution can be found.  It is provided here for testing and to encourage suggestions if someone is aware of a solution that has not yet been tried.
 
-local module = require("hs._asm.undocumented.coredock.internal")
+local USERDATA_TAG = "hs._asm.undocumented.coredock"
+local module       = require(USERDATA_TAG..".internal")
+
+local basePath = package.searchpath(USERDATA_TAG, package.path)
+if basePath then
+    basePath = basePath:match("^(.+)/init.lua$")
+    if require"hs.fs".attributes(basePath .. "/docs.json") then
+        require"hs.doc".registerJSONFile(basePath .. "/docs.json")
+    end
+end
+
+-- local log = require("hs.logger").new(USERDATA_TAG, require"hs.settings".get(USERDATA_TAG .. ".logLevel") or "warning")
 
 -- private variables and methods -----------------------------------------
 
-local _kMetaTable = {}
-_kMetaTable._k = {}
-_kMetaTable.__index = function(obj, key)
-        if _kMetaTable._k[obj] then
-            if _kMetaTable._k[obj][key] then
-                return _kMetaTable._k[obj][key]
-            else
-                for k,v in pairs(_kMetaTable._k[obj]) do
-                    if v == key then return k end
-                end
-            end
-        end
-        return nil
-    end
-_kMetaTable.__newindex = function(obj, key, value)
-        error("attempt to modify a table of constants",2)
-        return nil
-    end
-_kMetaTable.__pairs = function(obj) return pairs(_kMetaTable._k[obj]) end
-_kMetaTable.__tostring = function(obj)
-        local result = ""
-        if _kMetaTable._k[obj] then
-            local width = 0
-            for k,v in pairs(_kMetaTable._k[obj]) do width = width < #k and #k or width end
-            for k,v in require("hs.fnutils").sortByKeys(_kMetaTable._k[obj]) do
-                result = result..string.format("%-"..tostring(width).."s %s\n", k, tostring(v))
-            end
-        else
-            result = "constants table missing"
-        end
-        return result
-    end
-_kMetaTable.__metatable = _kMetaTable -- go ahead and look, but don't unset this
-
-local _makeConstantsTable = function(theTable)
-    local results = setmetatable({}, _kMetaTable)
-    _kMetaTable._k[results] = theTable
-    return results
-end
-
 -- Public interface ------------------------------------------------------
 
-module.options.orientation = _makeConstantsTable(module.options.orientation)
-module.options.pinning     = _makeConstantsTable(module.options.pinning)
-module.options.effect      = _makeConstantsTable(module.options.effect)
-module.options             = setmetatable(module.options, {
-    __tostring = function(_)
-        local result = ""
-        for i,v in require("hs.fnutils").sortByKeys(_) do
-            result = result..i.."\n"
-        end
-        return result
-    end,
-    __newindex = function(obj, key, value)
-        error("attempt to modify a table of constants",2)
-        return nil
-    end
-})
+module.options = ls.makeConstantsTable(module.options)
 
 --- hs._asm.undocumented.coredock.restartDock()
 --- Function

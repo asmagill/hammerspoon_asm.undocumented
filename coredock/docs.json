@@ -1,0 +1,470 @@
+[
+  {
+    "Constant" : [
+
+    ],
+    "submodules" : [
+
+    ],
+    "Function" : [
+      {
+        "doc" : "This function restarts the user's Dock instance.  This is not required for any of the functionality of this module, but does come in handy if your dock gets \"misplaced\" when you change monitor resolution or detach an external monitor (I've seen this occasionally when the Dock is on the left or right.)",
+        "stripped_doc" : [
+          "This function restarts the user's Dock instance.  This is not required for any of the functionality of this module, but does come in handy if your dock gets \"misplaced\" when you change monitor resolution or detach an external monitor (I've seen this occasionally when the Dock is on the left or right.)"
+        ],
+        "parameters" : [
+
+        ],
+        "def" : "hs._asm.undocumented.coredock.restartDock()",
+        "notes" : [
+
+        ],
+        "signature" : "hs._asm.undocumented.coredock.restartDock()",
+        "type" : "Function",
+        "returns" : [
+
+        ],
+        "name" : "restartDock",
+        "desc" : "This function restarts the user's Dock instance.  This is not required for any of the functionality of this module, but does come in handy if your dock gets \"misplaced\" when you change monitor resolution or detach an external monitor (I've seen this occasionally when the Dock is on the left or right.)"
+      },
+      {
+        "doc" : "Get or set the Dock icon tile size as a number between 0.0 and 1.0.\n\nParameters:\n * size - an optional number between 0.0 and 1.0 to set the Dock icon tile size to.\n\nReturns:\n * the (possibly changed) current value",
+        "stripped_doc" : [
+          "Get or set the Dock icon tile size as a number between 0.0 and 1.0.",
+          ""
+        ],
+        "parameters" : [
+          " * size - an optional number between 0.0 and 1.0 to set the Dock icon tile size to.",
+          ""
+        ],
+        "def" : "hs._asm.undocumented.coredock.tileSize([size]) -> float",
+        "notes" : [
+
+        ],
+        "signature" : "hs._asm.undocumented.coredock.tileSize([size]) -> float",
+        "type" : "Function",
+        "returns" : [
+          " * the (possibly changed) current value"
+        ],
+        "name" : "tileSize",
+        "desc" : "Get or set the Dock icon tile size as a number between 0.0 and 1.0."
+      },
+      {
+        "doc" : "Get or set the Dock icon magnification size as a number between 0.0 and 1.0.\n\nParameters:\n * size - an optional number between 0.0 and 1.0 to set the Dock icon magnification size to.\n\nReturns:\n * the (possibly changed) current value",
+        "stripped_doc" : [
+          "Get or set the Dock icon magnification size as a number between 0.0 and 1.0.",
+          ""
+        ],
+        "parameters" : [
+          " * size - an optional number between 0.0 and 1.0 to set the Dock icon magnification size to.",
+          ""
+        ],
+        "def" : "hs._asm.undocumented.coredock.magnificationSize([size]) -> float",
+        "notes" : [
+
+        ],
+        "signature" : "hs._asm.undocumented.coredock.magnificationSize([size]) -> float",
+        "type" : "Function",
+        "returns" : [
+          " * the (possibly changed) current value"
+        ],
+        "name" : "magnificationSize",
+        "desc" : "Get or set the Dock icon magnification size as a number between 0.0 and 1.0."
+      },
+      {
+        "doc" : "Get or set the Dock orientation.\n\nParameters:\n * orientation - an integer as specified in `hs._asm.undocumented.coredock.options.orientation`\n\nReturns:\n * the (possibly changed) current value\n\nNotes:\n * the top orientation and dock pinning has not been supported even within the private APIs for some time and may disappear from here in a future release unless another solution can be found.  It is provided here for testing and to encourage suggestions if someone is aware of a solution that has not yet been tried.",
+        "stripped_doc" : [
+          "Get or set the Dock orientation.",
+          ""
+        ],
+        "parameters" : [
+          " * orientation - an integer as specified in `hs._asm.undocumented.coredock.options.orientation`",
+          ""
+        ],
+        "def" : "hs._asm.undocumented.coredock.orientation([orientation]) -> orientation",
+        "notes" : [
+          " * the top orientation and dock pinning has not been supported even within the private APIs for some time and may disappear from here in a future release unless another solution can be found.  It is provided here for testing and to encourage suggestions if someone is aware of a solution that has not yet been tried."
+        ],
+        "signature" : "hs._asm.undocumented.coredock.orientation([orientation]) -> orientation",
+        "type" : "Function",
+        "returns" : [
+          " * the (possibly changed) current value",
+          ""
+        ],
+        "name" : "orientation",
+        "desc" : "Get or set the Dock orientation."
+      },
+      {
+        "doc" : "Get or set the Dock pinning.\n\nParameters:\n * pinning - an integer as specified in `hs._asm.undocumented.coredock.options.pinning`\n\nReturns:\n * the (possibly changed) current value\n\nNotes:\n * the top orientation and dock pinning has not been supported even within the private APIs for some time and may disappear from here in a future release unless another solution can be found.  It is provided here for testing and to encourage suggestions if someone is aware of a solution that has not yet been tried.",
+        "stripped_doc" : [
+          "Get or set the Dock pinning.",
+          ""
+        ],
+        "parameters" : [
+          " * pinning - an integer as specified in `hs._asm.undocumented.coredock.options.pinning`",
+          ""
+        ],
+        "def" : "hs._asm.undocumented.coredock.pinning([pinning]) -> pinning",
+        "notes" : [
+          " * the top orientation and dock pinning has not been supported even within the private APIs for some time and may disappear from here in a future release unless another solution can be found.  It is provided here for testing and to encourage suggestions if someone is aware of a solution that has not yet been tried."
+        ],
+        "signature" : "hs._asm.undocumented.coredock.pinning([pinning]) -> pinning",
+        "type" : "Function",
+        "returns" : [
+          " * the (possibly changed) current value",
+          ""
+        ],
+        "name" : "pinning",
+        "desc" : "Get or set the Dock pinning."
+      },
+      {
+        "doc" : "Get or set whether or not the Dock Magnification is enabled.\n\nParameters:\n * state - an optional boolean value specifying whether or not Dock Magnification should be enabled.\n\nReturns:\n * the (possibly changed) current value",
+        "stripped_doc" : [
+          "Get or set whether or not the Dock Magnification is enabled.",
+          ""
+        ],
+        "parameters" : [
+          " * state - an optional boolean value specifying whether or not Dock Magnification should be enabled.",
+          ""
+        ],
+        "def" : "hs._asm.undocumented.coredock.magnification([state]) -> bool",
+        "notes" : [
+
+        ],
+        "signature" : "hs._asm.undocumented.coredock.magnification([state]) -> bool",
+        "type" : "Function",
+        "returns" : [
+          " * the (possibly changed) current value"
+        ],
+        "name" : "magnification",
+        "desc" : "Get or set whether or not the Dock Magnification is enabled."
+      },
+      {
+        "doc" : "Get or set whether or not Dock Hiding is enabled.\n\nParameters:\n * state - an optional boolean value specifying whether or not Dock Hiding should be enabled.\n\nReturns:\n * the (possibly changed) current value",
+        "stripped_doc" : [
+          "Get or set whether or not Dock Hiding is enabled.",
+          ""
+        ],
+        "parameters" : [
+          " * state - an optional boolean value specifying whether or not Dock Hiding should be enabled.",
+          ""
+        ],
+        "def" : "hs._asm.undocumented.coredock.autoHide([state]) -> bool",
+        "notes" : [
+
+        ],
+        "signature" : "hs._asm.undocumented.coredock.autoHide([state]) -> bool",
+        "type" : "Function",
+        "returns" : [
+          " * the (possibly changed) current value"
+        ],
+        "name" : "autoHide",
+        "desc" : "Get or set whether or not Dock Hiding is enabled."
+      },
+      {
+        "doc" : "Get or set the Dock pinning.\n\nParameters:\n * effect - an integer as specified in `hs._asm.undocumented.coredock.options.effect`\n\nReturns:\n * the (possibly changed) current value",
+        "stripped_doc" : [
+          "Get or set the Dock pinning.",
+          ""
+        ],
+        "parameters" : [
+          " * effect - an integer as specified in `hs._asm.undocumented.coredock.options.effect`",
+          ""
+        ],
+        "def" : "hs._asm.undocumented.coredock.animationEffect([effect]) -> effect",
+        "notes" : [
+
+        ],
+        "signature" : "hs._asm.undocumented.coredock.animationEffect([effect]) -> effect",
+        "type" : "Function",
+        "returns" : [
+          " * the (possibly changed) current value"
+        ],
+        "name" : "animationEffect",
+        "desc" : "Get or set the Dock pinning."
+      }
+    ],
+    "Variable" : [
+      {
+        "doc" : "Connivence array of all currently defined coredock options.\n\n Note that the top orientation has not been supported even within the private APIs for some time and may disappear from here in a future release unless another solution can be found.\n * options.orientation[]  -- an array of the orientation options available for `orientation`\n   * top         -- put the dock at the top of the monitor\n   * bottom      -- put the dock at the bottom of the monitor\n   * left        -- put the dock at the left of the monitor\n   * right       -- put the dock at the right of the monitor\n\n Note that dock pinning has not been supported even within the private APIs for some time and may disappear from here in a future release unless another solution can be found.\n * options.pinning[]  -- an array of the pinning options available for `pinning`\n   * start       -- pin the dock at the start of its orientation\n   * middle      -- pin the dock at the middle of its orientation\n   * end         -- pin the dock at the end of its orientation\n\n    Note that the suck animation is not displayed in the System Preferences panel correctly, but does remain in effect as long as you do not change this specific field while in the Preferences panel for the Dock.\n * options.effect[]   -- an array of the dock animation options for  `animation_effect`\n   * genie       -- use the genie animation\n   * scale       -- use the scale animation\n   * suck        -- use the suck animation\n\nNotes:\n * the top orientation and dock pinning has not been supported even within the private APIs for some time and may disappear from here in a future release unless another solution can be found.  It is provided here for testing and to encourage suggestions if someone is aware of a solution that has not yet been tried.",
+        "stripped_doc" : [
+          "Connivence array of all currently defined coredock options.",
+          "",
+          " Note that the top orientation has not been supported even within the private APIs for some time and may disappear from here in a future release unless another solution can be found.",
+          " * options.orientation[]  -- an array of the orientation options available for `orientation`",
+          "   * top         -- put the dock at the top of the monitor",
+          "   * bottom      -- put the dock at the bottom of the monitor",
+          "   * left        -- put the dock at the left of the monitor",
+          "   * right       -- put the dock at the right of the monitor",
+          "",
+          " Note that dock pinning has not been supported even within the private APIs for some time and may disappear from here in a future release unless another solution can be found.",
+          " * options.pinning[]  -- an array of the pinning options available for `pinning`",
+          "   * start       -- pin the dock at the start of its orientation",
+          "   * middle      -- pin the dock at the middle of its orientation",
+          "   * end         -- pin the dock at the end of its orientation",
+          "",
+          "    Note that the suck animation is not displayed in the System Preferences panel correctly, but does remain in effect as long as you do not change this specific field while in the Preferences panel for the Dock.",
+          " * options.effect[]   -- an array of the dock animation options for  `animation_effect`",
+          "   * genie       -- use the genie animation",
+          "   * scale       -- use the scale animation",
+          "   * suck        -- use the suck animation",
+          ""
+        ],
+        "parameters" : [
+
+        ],
+        "def" : "hs._asm.undocumented.coredock.options[]",
+        "notes" : [
+          " * the top orientation and dock pinning has not been supported even within the private APIs for some time and may disappear from here in a future release unless another solution can be found.  It is provided here for testing and to encourage suggestions if someone is aware of a solution that has not yet been tried."
+        ],
+        "signature" : "hs._asm.undocumented.coredock.options[]",
+        "type" : "Variable",
+        "returns" : [
+
+        ],
+        "name" : "options",
+        "desc" : "Connivence array of all currently defined coredock options."
+      }
+    ],
+    "stripped_doc" : [
+
+    ],
+    "desc" : "This module provides access to CoreDock related features.  This allows you to adjust the Dock's position, pinning, hiding, magnification and animation settings.",
+    "Deprecated" : [
+
+    ],
+    "type" : "Module",
+    "Constructor" : [
+
+    ],
+    "items" : [
+      {
+        "doc" : "Connivence array of all currently defined coredock options.\n\n Note that the top orientation has not been supported even within the private APIs for some time and may disappear from here in a future release unless another solution can be found.\n * options.orientation[]  -- an array of the orientation options available for `orientation`\n   * top         -- put the dock at the top of the monitor\n   * bottom      -- put the dock at the bottom of the monitor\n   * left        -- put the dock at the left of the monitor\n   * right       -- put the dock at the right of the monitor\n\n Note that dock pinning has not been supported even within the private APIs for some time and may disappear from here in a future release unless another solution can be found.\n * options.pinning[]  -- an array of the pinning options available for `pinning`\n   * start       -- pin the dock at the start of its orientation\n   * middle      -- pin the dock at the middle of its orientation\n   * end         -- pin the dock at the end of its orientation\n\n    Note that the suck animation is not displayed in the System Preferences panel correctly, but does remain in effect as long as you do not change this specific field while in the Preferences panel for the Dock.\n * options.effect[]   -- an array of the dock animation options for  `animation_effect`\n   * genie       -- use the genie animation\n   * scale       -- use the scale animation\n   * suck        -- use the suck animation\n\nNotes:\n * the top orientation and dock pinning has not been supported even within the private APIs for some time and may disappear from here in a future release unless another solution can be found.  It is provided here for testing and to encourage suggestions if someone is aware of a solution that has not yet been tried.",
+        "stripped_doc" : [
+          "Connivence array of all currently defined coredock options.",
+          "",
+          " Note that the top orientation has not been supported even within the private APIs for some time and may disappear from here in a future release unless another solution can be found.",
+          " * options.orientation[]  -- an array of the orientation options available for `orientation`",
+          "   * top         -- put the dock at the top of the monitor",
+          "   * bottom      -- put the dock at the bottom of the monitor",
+          "   * left        -- put the dock at the left of the monitor",
+          "   * right       -- put the dock at the right of the monitor",
+          "",
+          " Note that dock pinning has not been supported even within the private APIs for some time and may disappear from here in a future release unless another solution can be found.",
+          " * options.pinning[]  -- an array of the pinning options available for `pinning`",
+          "   * start       -- pin the dock at the start of its orientation",
+          "   * middle      -- pin the dock at the middle of its orientation",
+          "   * end         -- pin the dock at the end of its orientation",
+          "",
+          "    Note that the suck animation is not displayed in the System Preferences panel correctly, but does remain in effect as long as you do not change this specific field while in the Preferences panel for the Dock.",
+          " * options.effect[]   -- an array of the dock animation options for  `animation_effect`",
+          "   * genie       -- use the genie animation",
+          "   * scale       -- use the scale animation",
+          "   * suck        -- use the suck animation",
+          ""
+        ],
+        "parameters" : [
+
+        ],
+        "def" : "hs._asm.undocumented.coredock.options[]",
+        "notes" : [
+          " * the top orientation and dock pinning has not been supported even within the private APIs for some time and may disappear from here in a future release unless another solution can be found.  It is provided here for testing and to encourage suggestions if someone is aware of a solution that has not yet been tried."
+        ],
+        "signature" : "hs._asm.undocumented.coredock.options[]",
+        "type" : "Variable",
+        "returns" : [
+
+        ],
+        "name" : "options",
+        "desc" : "Connivence array of all currently defined coredock options."
+      },
+      {
+        "doc" : "Get or set the Dock pinning.\n\nParameters:\n * effect - an integer as specified in `hs._asm.undocumented.coredock.options.effect`\n\nReturns:\n * the (possibly changed) current value",
+        "stripped_doc" : [
+          "Get or set the Dock pinning.",
+          ""
+        ],
+        "parameters" : [
+          " * effect - an integer as specified in `hs._asm.undocumented.coredock.options.effect`",
+          ""
+        ],
+        "def" : "hs._asm.undocumented.coredock.animationEffect([effect]) -> effect",
+        "notes" : [
+
+        ],
+        "signature" : "hs._asm.undocumented.coredock.animationEffect([effect]) -> effect",
+        "type" : "Function",
+        "returns" : [
+          " * the (possibly changed) current value"
+        ],
+        "name" : "animationEffect",
+        "desc" : "Get or set the Dock pinning."
+      },
+      {
+        "doc" : "Get or set whether or not Dock Hiding is enabled.\n\nParameters:\n * state - an optional boolean value specifying whether or not Dock Hiding should be enabled.\n\nReturns:\n * the (possibly changed) current value",
+        "stripped_doc" : [
+          "Get or set whether or not Dock Hiding is enabled.",
+          ""
+        ],
+        "parameters" : [
+          " * state - an optional boolean value specifying whether or not Dock Hiding should be enabled.",
+          ""
+        ],
+        "def" : "hs._asm.undocumented.coredock.autoHide([state]) -> bool",
+        "notes" : [
+
+        ],
+        "signature" : "hs._asm.undocumented.coredock.autoHide([state]) -> bool",
+        "type" : "Function",
+        "returns" : [
+          " * the (possibly changed) current value"
+        ],
+        "name" : "autoHide",
+        "desc" : "Get or set whether or not Dock Hiding is enabled."
+      },
+      {
+        "doc" : "Get or set whether or not the Dock Magnification is enabled.\n\nParameters:\n * state - an optional boolean value specifying whether or not Dock Magnification should be enabled.\n\nReturns:\n * the (possibly changed) current value",
+        "stripped_doc" : [
+          "Get or set whether or not the Dock Magnification is enabled.",
+          ""
+        ],
+        "parameters" : [
+          " * state - an optional boolean value specifying whether or not Dock Magnification should be enabled.",
+          ""
+        ],
+        "def" : "hs._asm.undocumented.coredock.magnification([state]) -> bool",
+        "notes" : [
+
+        ],
+        "signature" : "hs._asm.undocumented.coredock.magnification([state]) -> bool",
+        "type" : "Function",
+        "returns" : [
+          " * the (possibly changed) current value"
+        ],
+        "name" : "magnification",
+        "desc" : "Get or set whether or not the Dock Magnification is enabled."
+      },
+      {
+        "doc" : "Get or set the Dock icon magnification size as a number between 0.0 and 1.0.\n\nParameters:\n * size - an optional number between 0.0 and 1.0 to set the Dock icon magnification size to.\n\nReturns:\n * the (possibly changed) current value",
+        "stripped_doc" : [
+          "Get or set the Dock icon magnification size as a number between 0.0 and 1.0.",
+          ""
+        ],
+        "parameters" : [
+          " * size - an optional number between 0.0 and 1.0 to set the Dock icon magnification size to.",
+          ""
+        ],
+        "def" : "hs._asm.undocumented.coredock.magnificationSize([size]) -> float",
+        "notes" : [
+
+        ],
+        "signature" : "hs._asm.undocumented.coredock.magnificationSize([size]) -> float",
+        "type" : "Function",
+        "returns" : [
+          " * the (possibly changed) current value"
+        ],
+        "name" : "magnificationSize",
+        "desc" : "Get or set the Dock icon magnification size as a number between 0.0 and 1.0."
+      },
+      {
+        "doc" : "Get or set the Dock orientation.\n\nParameters:\n * orientation - an integer as specified in `hs._asm.undocumented.coredock.options.orientation`\n\nReturns:\n * the (possibly changed) current value\n\nNotes:\n * the top orientation and dock pinning has not been supported even within the private APIs for some time and may disappear from here in a future release unless another solution can be found.  It is provided here for testing and to encourage suggestions if someone is aware of a solution that has not yet been tried.",
+        "stripped_doc" : [
+          "Get or set the Dock orientation.",
+          ""
+        ],
+        "parameters" : [
+          " * orientation - an integer as specified in `hs._asm.undocumented.coredock.options.orientation`",
+          ""
+        ],
+        "def" : "hs._asm.undocumented.coredock.orientation([orientation]) -> orientation",
+        "notes" : [
+          " * the top orientation and dock pinning has not been supported even within the private APIs for some time and may disappear from here in a future release unless another solution can be found.  It is provided here for testing and to encourage suggestions if someone is aware of a solution that has not yet been tried."
+        ],
+        "signature" : "hs._asm.undocumented.coredock.orientation([orientation]) -> orientation",
+        "type" : "Function",
+        "returns" : [
+          " * the (possibly changed) current value",
+          ""
+        ],
+        "name" : "orientation",
+        "desc" : "Get or set the Dock orientation."
+      },
+      {
+        "doc" : "Get or set the Dock pinning.\n\nParameters:\n * pinning - an integer as specified in `hs._asm.undocumented.coredock.options.pinning`\n\nReturns:\n * the (possibly changed) current value\n\nNotes:\n * the top orientation and dock pinning has not been supported even within the private APIs for some time and may disappear from here in a future release unless another solution can be found.  It is provided here for testing and to encourage suggestions if someone is aware of a solution that has not yet been tried.",
+        "stripped_doc" : [
+          "Get or set the Dock pinning.",
+          ""
+        ],
+        "parameters" : [
+          " * pinning - an integer as specified in `hs._asm.undocumented.coredock.options.pinning`",
+          ""
+        ],
+        "def" : "hs._asm.undocumented.coredock.pinning([pinning]) -> pinning",
+        "notes" : [
+          " * the top orientation and dock pinning has not been supported even within the private APIs for some time and may disappear from here in a future release unless another solution can be found.  It is provided here for testing and to encourage suggestions if someone is aware of a solution that has not yet been tried."
+        ],
+        "signature" : "hs._asm.undocumented.coredock.pinning([pinning]) -> pinning",
+        "type" : "Function",
+        "returns" : [
+          " * the (possibly changed) current value",
+          ""
+        ],
+        "name" : "pinning",
+        "desc" : "Get or set the Dock pinning."
+      },
+      {
+        "doc" : "This function restarts the user's Dock instance.  This is not required for any of the functionality of this module, but does come in handy if your dock gets \"misplaced\" when you change monitor resolution or detach an external monitor (I've seen this occasionally when the Dock is on the left or right.)",
+        "stripped_doc" : [
+          "This function restarts the user's Dock instance.  This is not required for any of the functionality of this module, but does come in handy if your dock gets \"misplaced\" when you change monitor resolution or detach an external monitor (I've seen this occasionally when the Dock is on the left or right.)"
+        ],
+        "parameters" : [
+
+        ],
+        "def" : "hs._asm.undocumented.coredock.restartDock()",
+        "notes" : [
+
+        ],
+        "signature" : "hs._asm.undocumented.coredock.restartDock()",
+        "type" : "Function",
+        "returns" : [
+
+        ],
+        "name" : "restartDock",
+        "desc" : "This function restarts the user's Dock instance.  This is not required for any of the functionality of this module, but does come in handy if your dock gets \"misplaced\" when you change monitor resolution or detach an external monitor (I've seen this occasionally when the Dock is on the left or right.)"
+      },
+      {
+        "doc" : "Get or set the Dock icon tile size as a number between 0.0 and 1.0.\n\nParameters:\n * size - an optional number between 0.0 and 1.0 to set the Dock icon tile size to.\n\nReturns:\n * the (possibly changed) current value",
+        "stripped_doc" : [
+          "Get or set the Dock icon tile size as a number between 0.0 and 1.0.",
+          ""
+        ],
+        "parameters" : [
+          " * size - an optional number between 0.0 and 1.0 to set the Dock icon tile size to.",
+          ""
+        ],
+        "def" : "hs._asm.undocumented.coredock.tileSize([size]) -> float",
+        "notes" : [
+
+        ],
+        "signature" : "hs._asm.undocumented.coredock.tileSize([size]) -> float",
+        "type" : "Function",
+        "returns" : [
+          " * the (possibly changed) current value"
+        ],
+        "name" : "tileSize",
+        "desc" : "Get or set the Dock icon tile size as a number between 0.0 and 1.0."
+      }
+    ],
+    "doc" : "This module provides access to CoreDock related features.  This allows you to adjust the Dock's position, pinning, hiding, magnification and animation settings.\n\nThis module utilizes undocumented or unpublished functions to manipulate options and features within OS X.  These are from \"private\" api's for Mac OS X and are not guaranteed to work with any particular version of OS X or at all.This code was based primarily on code samples and segments found at (https:\/\/code.google.com\/p\/undocumented-goodness\/) and (https:\/\/code.google.com\/p\/iterm2\/source\/browse\/branches\/0.10.x\/CGSInternal\/CGSDebug.h?r=2).\n\nI make no promises that these will work for you or work at all with any, past, current, or future versions of OS X.  I can confirm only that they didn't crash my machine during testing under 10.10. You have been warned.\n\nNote that the top orientation and dock pinning has not been supported even within the private APIs for some time and may disappear from here in a future release unless another solution can be found.  It is provided here for testing and to encourage suggestions if someone is aware of a solution that has not yet been tried.",
+    "Command" : [
+
+    ],
+    "Field" : [
+
+    ],
+    "Method" : [
+
+    ],
+    "name" : "hs._asm.undocumented.coredock"
+  }
+]

@@ -16,6 +16,7 @@
 //   1.0 - Initial release
 
 typedef enum {
+  kCoreDockOrientationIgnore = 0,
   kCoreDockOrientationTop = 1,
   kCoreDockOrientationBottom = 2,
   kCoreDockOrientationLeft = 3,
@@ -23,6 +24,7 @@ typedef enum {
 } CoreDockOrientation;
 
 typedef enum {
+  kCoreDockPinningIgnore = 0,
   kCoreDockPinningStart = 1,
   kCoreDockPinningMiddle = 2,
   kCoreDockPinningEnd = 3
