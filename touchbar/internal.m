@@ -1,9 +1,8 @@
-
-
-// NOTE: should probably rework documentation to refer to it as a Virtual Touch Bar.
-
 @import Cocoa ;
 @import LuaSkin ;
+#import "TouchBar.h"
+
+// NOTE: should probably rework documentation to refer to it as a Virtual Touch Bar.
 
 // An attempt at gathering info to learn more about what private framework this is using
 // #define INCLUDE_DUMP_THREAD
@@ -22,14 +21,6 @@ static inline NSRect RectWithFlippedYCoordinate(NSRect theRect) {
                       theRect.size.width,
                       theRect.size.height) ;
 }
-
-// Part of SkyLight private Framework
-extern CGDisplayStreamRef SLSDFRDisplayStreamCreate(void *, dispatch_queue_t, CGDisplayStreamFrameAvailableHandler) ;
-// part of DFRFoundation private framework
-extern BOOL   DFRSetStatus(int) ;
-extern int    DFRGetStatus() ;
-extern BOOL   DFRFoundationPostEventWithMouseActivity(NSEventType type, NSPoint p) ;
-extern CGSize DFRGetScreenSize() ;
 
 @interface ASMTouchBarView : NSView
 @property CGDisplayStreamRef stream ;
@@ -642,6 +633,8 @@ static int userdata_gc(lua_State* L) {
     if (obj) {
         obj.selfRefCount-- ;
         if (obj.selfRefCount == 0) {
+            LuaSkin *skin = [LuaSkin shared] ;
+            obj.callbackRef = [skin luaUnref:refTable ref:obj.callbackRef] ;
             // not sure what else to do to cleanup... if I do [obj close] on the window, it crashes...
             obj.alphaValue = 0.0 ;
             [obj setIsVisible:NO] ;

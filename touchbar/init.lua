@@ -11,9 +11,11 @@
 
 local USERDATA_TAG = "hs._asm.undocumented.touchbar"
 local module       = require(USERDATA_TAG..".supported")
-if module.supported() then
-    for k, v in pairs(require(USERDATA_TAG..".internal")) do module[k] = v end
-end
+if not module.supported() then return module end
+
+module      = require(USERDATA_TAG..".internal")
+module.item = require(USERDATA_TAG..".item")
+module.bar  = require(USERDATA_TAG..".bar")
 
 local basePath = package.searchpath(USERDATA_TAG, package.path)
 if basePath then
@@ -32,6 +34,7 @@ local mouse        = require("hs.mouse")
 local screen       = require("hs.screen")
 
 require("hs.drawing.color")
+require("hs.image")
 
 -- private variables and methods -----------------------------------------
 
@@ -101,6 +104,8 @@ objectMT.centered = function(self, top)
     origin.y = top and scFrame.y or (scBottom - tbFrame.h)
     return self:topLeft(origin)
 end
+
+module.item.visibilityPriorities = ls.makeConstantsTable(module.item.visibilityPriorities)
 
 -- Return Module Object --------------------------------------------------
 
