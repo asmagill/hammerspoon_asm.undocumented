@@ -34,6 +34,6 @@ sampleCallback = function(self)
     self:presentModalBar(bar, closeBox)
 end
 
-sysTrayIcon = tb.item.newButton(image.imageFromName(image.systemImageNames.ApplicationIcon), "HSSystemButton")
+sysTrayIcon = tb.item.newButton(hs.image.imageFromName(hs.image.systemImageNames.ApplicationIcon), "HSSystemButton")
                      :callback(sampleCallback)
                      :addToSystemTray(true)
