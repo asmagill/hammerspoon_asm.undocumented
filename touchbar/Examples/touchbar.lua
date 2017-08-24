@@ -3,7 +3,7 @@
 -- Sample Use of hs._asm.undocumented.touchbar
 --
 -- Copy this file into your ~/.hammerspoon/ directory and then type (or add to your init.lua) the
--- following: myToolbar = require("touchbar")
+-- following: myTouchbar = require("touchbar")
 --
 --
 -- This example uses the hs._asm.undocumented.touchbar module to create an on-screen visible representation of the

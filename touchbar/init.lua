@@ -10,12 +10,12 @@
 --- If you wish to use this module in an environment where the end-user's machine may not have the correct macOS release version, you should always check the value of `hs._asm.undocumented.touchbar.supported` before trying to create the Touch Bar and provide your own fallback or message.  Failure to do so will cause your code to break to the Hammerspoon Console when you attempt to create and use the Touch Bar.
 
 local USERDATA_TAG = "hs._asm.undocumented.touchbar"
-local module       = require(USERDATA_TAG..".supported")
+local module       = require(USERDATA_TAG .. ".supported")
 if not module.supported() then return module end
 
-module      = require(USERDATA_TAG..".internal")
-module.item = require(USERDATA_TAG..".item")
-module.bar  = require(USERDATA_TAG..".bar")
+module      = require(USERDATA_TAG .. ".internal")
+module.item = require(USERDATA_TAG .. ".item")
+module.bar  = require(USERDATA_TAG .. ".bar")
 
 local basePath = package.searchpath(USERDATA_TAG, package.path)
 if basePath then
@@ -25,11 +25,10 @@ if basePath then
     end
 end
 
+local objectMT     = hs.getObjectMetatable(USERDATA_TAG)
+local itemMT       = hs.getObjectMetatable(USERDATA_TAG .. ".item")
+local barMT        = hs.getObjectMetatable(USERDATA_TAG .. ".bar")
 
--- if the userdata table was not created (i.e. we're on an unsupported machine), go ahead
--- and stick the "wrapped" methods into an empty table... it will be garbage collected after
--- the module is loaded, so no big deal.
-local objectMT     = hs.getObjectMetatable(USERDATA_TAG) or {}
 local mouse        = require("hs.mouse")
 local screen       = require("hs.screen")
 
@@ -106,6 +105,32 @@ objectMT.centered = function(self, top)
 end
 
 module.item.visibilityPriorities = ls.makeConstantsTable(module.item.visibilityPriorities)
+module.bar.builtInIdentifiers    = ls.makeConstantsTable(module.bar.builtInIdentifiers)
+
+--- hs._asm.undocumented.touchbar.item:presentModalBar(touchbar, [dismissButton]) -> touchbarItemObject
+--- Method
+--- Presents a bar in the touch bar display modally and hides this item if it is present in the System Tray of the touch bar display.
+---
+--- Parameters:
+---  * `touchbar` - An `hs._asm.undocumented.touchbar.bar` object of the bar to display modally in the touch bar display.
+---  * `dismissButton` - an optional boolean, default true, specifying whether or not the system escape (or its current replacement) button should be replaced by a button to remove the modal bar from the touch bar display when pressed.
+---
+--- Returns:
+---  * the touchbarItem object
+---
+--- Notes:
+---  * If you specify `dismissButton` as false, then you must use `hs._asm.undocumented.touchbar.bar:minimizeModalBar` or `hs._asm.undocumented.touchbar.bar:dismissModalBar` to remove the modal bar from the touch bar display.
+---    * Use `hs._asm.undocumented.touchbar.bar:minimizeModalBar` if you want the item to reappear in the System Tray (if it was present before displaying the bar).
+---
+---  * If you do not have "Touch Bar Shows" set to "App Controls With Control Strip" set in the Keyboard System Preferences, the modal bar will only be displayed when the Hammerspoon application is the frontmost application.
+---
+---  * This method is actually a wrapper to `hs._asm.undocumented.touchbar.bar:presentModalBar` provided for convenience.
+---
+---  * This method uses undocumented functions and/or framework methods and is not guaranteed to work with future updates to macOS. It has currently been tested with 10.12.6.
+itemMT.presentModalBar = function(self, touchbar, ...)
+    barMT.presentModalBar(touchbar, self, ...)
+    return self
+end
 
 -- Return Module Object --------------------------------------------------
 

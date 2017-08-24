@@ -12,6 +12,12 @@ extern CGSize DFRGetScreenSize() ;
 // Undocumented functions and methods to access the system touchbar
 
 extern void DFRElementSetControlStripPresenceForIdentifier(NSString *identifier, BOOL display) ;
+
+// always returns false for our identifiers. Based upon disassembly with Hopper, I think it may be limited to
+// the items which can "officially" be in the system tray since it looks in an array that the set function doesn't
+// update, and I haven't found a way to programmatically trigger an update of the array either.
+extern BOOL DFRElementGetControlStripPresenceForIdentifier(NSString *identifier) ;
+
 extern void DFRSystemModalShowsCloseBoxWhenFrontMost(BOOL flag) ;
 
 #pragma clang diagnostic push

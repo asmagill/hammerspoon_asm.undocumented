@@ -250,8 +250,8 @@ static int touchbar_enabled(lua_State *L) {
 // static int touchbar_screenSize(lua_State __unused *L) {
 //     LuaSkin *skin = [LuaSkin shared] ;
 //     [skin checkArgs:LS_TBREAK] ;
-//     CGSize toolbarSize = DFRGetScreenSize() ;
-//     [skin pushNSSize:NSSizeFromCGSize(toolbarSize)] ;
+//     CGSize touchbarSize = DFRGetScreenSize() ;
+//     [skin pushNSSize:NSSizeFromCGSize(touchbarSize)] ;
 //     return 1 ;
 // }
 
