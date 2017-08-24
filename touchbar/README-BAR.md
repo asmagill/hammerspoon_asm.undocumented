@@ -171,9 +171,9 @@ Notes:
 
 - - -
 
-<a name="isVisivle"></a>
+<a name="isVisible"></a>
 ~~~lua
-bar:isVisivle() -> boolean
+bar:isVisible() -> boolean
 ~~~
 Returns a boolean indicating whether the bar object is currently visible in the laptop or virtual Touch Bar.
 
