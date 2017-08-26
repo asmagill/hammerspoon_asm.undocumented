@@ -14,7 +14,7 @@
           "Creates a new touchbarObject representing a window which displays the Apple Touch Bar.",
           ""
         ],
-        "desc" : "Creates a new touchbarObject representing a window which displays the Apple Touch Bar.",
+        "def" : "hs._asm.undocumented.touchbar.new() -> touchbarObject | nil",
         "parameters" : [
           " * None",
           ""
@@ -29,7 +29,7 @@
           ""
         ],
         "name" : "new",
-        "def" : "hs._asm.undocumented.touchbar.new() -> touchbarObject | nil"
+        "desc" : "Creates a new touchbarObject representing a window which displays the Apple Touch Bar."
       },
       {
         "doc" : "Get or set whether or not the Touch Bar can be used by applications.\n\nParameters:\n * `state` - an optional boolean specifying whether applications can put items into the touch bar (true) or if this is limited only to the system items (false).\n\nReturns:\n * if an argument is provided, returns a boolean indicating whether or not the change was successful; otherwise returns the current value\n\nNotes:\n * Checking the value of this function does not indicate whether or not the machine *can* support the Touch Bar but rather if it *is* supporting the Touch Bar; Use [hs._asm.undocumented.touchbar.supported](#supported) to check whether or not the machine *can* support the Touch Bar.\n\n * Setting this to false will remove all application items from the Touch Bar.",
@@ -37,7 +37,7 @@
           "Get or set whether or not the Touch Bar can be used by applications.",
           ""
         ],
-        "desc" : "Get or set whether or not the Touch Bar can be used by applications.",
+        "def" : "hs._asm.undocumented.touchbar.enabled([state]) -> boolean",
         "parameters" : [
           " * `state` - an optional boolean specifying whether applications can put items into the touch bar (true) or if this is limited only to the system items (false).",
           ""
@@ -54,7 +54,7 @@
           ""
         ],
         "name" : "enabled",
-        "def" : "hs._asm.undocumented.touchbar.enabled([state]) -> boolean"
+        "desc" : "Get or set whether or not the Touch Bar can be used by applications."
       },
       {
         "doc" : "Returns a boolean value indicathing whether or not the Apple Touch Bar is supported on this Macintosh.\n\nParameters:\n * `showLink` - a boolean, default false, specifying whether a dialog prompting the user to download the necessary update is presented if Apple Touch Bar support is not found in the current Operating System.\n\nReturns:\n * true if Apple Touch Bar support is found in the current Operating System or false if it is not.\n\nNotes:\n * the link in the prompt is https:\/\/support.apple.com\/kb\/dl1897",
@@ -62,7 +62,7 @@
           "Returns a boolean value indicathing whether or not the Apple Touch Bar is supported on this Macintosh.",
           ""
         ],
-        "desc" : "Returns a boolean value indicathing whether or not the Apple Touch Bar is supported on this Macintosh.",
+        "def" : "hs._asm.undocumented.touchbar.supported([showLink]) -> boolean",
         "parameters" : [
           " * `showLink` - a boolean, default false, specifying whether a dialog prompting the user to download the necessary update is presented if Apple Touch Bar support is not found in the current Operating System.",
           ""
@@ -77,7 +77,7 @@
           ""
         ],
         "name" : "supported",
-        "def" : "hs._asm.undocumented.touchbar.supported([showLink]) -> boolean"
+        "desc" : "Returns a boolean value indicathing whether or not the Apple Touch Bar is supported on this Macintosh."
       }
     ],
     "Variable" : [
@@ -86,11 +86,11 @@
     "stripped_doc" : [
 
     ],
+    "desc" : "A module to display an on-screen representation of the Apple Touch Bar, even on machines which do not have the touch bar.",
     "Deprecated" : [
 
     ],
     "type" : "Module",
-    "desc" : "A module to display an on-screen representation of the Apple Touch Bar, even on machines which do not have the touch bar.",
     "Constructor" : [
 
     ],
@@ -102,7 +102,7 @@
           "Toggle's the visibility of the touch bar window.",
           ""
         ],
-        "desc" : "Toggle's the visibility of the touch bar window.",
+        "def" : "hs._asm.undocumented.touchbar:toggle([duration]) -> touchbarObject",
         "parameters" : [
           " * `duration` - an optional number, default 0.0, specifying the fade-in\/out time when changing the visibility of the touch bar window.",
           ""
@@ -116,7 +116,7 @@
           " * the touchbarObject"
         ],
         "name" : "toggle",
-        "def" : "hs._asm.undocumented.touchbar:toggle([duration]) -> touchbarObject"
+        "desc" : "Toggle's the visibility of the touch bar window."
       },
       {
         "doc" : "Moves the touch bar window so that it is centered directly underneath the mouse pointer.\n\nParameters:\n * None\n\nReturns:\n * the touchbarObject\n\nNotes:\n * This method mimics the display location as set by the sample code this module is based on.  See https:\/\/github.com\/bikkelbroeders\/TouchBarDemoApp for more information.\n * The touch bar position will be adjusted so that it is fully visible on the screen even if this moves it left or right from the mouse's current position.",
@@ -124,7 +124,7 @@
           "Moves the touch bar window so that it is centered directly underneath the mouse pointer.",
           ""
         ],
-        "desc" : "Moves the touch bar window so that it is centered directly underneath the mouse pointer.",
+        "def" : "hs._asm.undocumented.touchbar:atMousePosition() -> touchbarObject",
         "parameters" : [
           " * None",
           ""
@@ -140,7 +140,7 @@
           ""
         ],
         "name" : "atMousePosition",
-        "def" : "hs._asm.undocumented.touchbar:atMousePosition() -> touchbarObject"
+        "desc" : "Moves the touch bar window so that it is centered directly underneath the mouse pointer."
       },
       {
         "doc" : "Moves the touch bar window to the top or bottom center of the main screen.\n\nParameters:\n * `top` - an optional boolean, default false, specifying whether the touch bar should be centered at the top (true) of the screen or at the bottom (false).\n\nReturns:\n * the touchbarObject",
@@ -148,7 +148,7 @@
           "Moves the touch bar window to the top or bottom center of the main screen.",
           ""
         ],
-        "desc" : "Moves the touch bar window to the top or bottom center of the main screen.",
+        "def" : "hs._asm.undocumented.touchbar:centered([top]) -> touchbarObject",
         "parameters" : [
           " * `top` - an optional boolean, default false, specifying whether the touch bar should be centered at the top (true) of the screen or at the bottom (false).",
           ""
@@ -162,7 +162,7 @@
           " * the touchbarObject"
         ],
         "name" : "centered",
-        "def" : "hs._asm.undocumented.touchbar:centered([top]) -> touchbarObject"
+        "desc" : "Moves the touch bar window to the top or bottom center of the main screen."
       },
       {
         "doc" : "Display the touch bar window with an optional fade-in delay.\n\nParameters:\n * `duration` - an optional number, default 0.0, specifying the fade-in time for the touch bar window.\n\nReturns:\n * the touchbarObject\n\nNotes:\n * This method does nothing if the window is already visible.",
@@ -170,7 +170,7 @@
           "Display the touch bar window with an optional fade-in delay.",
           ""
         ],
-        "desc" : "Display the touch bar window with an optional fade-in delay.",
+        "def" : "hs._asm.undocumented.touchbar:show([duration]) -> touchbarObject",
         "parameters" : [
           " * `duration` - an optional number, default 0.0, specifying the fade-in time for the touch bar window.",
           ""
@@ -185,7 +185,7 @@
           ""
         ],
         "name" : "show",
-        "def" : "hs._asm.undocumented.touchbar:show([duration]) -> touchbarObject"
+        "desc" : "Display the touch bar window with an optional fade-in delay."
       },
       {
         "doc" : "Display the touch bar window with an optional fade-out delay.\n\nParameters:\n * `duration` - an optional number, default 0.0, specifying the fade-out time for the touch bar window.\n\nReturns:\n * the touchbarObject\n\nNotes:\n * This method does nothing if the window is already hidden.\n * The value used in the sample code referenced in the module header is 0.1.",
@@ -193,7 +193,7 @@
           "Display the touch bar window with an optional fade-out delay.",
           ""
         ],
-        "desc" : "Display the touch bar window with an optional fade-out delay.",
+        "def" : "hs._asm.undocumented.touchbar:hide([duration]) -> touchbarObject",
         "parameters" : [
           " * `duration` - an optional number, default 0.0, specifying the fade-out time for the touch bar window.",
           ""
@@ -209,7 +209,7 @@
           ""
         ],
         "name" : "hide",
-        "def" : "hs._asm.undocumented.touchbar:hide([duration]) -> touchbarObject"
+        "desc" : "Display the touch bar window with an optional fade-out delay."
       },
       {
         "doc" : "Get or set the top-left of the touch bar window.\n\nParameters:\n * `point` - an optional table specifying where the top left of the touch bar window should be moved to.\n\nReturns:\n * if a value is provided, returns the touchbarObject; otherwise returns the current value.\n\nNotes:\n * A point table is a table with at least `x` and `y` key-value pairs which specify the coordinates on the computer screen where the window should be moved to.  Hammerspoon considers the upper left corner of the primary screen to be { x = 0.0, y = 0.0 }.",
@@ -217,7 +217,7 @@
           "Get or set the top-left of the touch bar window.",
           ""
         ],
-        "desc" : "Get or set the top-left of the touch bar window.",
+        "def" : "hs._asm.undocumented.touchbar:topLeft([point]) -> table | touchbarObject",
         "parameters" : [
           " * `point` - an optional table specifying where the top left of the touch bar window should be moved to.",
           ""
@@ -232,7 +232,7 @@
           ""
         ],
         "name" : "topLeft",
-        "def" : "hs._asm.undocumented.touchbar:topLeft([point]) -> table | touchbarObject"
+        "desc" : "Get or set the top-left of the touch bar window."
       },
       {
         "doc" : "Gets the frame of the touch bar window\n\nParameters:\n * None\n\nReturns:\n * a frame table with key-value pairs specifying the top left corner of the touch bar window and its width and height.\n\nNotes:\n * A frame table is a table with at least `x`, `y`, `h` and `w` key-value pairs which specify the coordinates on the computer screen of the window and its width (w) and height(h).\n * This allows you to get the frame so that you can include its height and width in calculations - it does not allow you to change the size of the touch bar window itself.",
@@ -240,7 +240,7 @@
           "Gets the frame of the touch bar window",
           ""
         ],
-        "desc" : "Gets the frame of the touch bar window",
+        "def" : "hs._asm.undocumented.touchbar:getFrame() -> table",
         "parameters" : [
           " * None",
           ""
@@ -256,7 +256,7 @@
           ""
         ],
         "name" : "getFrame",
-        "def" : "hs._asm.undocumented.touchbar:getFrame() -> table"
+        "desc" : "Gets the frame of the touch bar window"
       },
       {
         "doc" : "Returns a boolean indicating whether or not the touch bar window is current visible.\n\nParameters:\n * None\n\nReturns:\n * a boolean specifying whether the touch bar window is visible (true) or not (false).",
@@ -264,7 +264,7 @@
           "Returns a boolean indicating whether or not the touch bar window is current visible.",
           ""
         ],
-        "desc" : "Returns a boolean indicating whether or not the touch bar window is current visible.",
+        "def" : "hs._asm.undocumented.touchbar:isVisible() -> boolean",
         "parameters" : [
           " * None",
           ""
@@ -278,7 +278,7 @@
           " * a boolean specifying whether the touch bar window is visible (true) or not (false)."
         ],
         "name" : "isVisible",
-        "def" : "hs._asm.undocumented.touchbar:isVisible() -> boolean"
+        "desc" : "Returns a boolean indicating whether or not the touch bar window is current visible."
       },
       {
         "doc" : "Get or set the alpha value for the touch bar window when the mouse is not hovering over it.\n\nParameters:\n * alpha - an optional number between 0.0 and 1.0 inclusive specifying the alpha value for the touch bar window when the mouse is not over it.  Defaults to 0.5.\n\nReturns:\n * if a value is provided, returns the touchbarObject; otherwise returns the current value",
@@ -286,7 +286,7 @@
           "Get or set the alpha value for the touch bar window when the mouse is not hovering over it.",
           ""
         ],
-        "desc" : "Get or set the alpha value for the touch bar window when the mouse is not hovering over it.",
+        "def" : "hs._asm.undocumented.touchbar:inactiveAlpha([alpha]) -> number | touchbarObject",
         "parameters" : [
           " * alpha - an optional number between 0.0 and 1.0 inclusive specifying the alpha value for the touch bar window when the mouse is not over it.  Defaults to 0.5.",
           ""
@@ -300,7 +300,7 @@
           " * if a value is provided, returns the touchbarObject; otherwise returns the current value"
         ],
         "name" : "inactiveAlpha",
-        "def" : "hs._asm.undocumented.touchbar:inactiveAlpha([alpha]) -> number | touchbarObject"
+        "desc" : "Get or set the alpha value for the touch bar window when the mouse is not hovering over it."
       },
       {
         "doc" : "Get or set whether or not the touch bar window is movable by clicking on it and holding down the mouse button while moving the mouse.\n\nParameters:\n * `state` - an optional boolean which specifies whether the touch bar window is movable (true) or not (false).  Default false.\n\nReturns:\n * if an argument is provided, returns the touchbarObject; otherwise returns the current value.\n\nNotes:\n * While the touch bar is movable, actions which require moving the mouse while clicking on the touch bar are not accessible.\n * See also [hs._asm.undocumented.touchbar:acceptsMouseEvents](#acceptsMouseEvents).",
@@ -308,7 +308,7 @@
           "Get or set whether or not the touch bar window is movable by clicking on it and holding down the mouse button while moving the mouse.",
           ""
         ],
-        "desc" : "Get or set whether or not the touch bar window is movable by clicking on it and holding down the mouse button while moving the mouse.",
+        "def" : "hs._asm.undocumented.touchbar:movable([state]) -> boolean | touchbarObject",
         "parameters" : [
           " * `state` - an optional boolean which specifies whether the touch bar window is movable (true) or not (false).  Default false.",
           ""
@@ -324,7 +324,7 @@
           ""
         ],
         "name" : "movable",
-        "def" : "hs._asm.undocumented.touchbar:movable([state]) -> boolean | touchbarObject"
+        "desc" : "Get or set whether or not the touch bar window is movable by clicking on it and holding down the mouse button while moving the mouse."
       },
       {
         "doc" : "Get or set whether or not the touch bar accepts mouse events.\n\nParameters:\n * `state` - an optional boolean which specifies whether the touch bar accepts mouse events (true) or not (false).  Default true.\n\nReturns:\n * if an argument is provided, returns the touchbarObject; otherwise returns the current value.\n\nNotes:\n * This method can be used to prevent mouse clicks in the touch bar from triggering the touch bar buttons.\n * This can be useful when [hs._asm.undocumented.touchbar:movable](#movable) is set to true to prevent accidentally triggering an action.",
@@ -332,7 +332,7 @@
           "Get or set whether or not the touch bar accepts mouse events.",
           ""
         ],
-        "desc" : "Get or set whether or not the touch bar accepts mouse events.",
+        "def" : "hs._asm.undocumented.touchbar:acceptsMouseEvents([state]) -> boolean | touchbarObject",
         "parameters" : [
           " * `state` - an optional boolean which specifies whether the touch bar accepts mouse events (true) or not (false).  Default true.",
           ""
@@ -348,7 +348,7 @@
           ""
         ],
         "name" : "acceptsMouseEvents",
-        "def" : "hs._asm.undocumented.touchbar:acceptsMouseEvents([state]) -> boolean | touchbarObject"
+        "desc" : "Get or set whether or not the touch bar accepts mouse events."
       },
       {
         "doc" : "Get or set the background color for the touch bar window.\n\nParameters:\n * `color` - an optional color table as defined in `hs.drawing.color` specifying the background color for the touch bar window.  Defaults to black, i.e. `{ white = 0.0, alpha = 1.0 }`.\n\nReturns:\n * if an argument is provided, returns the touchbarObject; otherwise returns the current value.\n\nNotes:\n * The visual effect of this method is to change the border color around the touch bar -- the touch bar itself remains the color as defined by the application which is providing the current touch bar items for display.",
@@ -356,7 +356,7 @@
           "Get or set the background color for the touch bar window.",
           ""
         ],
-        "desc" : "Get or set the background color for the touch bar window.",
+        "def" : "hs._asm.undocumented.touchbar:backgroundColor([color]) -> color | touchbarObject",
         "parameters" : [
           " * `color` - an optional color table as defined in `hs.drawing.color` specifying the background color for the touch bar window.  Defaults to black, i.e. `{ white = 0.0, alpha = 1.0 }`.",
           ""
@@ -371,7 +371,7 @@
           ""
         ],
         "name" : "backgroundColor",
-        "def" : "hs._asm.undocumented.touchbar:backgroundColor([color]) -> color | touchbarObject"
+        "desc" : "Get or set the background color for the touch bar window."
       },
       {
         "doc" : "Sets the callback function for the touch bar window.\n\nParameters:\n * `fn` - a function to set as the callback for the touch bar window, or nil to remove the existing callback function.\n\nReturns:\n * the touchbarObject\n\nNotes:\n * The function should expect 2 arguments and return none.  The arguments will be one of the following:\n\n   * obj, \"didEnter\" - indicates that the mouse pointer has entered the window containing the touch bar\n     * `obj`     - the touchbarObject the callback is for\n     * `message` - the message to the callback, in this case \"didEnter\"\n\n   * obj, \"didExit\" - indicates that the mouse pointer has exited the window containing the touch bar\n     * `obj`     - the touchbarObject the callback is for\n     * `message` - the message to the callback, in this case \"didEnter\"",
@@ -379,7 +379,7 @@
           "Sets the callback function for the touch bar window.",
           ""
         ],
-        "desc" : "Sets the callback function for the touch bar window.",
+        "def" : "hs._asm.undocumented.touchbar:setCallback(fn | nil) -> touchbarObject",
         "parameters" : [
           " * `fn` - a function to set as the callback for the touch bar window, or nil to remove the existing callback function.",
           ""
@@ -402,7 +402,7 @@
           ""
         ],
         "name" : "setCallback",
-        "def" : "hs._asm.undocumented.touchbar:setCallback(fn | nil) -> touchbarObject"
+        "desc" : "Sets the callback function for the touch bar window."
       }
     ],
     "Command" : [
@@ -418,7 +418,7 @@
           "Get or set whether or not the Touch Bar can be used by applications.",
           ""
         ],
-        "desc" : "Get or set whether or not the Touch Bar can be used by applications.",
+        "def" : "hs._asm.undocumented.touchbar.enabled([state]) -> boolean",
         "parameters" : [
           " * `state` - an optional boolean specifying whether applications can put items into the touch bar (true) or if this is limited only to the system items (false).",
           ""
@@ -435,7 +435,7 @@
           ""
         ],
         "name" : "enabled",
-        "def" : "hs._asm.undocumented.touchbar.enabled([state]) -> boolean"
+        "desc" : "Get or set whether or not the Touch Bar can be used by applications."
       },
       {
         "doc" : "Creates a new touchbarObject representing a window which displays the Apple Touch Bar.\n\nParameters:\n * None\n\nReturns:\n * the touchbarObject or nil if one could not be created\n\nNotes:\n * The most common reason a touchbarObject cannot be created is if your macOS version is not new enough. Type the following into your Hammerspoon console to check: `require(\"hs._asm.undocumented.touchbar\").supported(true)`.",
@@ -443,7 +443,7 @@
           "Creates a new touchbarObject representing a window which displays the Apple Touch Bar.",
           ""
         ],
-        "desc" : "Creates a new touchbarObject representing a window which displays the Apple Touch Bar.",
+        "def" : "hs._asm.undocumented.touchbar.new() -> touchbarObject | nil",
         "parameters" : [
           " * None",
           ""
@@ -458,7 +458,7 @@
           ""
         ],
         "name" : "new",
-        "def" : "hs._asm.undocumented.touchbar.new() -> touchbarObject | nil"
+        "desc" : "Creates a new touchbarObject representing a window which displays the Apple Touch Bar."
       },
       {
         "doc" : "Returns a boolean value indicathing whether or not the Apple Touch Bar is supported on this Macintosh.\n\nParameters:\n * `showLink` - a boolean, default false, specifying whether a dialog prompting the user to download the necessary update is presented if Apple Touch Bar support is not found in the current Operating System.\n\nReturns:\n * true if Apple Touch Bar support is found in the current Operating System or false if it is not.\n\nNotes:\n * the link in the prompt is https:\/\/support.apple.com\/kb\/dl1897",
@@ -466,7 +466,7 @@
           "Returns a boolean value indicathing whether or not the Apple Touch Bar is supported on this Macintosh.",
           ""
         ],
-        "desc" : "Returns a boolean value indicathing whether or not the Apple Touch Bar is supported on this Macintosh.",
+        "def" : "hs._asm.undocumented.touchbar.supported([showLink]) -> boolean",
         "parameters" : [
           " * `showLink` - a boolean, default false, specifying whether a dialog prompting the user to download the necessary update is presented if Apple Touch Bar support is not found in the current Operating System.",
           ""
@@ -481,7 +481,7 @@
           ""
         ],
         "name" : "supported",
-        "def" : "hs._asm.undocumented.touchbar.supported([showLink]) -> boolean"
+        "desc" : "Returns a boolean value indicathing whether or not the Apple Touch Bar is supported on this Macintosh."
       },
       {
         "doc" : "Get or set whether or not the touch bar accepts mouse events.\n\nParameters:\n * `state` - an optional boolean which specifies whether the touch bar accepts mouse events (true) or not (false).  Default true.\n\nReturns:\n * if an argument is provided, returns the touchbarObject; otherwise returns the current value.\n\nNotes:\n * This method can be used to prevent mouse clicks in the touch bar from triggering the touch bar buttons.\n * This can be useful when [hs._asm.undocumented.touchbar:movable](#movable) is set to true to prevent accidentally triggering an action.",
@@ -489,7 +489,7 @@
           "Get or set whether or not the touch bar accepts mouse events.",
           ""
         ],
-        "desc" : "Get or set whether or not the touch bar accepts mouse events.",
+        "def" : "hs._asm.undocumented.touchbar:acceptsMouseEvents([state]) -> boolean | touchbarObject",
         "parameters" : [
           " * `state` - an optional boolean which specifies whether the touch bar accepts mouse events (true) or not (false).  Default true.",
           ""
@@ -505,7 +505,7 @@
           ""
         ],
         "name" : "acceptsMouseEvents",
-        "def" : "hs._asm.undocumented.touchbar:acceptsMouseEvents([state]) -> boolean | touchbarObject"
+        "desc" : "Get or set whether or not the touch bar accepts mouse events."
       },
       {
         "doc" : "Moves the touch bar window so that it is centered directly underneath the mouse pointer.\n\nParameters:\n * None\n\nReturns:\n * the touchbarObject\n\nNotes:\n * This method mimics the display location as set by the sample code this module is based on.  See https:\/\/github.com\/bikkelbroeders\/TouchBarDemoApp for more information.\n * The touch bar position will be adjusted so that it is fully visible on the screen even if this moves it left or right from the mouse's current position.",
@@ -513,7 +513,7 @@
           "Moves the touch bar window so that it is centered directly underneath the mouse pointer.",
           ""
         ],
-        "desc" : "Moves the touch bar window so that it is centered directly underneath the mouse pointer.",
+        "def" : "hs._asm.undocumented.touchbar:atMousePosition() -> touchbarObject",
         "parameters" : [
           " * None",
           ""
@@ -529,7 +529,7 @@
           ""
         ],
         "name" : "atMousePosition",
-        "def" : "hs._asm.undocumented.touchbar:atMousePosition() -> touchbarObject"
+        "desc" : "Moves the touch bar window so that it is centered directly underneath the mouse pointer."
       },
       {
         "doc" : "Get or set the background color for the touch bar window.\n\nParameters:\n * `color` - an optional color table as defined in `hs.drawing.color` specifying the background color for the touch bar window.  Defaults to black, i.e. `{ white = 0.0, alpha = 1.0 }`.\n\nReturns:\n * if an argument is provided, returns the touchbarObject; otherwise returns the current value.\n\nNotes:\n * The visual effect of this method is to change the border color around the touch bar -- the touch bar itself remains the color as defined by the application which is providing the current touch bar items for display.",
@@ -537,7 +537,7 @@
           "Get or set the background color for the touch bar window.",
           ""
         ],
-        "desc" : "Get or set the background color for the touch bar window.",
+        "def" : "hs._asm.undocumented.touchbar:backgroundColor([color]) -> color | touchbarObject",
         "parameters" : [
           " * `color` - an optional color table as defined in `hs.drawing.color` specifying the background color for the touch bar window.  Defaults to black, i.e. `{ white = 0.0, alpha = 1.0 }`.",
           ""
@@ -552,7 +552,7 @@
           ""
         ],
         "name" : "backgroundColor",
-        "def" : "hs._asm.undocumented.touchbar:backgroundColor([color]) -> color | touchbarObject"
+        "desc" : "Get or set the background color for the touch bar window."
       },
       {
         "doc" : "Moves the touch bar window to the top or bottom center of the main screen.\n\nParameters:\n * `top` - an optional boolean, default false, specifying whether the touch bar should be centered at the top (true) of the screen or at the bottom (false).\n\nReturns:\n * the touchbarObject",
@@ -560,7 +560,7 @@
           "Moves the touch bar window to the top or bottom center of the main screen.",
           ""
         ],
-        "desc" : "Moves the touch bar window to the top or bottom center of the main screen.",
+        "def" : "hs._asm.undocumented.touchbar:centered([top]) -> touchbarObject",
         "parameters" : [
           " * `top` - an optional boolean, default false, specifying whether the touch bar should be centered at the top (true) of the screen or at the bottom (false).",
           ""
@@ -574,7 +574,7 @@
           " * the touchbarObject"
         ],
         "name" : "centered",
-        "def" : "hs._asm.undocumented.touchbar:centered([top]) -> touchbarObject"
+        "desc" : "Moves the touch bar window to the top or bottom center of the main screen."
       },
       {
         "doc" : "Gets the frame of the touch bar window\n\nParameters:\n * None\n\nReturns:\n * a frame table with key-value pairs specifying the top left corner of the touch bar window and its width and height.\n\nNotes:\n * A frame table is a table with at least `x`, `y`, `h` and `w` key-value pairs which specify the coordinates on the computer screen of the window and its width (w) and height(h).\n * This allows you to get the frame so that you can include its height and width in calculations - it does not allow you to change the size of the touch bar window itself.",
@@ -582,7 +582,7 @@
           "Gets the frame of the touch bar window",
           ""
         ],
-        "desc" : "Gets the frame of the touch bar window",
+        "def" : "hs._asm.undocumented.touchbar:getFrame() -> table",
         "parameters" : [
           " * None",
           ""
@@ -598,7 +598,7 @@
           ""
         ],
         "name" : "getFrame",
-        "def" : "hs._asm.undocumented.touchbar:getFrame() -> table"
+        "desc" : "Gets the frame of the touch bar window"
       },
       {
         "doc" : "Display the touch bar window with an optional fade-out delay.\n\nParameters:\n * `duration` - an optional number, default 0.0, specifying the fade-out time for the touch bar window.\n\nReturns:\n * the touchbarObject\n\nNotes:\n * This method does nothing if the window is already hidden.\n * The value used in the sample code referenced in the module header is 0.1.",
@@ -606,7 +606,7 @@
           "Display the touch bar window with an optional fade-out delay.",
           ""
         ],
-        "desc" : "Display the touch bar window with an optional fade-out delay.",
+        "def" : "hs._asm.undocumented.touchbar:hide([duration]) -> touchbarObject",
         "parameters" : [
           " * `duration` - an optional number, default 0.0, specifying the fade-out time for the touch bar window.",
           ""
@@ -622,7 +622,7 @@
           ""
         ],
         "name" : "hide",
-        "def" : "hs._asm.undocumented.touchbar:hide([duration]) -> touchbarObject"
+        "desc" : "Display the touch bar window with an optional fade-out delay."
       },
       {
         "doc" : "Get or set the alpha value for the touch bar window when the mouse is not hovering over it.\n\nParameters:\n * alpha - an optional number between 0.0 and 1.0 inclusive specifying the alpha value for the touch bar window when the mouse is not over it.  Defaults to 0.5.\n\nReturns:\n * if a value is provided, returns the touchbarObject; otherwise returns the current value",
@@ -630,7 +630,7 @@
           "Get or set the alpha value for the touch bar window when the mouse is not hovering over it.",
           ""
         ],
-        "desc" : "Get or set the alpha value for the touch bar window when the mouse is not hovering over it.",
+        "def" : "hs._asm.undocumented.touchbar:inactiveAlpha([alpha]) -> number | touchbarObject",
         "parameters" : [
           " * alpha - an optional number between 0.0 and 1.0 inclusive specifying the alpha value for the touch bar window when the mouse is not over it.  Defaults to 0.5.",
           ""
@@ -644,7 +644,7 @@
           " * if a value is provided, returns the touchbarObject; otherwise returns the current value"
         ],
         "name" : "inactiveAlpha",
-        "def" : "hs._asm.undocumented.touchbar:inactiveAlpha([alpha]) -> number | touchbarObject"
+        "desc" : "Get or set the alpha value for the touch bar window when the mouse is not hovering over it."
       },
       {
         "doc" : "Returns a boolean indicating whether or not the touch bar window is current visible.\n\nParameters:\n * None\n\nReturns:\n * a boolean specifying whether the touch bar window is visible (true) or not (false).",
@@ -652,7 +652,7 @@
           "Returns a boolean indicating whether or not the touch bar window is current visible.",
           ""
         ],
-        "desc" : "Returns a boolean indicating whether or not the touch bar window is current visible.",
+        "def" : "hs._asm.undocumented.touchbar:isVisible() -> boolean",
         "parameters" : [
           " * None",
           ""
@@ -666,7 +666,7 @@
           " * a boolean specifying whether the touch bar window is visible (true) or not (false)."
         ],
         "name" : "isVisible",
-        "def" : "hs._asm.undocumented.touchbar:isVisible() -> boolean"
+        "desc" : "Returns a boolean indicating whether or not the touch bar window is current visible."
       },
       {
         "doc" : "Get or set whether or not the touch bar window is movable by clicking on it and holding down the mouse button while moving the mouse.\n\nParameters:\n * `state` - an optional boolean which specifies whether the touch bar window is movable (true) or not (false).  Default false.\n\nReturns:\n * if an argument is provided, returns the touchbarObject; otherwise returns the current value.\n\nNotes:\n * While the touch bar is movable, actions which require moving the mouse while clicking on the touch bar are not accessible.\n * See also [hs._asm.undocumented.touchbar:acceptsMouseEvents](#acceptsMouseEvents).",
@@ -674,7 +674,7 @@
           "Get or set whether or not the touch bar window is movable by clicking on it and holding down the mouse button while moving the mouse.",
           ""
         ],
-        "desc" : "Get or set whether or not the touch bar window is movable by clicking on it and holding down the mouse button while moving the mouse.",
+        "def" : "hs._asm.undocumented.touchbar:movable([state]) -> boolean | touchbarObject",
         "parameters" : [
           " * `state` - an optional boolean which specifies whether the touch bar window is movable (true) or not (false).  Default false.",
           ""
@@ -690,7 +690,7 @@
           ""
         ],
         "name" : "movable",
-        "def" : "hs._asm.undocumented.touchbar:movable([state]) -> boolean | touchbarObject"
+        "desc" : "Get or set whether or not the touch bar window is movable by clicking on it and holding down the mouse button while moving the mouse."
       },
       {
         "doc" : "Sets the callback function for the touch bar window.\n\nParameters:\n * `fn` - a function to set as the callback for the touch bar window, or nil to remove the existing callback function.\n\nReturns:\n * the touchbarObject\n\nNotes:\n * The function should expect 2 arguments and return none.  The arguments will be one of the following:\n\n   * obj, \"didEnter\" - indicates that the mouse pointer has entered the window containing the touch bar\n     * `obj`     - the touchbarObject the callback is for\n     * `message` - the message to the callback, in this case \"didEnter\"\n\n   * obj, \"didExit\" - indicates that the mouse pointer has exited the window containing the touch bar\n     * `obj`     - the touchbarObject the callback is for\n     * `message` - the message to the callback, in this case \"didEnter\"",
@@ -698,7 +698,7 @@
           "Sets the callback function for the touch bar window.",
           ""
         ],
-        "desc" : "Sets the callback function for the touch bar window.",
+        "def" : "hs._asm.undocumented.touchbar:setCallback(fn | nil) -> touchbarObject",
         "parameters" : [
           " * `fn` - a function to set as the callback for the touch bar window, or nil to remove the existing callback function.",
           ""
@@ -721,7 +721,7 @@
           ""
         ],
         "name" : "setCallback",
-        "def" : "hs._asm.undocumented.touchbar:setCallback(fn | nil) -> touchbarObject"
+        "desc" : "Sets the callback function for the touch bar window."
       },
       {
         "doc" : "Display the touch bar window with an optional fade-in delay.\n\nParameters:\n * `duration` - an optional number, default 0.0, specifying the fade-in time for the touch bar window.\n\nReturns:\n * the touchbarObject\n\nNotes:\n * This method does nothing if the window is already visible.",
@@ -729,7 +729,7 @@
           "Display the touch bar window with an optional fade-in delay.",
           ""
         ],
-        "desc" : "Display the touch bar window with an optional fade-in delay.",
+        "def" : "hs._asm.undocumented.touchbar:show([duration]) -> touchbarObject",
         "parameters" : [
           " * `duration` - an optional number, default 0.0, specifying the fade-in time for the touch bar window.",
           ""
@@ -744,7 +744,7 @@
           ""
         ],
         "name" : "show",
-        "def" : "hs._asm.undocumented.touchbar:show([duration]) -> touchbarObject"
+        "desc" : "Display the touch bar window with an optional fade-in delay."
       },
       {
         "doc" : "Toggle's the visibility of the touch bar window.\n\nParameters:\n * `duration` - an optional number, default 0.0, specifying the fade-in\/out time when changing the visibility of the touch bar window.\n\nReturns:\n * the touchbarObject",
@@ -752,7 +752,7 @@
           "Toggle's the visibility of the touch bar window.",
           ""
         ],
-        "desc" : "Toggle's the visibility of the touch bar window.",
+        "def" : "hs._asm.undocumented.touchbar:toggle([duration]) -> touchbarObject",
         "parameters" : [
           " * `duration` - an optional number, default 0.0, specifying the fade-in\/out time when changing the visibility of the touch bar window.",
           ""
@@ -766,7 +766,7 @@
           " * the touchbarObject"
         ],
         "name" : "toggle",
-        "def" : "hs._asm.undocumented.touchbar:toggle([duration]) -> touchbarObject"
+        "desc" : "Toggle's the visibility of the touch bar window."
       },
       {
         "doc" : "Get or set the top-left of the touch bar window.\n\nParameters:\n * `point` - an optional table specifying where the top left of the touch bar window should be moved to.\n\nReturns:\n * if a value is provided, returns the touchbarObject; otherwise returns the current value.\n\nNotes:\n * A point table is a table with at least `x` and `y` key-value pairs which specify the coordinates on the computer screen where the window should be moved to.  Hammerspoon considers the upper left corner of the primary screen to be { x = 0.0, y = 0.0 }.",
@@ -774,7 +774,7 @@
           "Get or set the top-left of the touch bar window.",
           ""
         ],
-        "desc" : "Get or set the top-left of the touch bar window.",
+        "def" : "hs._asm.undocumented.touchbar:topLeft([point]) -> table | touchbarObject",
         "parameters" : [
           " * `point` - an optional table specifying where the top left of the touch bar window should be moved to.",
           ""
@@ -789,7 +789,7 @@
           ""
         ],
         "name" : "topLeft",
-        "def" : "hs._asm.undocumented.touchbar:topLeft([point]) -> table | touchbarObject"
+        "desc" : "Get or set the top-left of the touch bar window."
       }
     ],
     "name" : "hs._asm.undocumented.touchbar"
@@ -809,7 +809,7 @@
           "The following is ignored for modally displayed bars, so it's effects are still being evaluated; documentation will be updated when nested bars can be tested and more fully understood within the context of the Hammerspoon console and webview.",
           " * otherItemsProxy - provides a place for nested bars to display items"
         ],
-        "desc" : "A table of key-value pairs whose values represent built in touch bar items which can be used to adjust the layout of the bar object when it is being presented.",
+        "def" : "hs._asm.undocumented.touchbar.bar.builtInIdentifiers[]",
         "parameters" : [
 
         ],
@@ -822,7 +822,7 @@
 
         ],
         "name" : "builtInIdentifiers",
-        "def" : "hs._asm.undocumented.touchbar.bar.builtInIdentifiers[]"
+        "desc" : "A table of key-value pairs whose values represent built in touch bar items which can be used to adjust the layout of the bar object when it is being presented."
       }
     ],
     "submodules" : [
@@ -835,7 +835,7 @@
           "(See Notes) Toggle's the Touch Bar customization panel for the Hammerspoon application",
           ""
         ],
-        "desc" : "(See Notes) Toggle's the Touch Bar customization panel for the Hammerspoon application",
+        "def" : "hs._asm.undocumented.touchbar.bar.toggleCustomization() -> None",
         "parameters" : [
           " * None",
           ""
@@ -853,7 +853,7 @@
           ""
         ],
         "name" : "toggleCustomization",
-        "def" : "hs._asm.undocumented.touchbar.bar.toggleCustomization() -> None"
+        "desc" : "(See Notes) Toggle's the Touch Bar customization panel for the Hammerspoon application"
       }
     ],
     "Variable" : [
@@ -862,11 +862,11 @@
     "stripped_doc" : [
 
     ],
+    "desc" : "This module is used to create and manipulate bar objects which can be displayed in the Touch Bar of new Macintosh Pro laptops or with the virtual Touch Bar provided by `hs._asm.undocumented.touchbar`.",
     "Deprecated" : [
 
     ],
     "type" : "Module",
-    "desc" : "This module is used to create and manipulate bar objects which can be displayed in the Touch Bar of new Macintosh Pro laptops or with the virtual Touch Bar provided by `hs._asm.undocumented.touchbar`.",
     "Constructor" : [
       {
         "doc" : "Creates a new bar object\n\nParameters:\n * None\n\nReturns:\n * a new bar object",
@@ -874,7 +874,7 @@
           "Creates a new bar object",
           ""
         ],
-        "desc" : "Creates a new bar object",
+        "def" : "hs._asm.undocumented.touchbar.bar.new() -> barObject",
         "parameters" : [
           " * None",
           ""
@@ -888,7 +888,7 @@
           " * a new bar object"
         ],
         "name" : "new",
-        "def" : "hs._asm.undocumented.touchbar.bar.new() -> barObject"
+        "desc" : "Creates a new bar object"
       }
     ],
     "doc" : "This module is used to create and manipulate bar objects which can be displayed in the Touch Bar of new Macintosh Pro laptops or with the virtual Touch Bar provided by `hs._asm.undocumented.touchbar`.\n\nAt present, bar objects can be presented modally under Hammerspoon control but cannot be attached directly to the Hammerspoon console or webview objects to dynamically appear as application focus changes; this is expected to change in the future.\n\nThis module requires macOS 10.12.2 or later. Some of the methods (identified in their notes) in this module use undocumented functions and\/or framework methods and are not guaranteed to work with future updates to macOS. It has currently been tested with 10.12.6.\n\nThis module is very experimental and is still under development, so the exact functions and methods are subject to change without notice.\n\nTODO:\n * touch bars for the console and webviews\n * `isVisible` is KVO, so add a watcher",
@@ -899,7 +899,7 @@
           "Returns a boolean indicating whether the bar object is currently visible in the laptop or virtual Touch Bar.",
           ""
         ],
-        "desc" : "Returns a boolean indicating whether the bar object is currently visible in the laptop or virtual Touch Bar.",
+        "def" : "hs._asm.undocumented.touchbar.bar:isVisible() -> boolean",
         "parameters" : [
           " * None",
           ""
@@ -907,13 +907,13 @@
         "notes" : [
 
         ],
-        "signature" : "hs._asm.undocumented.touchbar.bar:isVisivle() -> boolean",
+        "signature" : "hs._asm.undocumented.touchbar.bar:isVisible() -> boolean",
         "type" : "Method",
         "returns" : [
           " * a boolean value indicating whether or not the touchbar represented by the object is currently being displayed in the laptop or virtual Touch Bar."
         ],
-        "name" : "isVisivle",
-        "def" : "hs._asm.undocumented.touchbar.bar:isVisivle() -> boolean"
+        "name" : "isVisible",
+        "desc" : "Returns a boolean indicating whether the bar object is currently visible in the laptop or virtual Touch Bar."
       },
       {
         "doc" : "Returns an array of strings specifying the identifiers of the touchbar items currently presented by the bar object.\n\nParameters:\n * None\n\nReturns:\n * an array of strings specifying the identifiers of the touchbar items currently presented by the bar object.\n\nNotes:\n * If the user has not customized the bar, the list of identifiers will match the list provided by [hs._asm.undocumented.touchbar.bar:defaultIdentifiers()](#defaultIdentifiers).",
@@ -921,7 +921,7 @@
           "Returns an array of strings specifying the identifiers of the touchbar items currently presented by the bar object.",
           ""
         ],
-        "desc" : "Returns an array of strings specifying the identifiers of the touchbar items currently presented by the bar object.",
+        "def" : "hs._asm.undocumented.touchbar.bar:itemIdentifiers() -> table",
         "parameters" : [
           " * None",
           ""
@@ -936,7 +936,7 @@
           ""
         ],
         "name" : "itemIdentifiers",
-        "def" : "hs._asm.undocumented.touchbar.bar:itemIdentifiers() -> table"
+        "desc" : "Returns an array of strings specifying the identifiers of the touchbar items currently presented by the bar object."
       },
       {
         "doc" : "Get or set the customization label for saving and restoring user customizations for the bar.\n\nParameters:\n * `label` - an optional string, or explicit nil to disable, specifying the customization label for saving and restoring user customizations for the bar; defaults to nil.\n\nReturns:\n * If an argument is provided, returns the barObject; otherwise returns the current value.",
@@ -944,7 +944,7 @@
           "Get or set the customization label for saving and restoring user customizations for the bar.",
           ""
         ],
-        "desc" : "Get or set the customization label for saving and restoring user customizations for the bar.",
+        "def" : "hs._asm.undocumented.touchbar.bar:customizationLabel([label]) -> barObject | string",
         "parameters" : [
           " * `label` - an optional string, or explicit nil to disable, specifying the customization label for saving and restoring user customizations for the bar; defaults to nil.",
           ""
@@ -958,7 +958,7 @@
           " * If an argument is provided, returns the barObject; otherwise returns the current value."
         ],
         "name" : "customizationLabel",
-        "def" : "hs._asm.undocumented.touchbar.bar:customizationLabel([label]) -> barObject | string"
+        "desc" : "Get or set the customization label for saving and restoring user customizations for the bar."
       },
       {
         "doc" : "Get or set the principle item for the bar.\n\nParameters:\n * `identifer` - an optional string, or explicit nil to disable, specifying the principle item for the bar; defaults to nil.\n\nReturns:\n * If an argument is provided, returns the barObject; otherwise returns the current value.\n\nNotes:\n * the principle item will be centered in the displayed portion of the bar.\n\n * the identifier specified must belong to a touchbar items already assigned to the bar object with [hs._asm.undocumented.touchbar.bar:templateItems](#templateItems) or one of the built in identifier values defined in [hs._asm.undocumented.touchbar.bar.builtInIdentifiers](#builtInIdentifiers).",
@@ -966,7 +966,7 @@
           "Get or set the principle item for the bar.",
           ""
         ],
-        "desc" : "Get or set the principle item for the bar.",
+        "def" : "hs._asm.undocumented.touchbar.bar:principleItem([identifier]) -> barObject | string",
         "parameters" : [
           " * `identifer` - an optional string, or explicit nil to disable, specifying the principle item for the bar; defaults to nil.",
           ""
@@ -983,7 +983,7 @@
           ""
         ],
         "name" : "principleItem",
-        "def" : "hs._asm.undocumented.touchbar.bar:principleItem([identifier]) -> barObject | string"
+        "desc" : "Get or set the principle item for the bar."
       },
       {
         "doc" : "Get or set the item which replaces the system escape key for the bar.\n\nParameters:\n * `identifer` - an optional string, or explicit nil to disable, specifying the item which replaces the system escape key for the bar; defaults to nil.\n\nReturns:\n * If an argument is provided, returns the barObject; otherwise returns the current value.\n\nNotes:\n * This method has no effect on modally displayed bars.\n\n * the identifier specified must belong to a touchbar items already assigned to the bar object with [hs._asm.undocumented.touchbar.bar:templateItems](#templateItems).",
@@ -991,7 +991,7 @@
           "Get or set the item which replaces the system escape key for the bar.",
           ""
         ],
-        "desc" : "Get or set the item which replaces the system escape key for the bar.",
+        "def" : "hs._asm.undocumented.touchbar.bar:escapeKeyReplacement([identifier]) -> barObject | string",
         "parameters" : [
           " * `identifer` - an optional string, or explicit nil to disable, specifying the item which replaces the system escape key for the bar; defaults to nil.",
           ""
@@ -1008,7 +1008,7 @@
           ""
         ],
         "name" : "escapeKeyReplacement",
-        "def" : "hs._asm.undocumented.touchbar.bar:escapeKeyReplacement([identifier]) -> barObject | string"
+        "desc" : "Get or set the item which replaces the system escape key for the bar."
       },
       {
         "doc" : "Get or set an array of strings specifying the identifiers of the touchbar items that can be added or removed from the bar object through user customization.\n\nParameters:\n * `identifiersTable` - an optional table containing strings specifying the identifiers of touchbar items that can be added or removed from the bar object through user customization.\n\nReturns:\n * If an argument is provided, returns the barObject; otherwise returns the current value.\n\nNotes:\n * the identifiers specified must belong to touchbar items already assigned to the bar object with [hs._asm.undocumented.touchbar.bar:templateItems](#templateItems) or one of the built in identifier values defined in [hs._asm.undocumented.touchbar.bar.builtInIdentifiers](#builtInIdentifiers).",
@@ -1016,7 +1016,7 @@
           "Get or set an array of strings specifying the identifiers of the touchbar items that can be added or removed from the bar object through user customization.",
           ""
         ],
-        "desc" : "Get or set an array of strings specifying the identifiers of the touchbar items that can be added or removed from the bar object through user customization.",
+        "def" : "hs._asm.undocumented.touchbar.bar:customizableIdentifiers([identifiersTable]) -> barObject | table",
         "parameters" : [
           " * `identifiersTable` - an optional table containing strings specifying the identifiers of touchbar items that can be added or removed from the bar object through user customization.",
           ""
@@ -1031,7 +1031,7 @@
           ""
         ],
         "name" : "customizableIdentifiers",
-        "def" : "hs._asm.undocumented.touchbar.bar:customizableIdentifiers([identifiersTable]) -> barObject | table"
+        "desc" : "Get or set an array of strings specifying the identifiers of the touchbar items that can be added or removed from the bar object through user customization."
       },
       {
         "doc" : "Get or set an array of strings specifying the identifiers of the touchbar items that cannot be removed from the bar object through user customization.\n\nParameters:\n * `identifiersTable` - an optional table containing strings specifying the identifiers of touchbar items that cannot be removed from the bar object through user customization.\n\nReturns:\n * If an argument is provided, returns the barObject; otherwise returns the current value.\n\nNotes:\n * the identifiers specified must belong to touchbar items already assigned to the bar object with [hs._asm.undocumented.touchbar.bar:templateItems](#templateItems) or one of the built in identifier values defined in [hs._asm.undocumented.touchbar.bar.builtInIdentifiers](#builtInIdentifiers).",
@@ -1039,7 +1039,7 @@
           "Get or set an array of strings specifying the identifiers of the touchbar items that cannot be removed from the bar object through user customization.",
           ""
         ],
-        "desc" : "Get or set an array of strings specifying the identifiers of the touchbar items that cannot be removed from the bar object through user customization.",
+        "def" : "hs._asm.undocumented.touchbar.bar:requiredIdentifiers([identifiersTable]) -> barObject | table",
         "parameters" : [
           " * `identifiersTable` - an optional table containing strings specifying the identifiers of touchbar items that cannot be removed from the bar object through user customization.",
           ""
@@ -1054,7 +1054,7 @@
           ""
         ],
         "name" : "requiredIdentifiers",
-        "def" : "hs._asm.undocumented.touchbar.bar:requiredIdentifiers([identifiersTable]) -> barObject | table"
+        "desc" : "Get or set an array of strings specifying the identifiers of the touchbar items that cannot be removed from the bar object through user customization."
       },
       {
         "doc" : "Get or set an array of strings specifying the identifiers of the touchbar items added to the bar object by default, before any user customization.\n\nParameters:\n * `identifiersTable` - an optional table containing strings specifying the identifiers of touchbar items added to the bar object by default, before any user customization.\n\nReturns:\n * If an argument is provided, returns the barObject; otherwise returns the current value.\n\nNotes:\n * the identifiers specified must belong to touchbar items already assigned to the bar object with [hs._asm.undocumented.touchbar.bar:templateItems](#templateItems) or one of the built in identifier values defined in [hs._asm.undocumented.touchbar.bar.builtInIdentifiers](#builtInIdentifiers).",
@@ -1062,7 +1062,7 @@
           "Get or set an array of strings specifying the identifiers of the touchbar items added to the bar object by default, before any user customization.",
           ""
         ],
-        "desc" : "Get or set an array of strings specifying the identifiers of the touchbar items added to the bar object by default, before any user customization.",
+        "def" : "hs._asm.undocumented.touchbar.bar:defaultIdentifiers([identifiersTable]) -> barObject | table",
         "parameters" : [
           " * `identifiersTable` - an optional table containing strings specifying the identifiers of touchbar items added to the bar object by default, before any user customization.",
           ""
@@ -1077,7 +1077,7 @@
           ""
         ],
         "name" : "defaultIdentifiers",
-        "def" : "hs._asm.undocumented.touchbar.bar:defaultIdentifiers([identifiersTable]) -> barObject | table"
+        "desc" : "Get or set an array of strings specifying the identifiers of the touchbar items added to the bar object by default, before any user customization."
       },
       {
         "doc" : "Get or set an array of `hs._asm.undocumented.touchbar.item` objects that can be presented by the bar object.\n\nParameters:\n * `itemsTable` - an optional table containing `hs._asm.undocumented.touchbar.item` objects that can be presented by the bar object.\n\nReturns:\n * If an argument is provided, returns the barObject; otherwise returns the current value.\n\nNotes:\n * only the identifiers of items assigned by this method can be used by the other methods in this module that use string identifiers in their arguments.",
@@ -1085,7 +1085,7 @@
           "Get or set an array of `hs._asm.undocumented.touchbar.item` objects that can be presented by the bar object.",
           ""
         ],
-        "desc" : "Get or set an array of `hs._asm.undocumented.touchbar.item` objects that can be presented by the bar object.",
+        "def" : "hs._asm.undocumented.touchbar.bar:templateItems([itemsTable]) -> barObject | table",
         "parameters" : [
           " * `itemsTable` - an optional table containing `hs._asm.undocumented.touchbar.item` objects that can be presented by the bar object.",
           ""
@@ -1100,7 +1100,7 @@
           ""
         ],
         "name" : "templateItems",
-        "def" : "hs._asm.undocumented.touchbar.bar:templateItems([itemsTable]) -> barObject | table"
+        "desc" : "Get or set an array of `hs._asm.undocumented.touchbar.item` objects that can be presented by the bar object."
       },
       {
         "doc" : "Returns the touchbarItemObject for the identifier specified.\n\nParameters:\n * `identifier` - a string specifying the touchbarItem object to get from the items assigned to the bar with [hs._asm.undocumented.touchbar.bar:templateItems](#templateItems).\n\nReturns:\n * the touchbarItem object for the item specified or nil if no such item has been assigned to the bar.",
@@ -1108,7 +1108,7 @@
           "Returns the touchbarItemObject for the identifier specified.",
           ""
         ],
-        "desc" : "Returns the touchbarItemObject for the identifier specified.",
+        "def" : "hs._asm.undocumented.touchbar.bar:itemForIdentifier([identifier]) -> touchbarItemObject | nil",
         "parameters" : [
           " * `identifier` - a string specifying the touchbarItem object to get from the items assigned to the bar with [hs._asm.undocumented.touchbar.bar:templateItems](#templateItems).",
           ""
@@ -1122,7 +1122,7 @@
           " * the touchbarItem object for the item specified or nil if no such item has been assigned to the bar."
         ],
         "name" : "itemForIdentifier",
-        "def" : "hs._asm.undocumented.touchbar.bar:itemForIdentifier([identifier]) -> touchbarItemObject | nil"
+        "desc" : "Returns the touchbarItemObject for the identifier specified."
       },
       {
         "doc" : "Presents the bar in the touch bar display modally.\n\nParameters:\n * `itemObject`    - an optional `hs._asm.undocumented.touchbar.item` object which, if currently attached to the system tray, will be hidden while the bar is visible modally.\n * `dismissButton` - an optional boolean, default true, specifying whether or not the system escape (or its current replacement) button should be replaced by a button to remove the modal bar from the touch bar display when pressed.\n\nReturns:\n * the barObject\n\nNotes:\n * If you specify `dismissButton` as false, then you must use [hs._asm.undocumented.touchbar.bar:minimizeModalBar](#minimizeModalBar) or [hs._asm.undocumented.touchbar.bar:dismissModalBar](#dismissModalBar) to remove the modal bar from the touch bar display.\n\n * If you do not have \"Touch Bar Shows\" set to \"App Controls With Control Strip\" set in the Keyboard System Preferences, the modal bar will only be displayed when the Hammerspoon application is the frontmost application.\n\n * If you specify `itemObject` and the object is not currently attached to the system tray (see `hs._asm.undocumented.touchbar.item:addToSystemTray)`, or if you do not have \"Touch Bar Shows\" set to \"App Controls With Control Strip\" set in the Keyboard System Preferences, providing this argument has no effect.\n\n * This method uses undocumented functions and\/or framework methods and is not guaranteed to work with future updates to macOS. It has currently been tested with 10.12.6.",
@@ -1130,7 +1130,7 @@
           "Presents the bar in the touch bar display modally.",
           ""
         ],
-        "desc" : "Presents the bar in the touch bar display modally.",
+        "def" : "hs._asm.undocumented.touchbar.bar:presentModalBar([itemObject], [dismissButton]) -> barObject",
         "parameters" : [
           " * `itemObject`    - an optional `hs._asm.undocumented.touchbar.item` object which, if currently attached to the system tray, will be hidden while the bar is visible modally.",
           " * `dismissButton` - an optional boolean, default true, specifying whether or not the system escape (or its current replacement) button should be replaced by a button to remove the modal bar from the touch bar display when pressed.",
@@ -1152,7 +1152,7 @@
           ""
         ],
         "name" : "presentModalBar",
-        "def" : "hs._asm.undocumented.touchbar.bar:presentModalBar([itemObject], [dismissButton]) -> barObject"
+        "desc" : "Presents the bar in the touch bar display modally."
       },
       {
         "doc" : "Dismiss the bar from the touch bar display by removing it if it is currently being displayed modally.\n\nParameters:\n * None\n\nReturns:\n * the barObject\n\nNotes:\n * If an `itemObject` was specified with [hs._asm.undocumented.touchbar.bar:presentModalBar](#presentModalBar) or if the bar was displayed with `hs._asm.undocumented.touchbar.item:presentModalBar`, this method will ***not*** restore the item to the system tray.\n\n * This method uses undocumented functions and\/or framework methods and is not guaranteed to work with future updates to macOS. It has currently been tested with 10.12.6.",
@@ -1160,7 +1160,7 @@
           "Dismiss the bar from the touch bar display by removing it if it is currently being displayed modally.",
           ""
         ],
-        "desc" : "Dismiss the bar from the touch bar display by removing it if it is currently being displayed modally.",
+        "def" : "hs._asm.undocumented.touchbar.bar:dismissModalBar() -> barObject",
         "parameters" : [
           " * None",
           ""
@@ -1177,7 +1177,7 @@
           ""
         ],
         "name" : "dismissModalBar",
-        "def" : "hs._asm.undocumented.touchbar.bar:dismissModalBar() -> barObject"
+        "desc" : "Dismiss the bar from the touch bar display by removing it if it is currently being displayed modally."
       },
       {
         "doc" : "Dismiss the bar from the touch bar display by minimizing it if it is currently being displayed modally.\n\nParameters:\n * None\n\nReturns:\n * the barObject\n\nNotes:\n * If an `itemObject` was specified with [hs._asm.undocumented.touchbar.bar:presentModalBar](#presentModalBar) or if the bar was displayed with `hs._asm.undocumented.touchbar.item:presentModalBar`, this method ***will*** restore the item to the system tray.\n\n * This method is the same as pressing the `dismissButton` if it was not set to false when [hs._asm.undocumented.touchbar.bar:presentModalBar](#presentModalBar) or `hs._asm.undocumented.touchbar.item:presentModalBar` was invoked.\n\n * This method uses undocumented functions and\/or framework methods and is not guaranteed to work with future updates to macOS. It has currently been tested with 10.12.6.",
@@ -1185,7 +1185,7 @@
           "Dismiss the bar from the touch bar display by minimizing it if it is currently being displayed modally.",
           ""
         ],
-        "desc" : "Dismiss the bar from the touch bar display by minimizing it if it is currently being displayed modally.",
+        "def" : "hs._asm.undocumented.touchbar.bar:minimizeModalBar() -> barObject",
         "parameters" : [
           " * None",
           ""
@@ -1204,7 +1204,7 @@
           ""
         ],
         "name" : "minimizeModalBar",
-        "def" : "hs._asm.undocumented.touchbar.bar:minimizeModalBar() -> barObject"
+        "desc" : "Dismiss the bar from the touch bar display by minimizing it if it is currently being displayed modally."
       }
     ],
     "Command" : [
@@ -1227,7 +1227,7 @@
           "The following is ignored for modally displayed bars, so it's effects are still being evaluated; documentation will be updated when nested bars can be tested and more fully understood within the context of the Hammerspoon console and webview.",
           " * otherItemsProxy - provides a place for nested bars to display items"
         ],
-        "desc" : "A table of key-value pairs whose values represent built in touch bar items which can be used to adjust the layout of the bar object when it is being presented.",
+        "def" : "hs._asm.undocumented.touchbar.bar.builtInIdentifiers[]",
         "parameters" : [
 
         ],
@@ -1240,7 +1240,7 @@
 
         ],
         "name" : "builtInIdentifiers",
-        "def" : "hs._asm.undocumented.touchbar.bar.builtInIdentifiers[]"
+        "desc" : "A table of key-value pairs whose values represent built in touch bar items which can be used to adjust the layout of the bar object when it is being presented."
       },
       {
         "doc" : "(See Notes) Toggle's the Touch Bar customization panel for the Hammerspoon application\n\nParameters:\n * None\n\nReturns:\n * None\n\nNotes:\n * At present this function is not useful; it is expected to be more useful when Hammerspoon specific views can provide their own touchbars.\n\n * The customization panel allows modification of the current bar visible for the macOS application triggering the request within that applications resolver chain -- as such, it can only modify touchbar's attached to the Hammerspoon console or webview objects.\n * The customization panel cannot modify modally displayed bar objects.",
@@ -1248,7 +1248,7 @@
           "(See Notes) Toggle's the Touch Bar customization panel for the Hammerspoon application",
           ""
         ],
-        "desc" : "(See Notes) Toggle's the Touch Bar customization panel for the Hammerspoon application",
+        "def" : "hs._asm.undocumented.touchbar.bar.toggleCustomization() -> None",
         "parameters" : [
           " * None",
           ""
@@ -1266,7 +1266,7 @@
           ""
         ],
         "name" : "toggleCustomization",
-        "def" : "hs._asm.undocumented.touchbar.bar.toggleCustomization() -> None"
+        "desc" : "(See Notes) Toggle's the Touch Bar customization panel for the Hammerspoon application"
       },
       {
         "doc" : "Creates a new bar object\n\nParameters:\n * None\n\nReturns:\n * a new bar object",
@@ -1274,7 +1274,7 @@
           "Creates a new bar object",
           ""
         ],
-        "desc" : "Creates a new bar object",
+        "def" : "hs._asm.undocumented.touchbar.bar.new() -> barObject",
         "parameters" : [
           " * None",
           ""
@@ -1288,7 +1288,7 @@
           " * a new bar object"
         ],
         "name" : "new",
-        "def" : "hs._asm.undocumented.touchbar.bar.new() -> barObject"
+        "desc" : "Creates a new bar object"
       },
       {
         "doc" : "Get or set an array of strings specifying the identifiers of the touchbar items that can be added or removed from the bar object through user customization.\n\nParameters:\n * `identifiersTable` - an optional table containing strings specifying the identifiers of touchbar items that can be added or removed from the bar object through user customization.\n\nReturns:\n * If an argument is provided, returns the barObject; otherwise returns the current value.\n\nNotes:\n * the identifiers specified must belong to touchbar items already assigned to the bar object with [hs._asm.undocumented.touchbar.bar:templateItems](#templateItems) or one of the built in identifier values defined in [hs._asm.undocumented.touchbar.bar.builtInIdentifiers](#builtInIdentifiers).",
@@ -1296,7 +1296,7 @@
           "Get or set an array of strings specifying the identifiers of the touchbar items that can be added or removed from the bar object through user customization.",
           ""
         ],
-        "desc" : "Get or set an array of strings specifying the identifiers of the touchbar items that can be added or removed from the bar object through user customization.",
+        "def" : "hs._asm.undocumented.touchbar.bar:customizableIdentifiers([identifiersTable]) -> barObject | table",
         "parameters" : [
           " * `identifiersTable` - an optional table containing strings specifying the identifiers of touchbar items that can be added or removed from the bar object through user customization.",
           ""
@@ -1311,7 +1311,7 @@
           ""
         ],
         "name" : "customizableIdentifiers",
-        "def" : "hs._asm.undocumented.touchbar.bar:customizableIdentifiers([identifiersTable]) -> barObject | table"
+        "desc" : "Get or set an array of strings specifying the identifiers of the touchbar items that can be added or removed from the bar object through user customization."
       },
       {
         "doc" : "Get or set the customization label for saving and restoring user customizations for the bar.\n\nParameters:\n * `label` - an optional string, or explicit nil to disable, specifying the customization label for saving and restoring user customizations for the bar; defaults to nil.\n\nReturns:\n * If an argument is provided, returns the barObject; otherwise returns the current value.",
@@ -1319,7 +1319,7 @@
           "Get or set the customization label for saving and restoring user customizations for the bar.",
           ""
         ],
-        "desc" : "Get or set the customization label for saving and restoring user customizations for the bar.",
+        "def" : "hs._asm.undocumented.touchbar.bar:customizationLabel([label]) -> barObject | string",
         "parameters" : [
           " * `label` - an optional string, or explicit nil to disable, specifying the customization label for saving and restoring user customizations for the bar; defaults to nil.",
           ""
@@ -1333,7 +1333,7 @@
           " * If an argument is provided, returns the barObject; otherwise returns the current value."
         ],
         "name" : "customizationLabel",
-        "def" : "hs._asm.undocumented.touchbar.bar:customizationLabel([label]) -> barObject | string"
+        "desc" : "Get or set the customization label for saving and restoring user customizations for the bar."
       },
       {
         "doc" : "Get or set an array of strings specifying the identifiers of the touchbar items added to the bar object by default, before any user customization.\n\nParameters:\n * `identifiersTable` - an optional table containing strings specifying the identifiers of touchbar items added to the bar object by default, before any user customization.\n\nReturns:\n * If an argument is provided, returns the barObject; otherwise returns the current value.\n\nNotes:\n * the identifiers specified must belong to touchbar items already assigned to the bar object with [hs._asm.undocumented.touchbar.bar:templateItems](#templateItems) or one of the built in identifier values defined in [hs._asm.undocumented.touchbar.bar.builtInIdentifiers](#builtInIdentifiers).",
@@ -1341,7 +1341,7 @@
           "Get or set an array of strings specifying the identifiers of the touchbar items added to the bar object by default, before any user customization.",
           ""
         ],
-        "desc" : "Get or set an array of strings specifying the identifiers of the touchbar items added to the bar object by default, before any user customization.",
+        "def" : "hs._asm.undocumented.touchbar.bar:defaultIdentifiers([identifiersTable]) -> barObject | table",
         "parameters" : [
           " * `identifiersTable` - an optional table containing strings specifying the identifiers of touchbar items added to the bar object by default, before any user customization.",
           ""
@@ -1356,7 +1356,7 @@
           ""
         ],
         "name" : "defaultIdentifiers",
-        "def" : "hs._asm.undocumented.touchbar.bar:defaultIdentifiers([identifiersTable]) -> barObject | table"
+        "desc" : "Get or set an array of strings specifying the identifiers of the touchbar items added to the bar object by default, before any user customization."
       },
       {
         "doc" : "Dismiss the bar from the touch bar display by removing it if it is currently being displayed modally.\n\nParameters:\n * None\n\nReturns:\n * the barObject\n\nNotes:\n * If an `itemObject` was specified with [hs._asm.undocumented.touchbar.bar:presentModalBar](#presentModalBar) or if the bar was displayed with `hs._asm.undocumented.touchbar.item:presentModalBar`, this method will ***not*** restore the item to the system tray.\n\n * This method uses undocumented functions and\/or framework methods and is not guaranteed to work with future updates to macOS. It has currently been tested with 10.12.6.",
@@ -1364,7 +1364,7 @@
           "Dismiss the bar from the touch bar display by removing it if it is currently being displayed modally.",
           ""
         ],
-        "desc" : "Dismiss the bar from the touch bar display by removing it if it is currently being displayed modally.",
+        "def" : "hs._asm.undocumented.touchbar.bar:dismissModalBar() -> barObject",
         "parameters" : [
           " * None",
           ""
@@ -1381,7 +1381,7 @@
           ""
         ],
         "name" : "dismissModalBar",
-        "def" : "hs._asm.undocumented.touchbar.bar:dismissModalBar() -> barObject"
+        "desc" : "Dismiss the bar from the touch bar display by removing it if it is currently being displayed modally."
       },
       {
         "doc" : "Get or set the item which replaces the system escape key for the bar.\n\nParameters:\n * `identifer` - an optional string, or explicit nil to disable, specifying the item which replaces the system escape key for the bar; defaults to nil.\n\nReturns:\n * If an argument is provided, returns the barObject; otherwise returns the current value.\n\nNotes:\n * This method has no effect on modally displayed bars.\n\n * the identifier specified must belong to a touchbar items already assigned to the bar object with [hs._asm.undocumented.touchbar.bar:templateItems](#templateItems).",
@@ -1389,7 +1389,7 @@
           "Get or set the item which replaces the system escape key for the bar.",
           ""
         ],
-        "desc" : "Get or set the item which replaces the system escape key for the bar.",
+        "def" : "hs._asm.undocumented.touchbar.bar:escapeKeyReplacement([identifier]) -> barObject | string",
         "parameters" : [
           " * `identifer` - an optional string, or explicit nil to disable, specifying the item which replaces the system escape key for the bar; defaults to nil.",
           ""
@@ -1406,7 +1406,7 @@
           ""
         ],
         "name" : "escapeKeyReplacement",
-        "def" : "hs._asm.undocumented.touchbar.bar:escapeKeyReplacement([identifier]) -> barObject | string"
+        "desc" : "Get or set the item which replaces the system escape key for the bar."
       },
       {
         "doc" : "Returns a boolean indicating whether the bar object is currently visible in the laptop or virtual Touch Bar.\n\nParameters:\n * None\n\nReturns:\n * a boolean value indicating whether or not the touchbar represented by the object is currently being displayed in the laptop or virtual Touch Bar.",
@@ -1414,7 +1414,7 @@
           "Returns a boolean indicating whether the bar object is currently visible in the laptop or virtual Touch Bar.",
           ""
         ],
-        "desc" : "Returns a boolean indicating whether the bar object is currently visible in the laptop or virtual Touch Bar.",
+        "def" : "hs._asm.undocumented.touchbar.bar:isVisible() -> boolean",
         "parameters" : [
           " * None",
           ""
@@ -1422,13 +1422,13 @@
         "notes" : [
 
         ],
-        "signature" : "hs._asm.undocumented.touchbar.bar:isVisivle() -> boolean",
+        "signature" : "hs._asm.undocumented.touchbar.bar:isVisible() -> boolean",
         "type" : "Method",
         "returns" : [
           " * a boolean value indicating whether or not the touchbar represented by the object is currently being displayed in the laptop or virtual Touch Bar."
         ],
-        "name" : "isVisivle",
-        "def" : "hs._asm.undocumented.touchbar.bar:isVisivle() -> boolean"
+        "name" : "isVisible",
+        "desc" : "Returns a boolean indicating whether the bar object is currently visible in the laptop or virtual Touch Bar."
       },
       {
         "doc" : "Returns the touchbarItemObject for the identifier specified.\n\nParameters:\n * `identifier` - a string specifying the touchbarItem object to get from the items assigned to the bar with [hs._asm.undocumented.touchbar.bar:templateItems](#templateItems).\n\nReturns:\n * the touchbarItem object for the item specified or nil if no such item has been assigned to the bar.",
@@ -1436,7 +1436,7 @@
           "Returns the touchbarItemObject for the identifier specified.",
           ""
         ],
-        "desc" : "Returns the touchbarItemObject for the identifier specified.",
+        "def" : "hs._asm.undocumented.touchbar.bar:itemForIdentifier([identifier]) -> touchbarItemObject | nil",
         "parameters" : [
           " * `identifier` - a string specifying the touchbarItem object to get from the items assigned to the bar with [hs._asm.undocumented.touchbar.bar:templateItems](#templateItems).",
           ""
@@ -1450,7 +1450,7 @@
           " * the touchbarItem object for the item specified or nil if no such item has been assigned to the bar."
         ],
         "name" : "itemForIdentifier",
-        "def" : "hs._asm.undocumented.touchbar.bar:itemForIdentifier([identifier]) -> touchbarItemObject | nil"
+        "desc" : "Returns the touchbarItemObject for the identifier specified."
       },
       {
         "doc" : "Returns an array of strings specifying the identifiers of the touchbar items currently presented by the bar object.\n\nParameters:\n * None\n\nReturns:\n * an array of strings specifying the identifiers of the touchbar items currently presented by the bar object.\n\nNotes:\n * If the user has not customized the bar, the list of identifiers will match the list provided by [hs._asm.undocumented.touchbar.bar:defaultIdentifiers()](#defaultIdentifiers).",
@@ -1458,7 +1458,7 @@
           "Returns an array of strings specifying the identifiers of the touchbar items currently presented by the bar object.",
           ""
         ],
-        "desc" : "Returns an array of strings specifying the identifiers of the touchbar items currently presented by the bar object.",
+        "def" : "hs._asm.undocumented.touchbar.bar:itemIdentifiers() -> table",
         "parameters" : [
           " * None",
           ""
@@ -1473,7 +1473,7 @@
           ""
         ],
         "name" : "itemIdentifiers",
-        "def" : "hs._asm.undocumented.touchbar.bar:itemIdentifiers() -> table"
+        "desc" : "Returns an array of strings specifying the identifiers of the touchbar items currently presented by the bar object."
       },
       {
         "doc" : "Dismiss the bar from the touch bar display by minimizing it if it is currently being displayed modally.\n\nParameters:\n * None\n\nReturns:\n * the barObject\n\nNotes:\n * If an `itemObject` was specified with [hs._asm.undocumented.touchbar.bar:presentModalBar](#presentModalBar) or if the bar was displayed with `hs._asm.undocumented.touchbar.item:presentModalBar`, this method ***will*** restore the item to the system tray.\n\n * This method is the same as pressing the `dismissButton` if it was not set to false when [hs._asm.undocumented.touchbar.bar:presentModalBar](#presentModalBar) or `hs._asm.undocumented.touchbar.item:presentModalBar` was invoked.\n\n * This method uses undocumented functions and\/or framework methods and is not guaranteed to work with future updates to macOS. It has currently been tested with 10.12.6.",
@@ -1481,7 +1481,7 @@
           "Dismiss the bar from the touch bar display by minimizing it if it is currently being displayed modally.",
           ""
         ],
-        "desc" : "Dismiss the bar from the touch bar display by minimizing it if it is currently being displayed modally.",
+        "def" : "hs._asm.undocumented.touchbar.bar:minimizeModalBar() -> barObject",
         "parameters" : [
           " * None",
           ""
@@ -1500,7 +1500,7 @@
           ""
         ],
         "name" : "minimizeModalBar",
-        "def" : "hs._asm.undocumented.touchbar.bar:minimizeModalBar() -> barObject"
+        "desc" : "Dismiss the bar from the touch bar display by minimizing it if it is currently being displayed modally."
       },
       {
         "doc" : "Presents the bar in the touch bar display modally.\n\nParameters:\n * `itemObject`    - an optional `hs._asm.undocumented.touchbar.item` object which, if currently attached to the system tray, will be hidden while the bar is visible modally.\n * `dismissButton` - an optional boolean, default true, specifying whether or not the system escape (or its current replacement) button should be replaced by a button to remove the modal bar from the touch bar display when pressed.\n\nReturns:\n * the barObject\n\nNotes:\n * If you specify `dismissButton` as false, then you must use [hs._asm.undocumented.touchbar.bar:minimizeModalBar](#minimizeModalBar) or [hs._asm.undocumented.touchbar.bar:dismissModalBar](#dismissModalBar) to remove the modal bar from the touch bar display.\n\n * If you do not have \"Touch Bar Shows\" set to \"App Controls With Control Strip\" set in the Keyboard System Preferences, the modal bar will only be displayed when the Hammerspoon application is the frontmost application.\n\n * If you specify `itemObject` and the object is not currently attached to the system tray (see `hs._asm.undocumented.touchbar.item:addToSystemTray)`, or if you do not have \"Touch Bar Shows\" set to \"App Controls With Control Strip\" set in the Keyboard System Preferences, providing this argument has no effect.\n\n * This method uses undocumented functions and\/or framework methods and is not guaranteed to work with future updates to macOS. It has currently been tested with 10.12.6.",
@@ -1508,7 +1508,7 @@
           "Presents the bar in the touch bar display modally.",
           ""
         ],
-        "desc" : "Presents the bar in the touch bar display modally.",
+        "def" : "hs._asm.undocumented.touchbar.bar:presentModalBar([itemObject], [dismissButton]) -> barObject",
         "parameters" : [
           " * `itemObject`    - an optional `hs._asm.undocumented.touchbar.item` object which, if currently attached to the system tray, will be hidden while the bar is visible modally.",
           " * `dismissButton` - an optional boolean, default true, specifying whether or not the system escape (or its current replacement) button should be replaced by a button to remove the modal bar from the touch bar display when pressed.",
@@ -1530,7 +1530,7 @@
           ""
         ],
         "name" : "presentModalBar",
-        "def" : "hs._asm.undocumented.touchbar.bar:presentModalBar([itemObject], [dismissButton]) -> barObject"
+        "desc" : "Presents the bar in the touch bar display modally."
       },
       {
         "doc" : "Get or set the principle item for the bar.\n\nParameters:\n * `identifer` - an optional string, or explicit nil to disable, specifying the principle item for the bar; defaults to nil.\n\nReturns:\n * If an argument is provided, returns the barObject; otherwise returns the current value.\n\nNotes:\n * the principle item will be centered in the displayed portion of the bar.\n\n * the identifier specified must belong to a touchbar items already assigned to the bar object with [hs._asm.undocumented.touchbar.bar:templateItems](#templateItems) or one of the built in identifier values defined in [hs._asm.undocumented.touchbar.bar.builtInIdentifiers](#builtInIdentifiers).",
@@ -1538,7 +1538,7 @@
           "Get or set the principle item for the bar.",
           ""
         ],
-        "desc" : "Get or set the principle item for the bar.",
+        "def" : "hs._asm.undocumented.touchbar.bar:principleItem([identifier]) -> barObject | string",
         "parameters" : [
           " * `identifer` - an optional string, or explicit nil to disable, specifying the principle item for the bar; defaults to nil.",
           ""
@@ -1555,7 +1555,7 @@
           ""
         ],
         "name" : "principleItem",
-        "def" : "hs._asm.undocumented.touchbar.bar:principleItem([identifier]) -> barObject | string"
+        "desc" : "Get or set the principle item for the bar."
       },
       {
         "doc" : "Get or set an array of strings specifying the identifiers of the touchbar items that cannot be removed from the bar object through user customization.\n\nParameters:\n * `identifiersTable` - an optional table containing strings specifying the identifiers of touchbar items that cannot be removed from the bar object through user customization.\n\nReturns:\n * If an argument is provided, returns the barObject; otherwise returns the current value.\n\nNotes:\n * the identifiers specified must belong to touchbar items already assigned to the bar object with [hs._asm.undocumented.touchbar.bar:templateItems](#templateItems) or one of the built in identifier values defined in [hs._asm.undocumented.touchbar.bar.builtInIdentifiers](#builtInIdentifiers).",
@@ -1563,7 +1563,7 @@
           "Get or set an array of strings specifying the identifiers of the touchbar items that cannot be removed from the bar object through user customization.",
           ""
         ],
-        "desc" : "Get or set an array of strings specifying the identifiers of the touchbar items that cannot be removed from the bar object through user customization.",
+        "def" : "hs._asm.undocumented.touchbar.bar:requiredIdentifiers([identifiersTable]) -> barObject | table",
         "parameters" : [
           " * `identifiersTable` - an optional table containing strings specifying the identifiers of touchbar items that cannot be removed from the bar object through user customization.",
           ""
@@ -1578,7 +1578,7 @@
           ""
         ],
         "name" : "requiredIdentifiers",
-        "def" : "hs._asm.undocumented.touchbar.bar:requiredIdentifiers([identifiersTable]) -> barObject | table"
+        "desc" : "Get or set an array of strings specifying the identifiers of the touchbar items that cannot be removed from the bar object through user customization."
       },
       {
         "doc" : "Get or set an array of `hs._asm.undocumented.touchbar.item` objects that can be presented by the bar object.\n\nParameters:\n * `itemsTable` - an optional table containing `hs._asm.undocumented.touchbar.item` objects that can be presented by the bar object.\n\nReturns:\n * If an argument is provided, returns the barObject; otherwise returns the current value.\n\nNotes:\n * only the identifiers of items assigned by this method can be used by the other methods in this module that use string identifiers in their arguments.",
@@ -1586,7 +1586,7 @@
           "Get or set an array of `hs._asm.undocumented.touchbar.item` objects that can be presented by the bar object.",
           ""
         ],
-        "desc" : "Get or set an array of `hs._asm.undocumented.touchbar.item` objects that can be presented by the bar object.",
+        "def" : "hs._asm.undocumented.touchbar.bar:templateItems([itemsTable]) -> barObject | table",
         "parameters" : [
           " * `itemsTable` - an optional table containing `hs._asm.undocumented.touchbar.item` objects that can be presented by the bar object.",
           ""
@@ -1601,7 +1601,7 @@
           ""
         ],
         "name" : "templateItems",
-        "def" : "hs._asm.undocumented.touchbar.bar:templateItems([itemsTable]) -> barObject | table"
+        "desc" : "Get or set an array of `hs._asm.undocumented.touchbar.item` objects that can be presented by the bar object."
       }
     ],
     "name" : "hs._asm.undocumented.touchbar.bar"
@@ -1620,7 +1620,7 @@
           " * `normal`-     0.0 (this is the default value assigned to an item when it is first created)",
           " * `high`  -  1000.0"
         ],
-        "desc" : "Predefined visibility priorities for use with [hs._asm.undocumented.touchbar.item:visibilityPriority](#visibilityPriority)",
+        "def" : "hs._asm.undocumented.touchbar.item.visibilityPriorities[]",
         "parameters" : [
 
         ],
@@ -1633,7 +1633,7 @@
 
         ],
         "name" : "visibilityPriorities",
-        "def" : "hs._asm.undocumented.touchbar.item.visibilityPriorities[]"
+        "desc" : "Predefined visibility priorities for use with [hs._asm.undocumented.touchbar.item:visibilityPriority](#visibilityPriority)"
       }
     ],
     "submodules" : [
@@ -1648,11 +1648,11 @@
     "stripped_doc" : [
 
     ],
+    "desc" : "This module is used to create and manipulate touchbar item objects which can added to `hs._asm.undocumented.touchbar.bar` objects and displayed in the Touch Bar of new Macintosh Pro laptops or with the virtual Touch Bar provided by `hs._asm.undocumented.touchbar`.",
     "Deprecated" : [
 
     ],
     "type" : "Module",
-    "desc" : "This module is used to create and manipulate touchbar item objects which can added to `hs._asm.undocumented.touchbar.bar` objects and displayed in the Touch Bar of new Macintosh Pro laptops or with the virtual Touch Bar provided by `hs._asm.undocumented.touchbar`.",
     "Constructor" : [
       {
         "doc" : "Create a new button touchbarItem object.\n\nParameters:\n * `title`      - A string specifying the title for the button. Optional if `image` is specified.\n * `image`      - An `hs.image` object specifying the image for the button.  Optional is `title` is specified.\n * `identifier` - An optional string specifying the identifier for this touchbar item. Must be unique within the bar the item will be assigned to if specified. If not specified, a new UUID is generated for the item.\n\nReturns:\n * a touchbarItemObject or nil if an error occurs\n\nNotes:\n * You can change the button's title with [hs._asm.undocumented.touchbar.item:title](#title) only if you initially assign one with this constructor.\n * You can change the button's image with [hs._asm.undocumented.touchbar.item:image](#title) only if you initially assign one with this constructor.\n * If you intend to allow customization of the touch bar, it is highly recommended that you specify an identifier, since the UUID will change each time the item is regenerated (when Hammerspoon reloads or restarts).",
@@ -1660,7 +1660,7 @@
           "Create a new button touchbarItem object.",
           ""
         ],
-        "desc" : "Create a new button touchbarItem object.",
+        "def" : "hs._asm.undocumented.touchbar.item.newButton([title], [image], [identifier]) -> touchbarItemObject",
         "parameters" : [
           " * `title`      - A string specifying the title for the button. Optional if `image` is specified.",
           " * `image`      - An `hs.image` object specifying the image for the button.  Optional is `title` is specified.",
@@ -1679,7 +1679,7 @@
           ""
         ],
         "name" : "newButton",
-        "def" : "hs._asm.undocumented.touchbar.item.newButton([title], [image], [identifier]) -> touchbarItemObject"
+        "desc" : "Create a new button touchbarItem object."
       }
     ],
     "doc" : "This module is used to create and manipulate touchbar item objects which can added to `hs._asm.undocumented.touchbar.bar` objects and displayed in the Touch Bar of new Macintosh Pro laptops or with the virtual Touch Bar provided by `hs._asm.undocumented.touchbar`.\n\nAt present, only simple button type items are supported.\n\nThis module requires macOS 10.12.2 or later. Some of the methods (identified in their notes) in this module use undocumented functions and\/or framework methods and are not guaranteed to work with future updates to macOS. It has currently been tested with 10.12.6.\n\nThis module is very experimental and is still under development, so the exact functions and methods are subject to change without notice.\n\nTODO:\n * More item types\n * `isVisible` is KVO, so add a watcher",
@@ -1690,7 +1690,7 @@
           "Presents a bar in the touch bar display modally and hides this item if it is present in the System Tray of the touch bar display.",
           ""
         ],
-        "desc" : "Presents a bar in the touch bar display modally and hides this item if it is present in the System Tray of the touch bar display.",
+        "def" : "hs._asm.undocumented.touchbar.item:presentModalBar(touchbar, [dismissButton]) -> touchbarItemObject",
         "parameters" : [
           " * `touchbar` - An `hs._asm.undocumented.touchbar.bar` object of the bar to display modally in the touch bar display.",
           " * `dismissButton` - an optional boolean, default true, specifying whether or not the system escape (or its current replacement) button should be replaced by a button to remove the modal bar from the touch bar display when pressed.",
@@ -1713,7 +1713,7 @@
           ""
         ],
         "name" : "presentModalBar",
-        "def" : "hs._asm.undocumented.touchbar.item:presentModalBar(touchbar, [dismissButton]) -> touchbarItemObject"
+        "desc" : "Presents a bar in the touch bar display modally and hides this item if it is present in the System Tray of the touch bar display."
       },
       {
         "doc" : "Get or set the label displayed for the item when the customization panel is being displayed for the touch bar.\n\nParameters:\n * `label` - an optional string, or explicit nil to reset to an empty string, specifying the label to be displayed with the item when the customization panel is being displayed for the touch bar.  Defaults to an empty string.\n\nReturns:\n * if an argument is provided, returns the touchbarItem object; otherwise returns the current value",
@@ -1721,7 +1721,7 @@
           "Get or set the label displayed for the item when the customization panel is being displayed for the touch bar.",
           ""
         ],
-        "desc" : "Get or set the label displayed for the item when the customization panel is being displayed for the touch bar.",
+        "def" : "hs._asm.undocumented.touchbar.item:customizationLabel([label]) -> touchbarItemObject | string",
         "parameters" : [
           " * `label` - an optional string, or explicit nil to reset to an empty string, specifying the label to be displayed with the item when the customization panel is being displayed for the touch bar.  Defaults to an empty string.",
           ""
@@ -1735,7 +1735,7 @@
           " * if an argument is provided, returns the touchbarItem object; otherwise returns the current value"
         ],
         "name" : "customizationLabel",
-        "def" : "hs._asm.undocumented.touchbar.item:customizationLabel([label]) -> touchbarItemObject | string"
+        "desc" : "Get or set the label displayed for the item when the customization panel is being displayed for the touch bar."
       },
       {
         "doc" : "Get or set the image for a button item which was initially given an image when created.\n\nParameters:\n * `image` - an optional `hs.image` object, or explicit nil, specifying the image for the button item.\n\nReturns:\n * if an argument is provided, returns the touchbarItem object; otherwise returns the current value\n\nNotes:\n * This method will generate an error if an image was not provided when the object was created.\n * Setting the image to nil will remove the image and shrink the button, but not as tightly as the button would appear if it had been initially created without an image at all.",
@@ -1743,7 +1743,7 @@
           "Get or set the image for a button item which was initially given an image when created.",
           ""
         ],
-        "desc" : "Get or set the image for a button item which was initially given an image when created.",
+        "def" : "hs._asm.undocumented.touchbar.item:image([image]) -> touchbarItemObject | hs.image object",
         "parameters" : [
           " * `image` - an optional `hs.image` object, or explicit nil, specifying the image for the button item.",
           ""
@@ -1759,7 +1759,7 @@
           ""
         ],
         "name" : "image",
-        "def" : "hs._asm.undocumented.touchbar.item:image([image]) -> touchbarItemObject | hs.image object"
+        "desc" : "Get or set the image for a button item which was initially given an image when created."
       },
       {
         "doc" : "Get or set the title for a button item which was initially given a title when created.\n\nParameters:\n * `title` - an optional string, or explicit nil, specifying the title for the button item.\n\nReturns:\n * if an argument is provided, returns the touchbarItem object; otherwise returns the current value\n\nNotes:\n * This method will generate an error if a title was not provided when the object was created.\n * Setting the title to nil will remove the title and shrink the button, but not as tightly as the button would appear if it had been initially created without a title at all.",
@@ -1767,7 +1767,7 @@
           "Get or set the title for a button item which was initially given a title when created.",
           ""
         ],
-        "desc" : "Get or set the title for a button item which was initially given a title when created.",
+        "def" : "hs._asm.undocumented.touchbar.item:title([title]) -> touchbarItemObject | string",
         "parameters" : [
           " * `title` - an optional string, or explicit nil, specifying the title for the button item.",
           ""
@@ -1783,7 +1783,7 @@
           ""
         ],
         "name" : "title",
-        "def" : "hs._asm.undocumented.touchbar.item:title([title]) -> touchbarItemObject | string"
+        "desc" : "Get or set the title for a button item which was initially given a title when created."
       },
       {
         "doc" : "Returns the identifier for the touchbarItem object\n\nParameters:\n * None\n\nReturns:\n * the identifier for the item as a string",
@@ -1791,7 +1791,7 @@
           "Returns the identifier for the touchbarItem object",
           ""
         ],
-        "desc" : "Returns the identifier for the touchbarItem object",
+        "def" : "hs._asm.undocumented.touchbar.item:identifier() -> string",
         "parameters" : [
           " * None",
           ""
@@ -1805,21 +1805,21 @@
           " * the identifier for the item as a string"
         ],
         "name" : "identifier",
-        "def" : "hs._asm.undocumented.touchbar.item:identifier() -> string"
+        "desc" : "Returns the identifier for the touchbarItem object"
       },
       {
-        "doc" : "Returns a boolean indicating whether or not the item is currently visible in the bar that it is assigned to.\n\nParameters:\n * None\n\nReturns:\n * a boolean specifying whether or not the item is currently visible in the bar that it is assigned to.\n\nNotes:\n * If the bar that the item is assigned to has been visible at some point in the past, and the item was visible at that time, this method will return true even if the bar is not currently visible. If you want to know if the item is visible in the touch bar display *right now*, you should use `bar:isVisible() and item:isVisible()`",
+        "doc" : "Returns a boolean indicating whether or not the item is currently visible in the bar that it is assigned to.\n\nParameters:\n * None\n\nReturns:\n * a boolean specifying whether or not the item is currently visible in the bar that it is assigned to.\n\nNotes:\n * If the bar that the item is assigned to has been visible at some point in the past, and the item was visible at that time, this method will return true even if the bar is not currently visible. If you want to know if the item is visible in the touch bar display *right now*, you should use `reallyVisible = bar:isVisible() and item:isVisible()`",
         "stripped_doc" : [
           "Returns a boolean indicating whether or not the item is currently visible in the bar that it is assigned to.",
           ""
         ],
-        "desc" : "Returns a boolean indicating whether or not the item is currently visible in the bar that it is assigned to.",
+        "def" : "hs._asm.undocumented.touchbar.item:isVisible() -> boolean",
         "parameters" : [
           " * None",
           ""
         ],
         "notes" : [
-          " * If the bar that the item is assigned to has been visible at some point in the past, and the item was visible at that time, this method will return true even if the bar is not currently visible. If you want to know if the item is visible in the touch bar display *right now*, you should use `bar:isVisible() and item:isVisible()`"
+          " * If the bar that the item is assigned to has been visible at some point in the past, and the item was visible at that time, this method will return true even if the bar is not currently visible. If you want to know if the item is visible in the touch bar display *right now*, you should use `reallyVisible = bar:isVisible() and item:isVisible()`"
         ],
         "signature" : "hs._asm.undocumented.touchbar.item:isVisible() -> boolean",
         "type" : "Method",
@@ -1828,7 +1828,7 @@
           ""
         ],
         "name" : "isVisible",
-        "def" : "hs._asm.undocumented.touchbar.item:isVisible() -> boolean"
+        "desc" : "Returns a boolean indicating whether or not the item is currently visible in the bar that it is assigned to."
       },
       {
         "doc" : "Get or set the visibility priority for the touchbar item.\n\nParameters:\n * `priority` - an optional number specifying the visibility priority for the item.\n\nReturns:\n * if an argument is provided, returns the touchbarItem object; otherwise returns the current value\n\nNotes:\n * If their are more items to be presented in the touch bar display than space permits, items with a lower visibility priority will be hidden first.\n * Some predefined visibility values are defined in [hs._asm.undocumented.touchbar.item.visibilityPriorities](#visibilityPriorities), though others are allowed. The default priority for an item object is `hs._asm.undocumented.touchbar.item.visibilityPriorities.normal`.",
@@ -1836,7 +1836,7 @@
           "Get or set the visibility priority for the touchbar item.",
           ""
         ],
-        "desc" : "Get or set the visibility priority for the touchbar item.",
+        "def" : "hs._asm.undocumented.touchbar.item:visibilityPriority([priority]) -> touchbarItemObject | number",
         "parameters" : [
           " * `priority` - an optional number specifying the visibility priority for the item.",
           ""
@@ -1852,7 +1852,7 @@
           ""
         ],
         "name" : "visibilityPriority",
-        "def" : "hs._asm.undocumented.touchbar.item:visibilityPriority([priority]) -> touchbarItemObject | number"
+        "desc" : "Get or set the visibility priority for the touchbar item."
       },
       {
         "doc" : "Get or set the callback function for the touchbar item.\n\nParameters:\n * `fn` - an optional function, or explicit nil to remove, specifying the callback to be invoked when the item is pressed.\n\nReturns:\n * if an argument is provided, returns the touchbarItem object; otherwise returns the current value\n\nNotes:\n * The callback function should expect one argument, the touchbarItemObject, and return none.",
@@ -1860,7 +1860,7 @@
           "Get or set the callback function for the touchbar item.",
           ""
         ],
-        "desc" : "Get or set the callback function for the touchbar item.",
+        "def" : "hs._asm.undocumented.touchbar.item:callback([fn | nil]) -> touchbarItemObject | fn",
         "parameters" : [
           " * `fn` - an optional function, or explicit nil to remove, specifying the callback to be invoked when the item is pressed.",
           ""
@@ -1875,7 +1875,7 @@
           ""
         ],
         "name" : "callback",
-        "def" : "hs._asm.undocumented.touchbar.item:callback([fn | nil]) -> touchbarItemObject | fn"
+        "desc" : "Get or set the callback function for the touchbar item."
       },
       {
         "doc" : "Add or remove the touchbar item from the System Tray in the touch bar display.\n\nParameters:\n * `state` - a boolean specifying if the item should be displayed in the System Tray (true) or not (false).\n\nReturns:\n * the touchbarItem object\n\nNotes:\n * The item will only be visible in the System Tray if you have \"Touch Bar Shows\" set to \"App Controls With Control Strip\" set in the Keyboard System Preferences.\n\n * Initial experiments suggest that only one item *from any macOS application currently running* may be added to the System Tray at a time.\n * Adding a new item will hide any previous item assigned; however they do appear to stack, so removing an existing item with this method, or if it has bar object attached with [hs._asm.undocumented.touchbar.item:presentModalBar](#presentModalBar) and you dismiss the bar with `hs._asm.undocumented.touchbar.bar:dismissModalBar`, the previous item should become visible again.\n\n * At present, there is no known way to determine which item is currently displayed in the System Tray or detect when a specific item is replaced ([hs._asm.undocumented.touchbar.item:isVisible](#isVisible) returns false). Please submit an issue if you know of a solution.\n\n * This method uses undocumented functions and\/or framework methods and is not guaranteed to work with future updates to macOS. It has currently been tested with 10.12.6.",
@@ -1883,7 +1883,7 @@
           "Add or remove the touchbar item from the System Tray in the touch bar display.",
           ""
         ],
-        "desc" : "Add or remove the touchbar item from the System Tray in the touch bar display.",
+        "def" : "hs._asm.undocumented.touchbar.item:addToSystemTray(state) -> touchbarItemObject",
         "parameters" : [
           " * `state` - a boolean specifying if the item should be displayed in the System Tray (true) or not (false).",
           ""
@@ -1905,7 +1905,7 @@
           ""
         ],
         "name" : "addToSystemTray",
-        "def" : "hs._asm.undocumented.touchbar.item:addToSystemTray(state) -> touchbarItemObject"
+        "desc" : "Add or remove the touchbar item from the System Tray in the touch bar display."
       }
     ],
     "Command" : [
@@ -1927,7 +1927,7 @@
           " * `normal`-     0.0 (this is the default value assigned to an item when it is first created)",
           " * `high`  -  1000.0"
         ],
-        "desc" : "Predefined visibility priorities for use with [hs._asm.undocumented.touchbar.item:visibilityPriority](#visibilityPriority)",
+        "def" : "hs._asm.undocumented.touchbar.item.visibilityPriorities[]",
         "parameters" : [
 
         ],
@@ -1940,7 +1940,7 @@
 
         ],
         "name" : "visibilityPriorities",
-        "def" : "hs._asm.undocumented.touchbar.item.visibilityPriorities[]"
+        "desc" : "Predefined visibility priorities for use with [hs._asm.undocumented.touchbar.item:visibilityPriority](#visibilityPriority)"
       },
       {
         "doc" : "Create a new button touchbarItem object.\n\nParameters:\n * `title`      - A string specifying the title for the button. Optional if `image` is specified.\n * `image`      - An `hs.image` object specifying the image for the button.  Optional is `title` is specified.\n * `identifier` - An optional string specifying the identifier for this touchbar item. Must be unique within the bar the item will be assigned to if specified. If not specified, a new UUID is generated for the item.\n\nReturns:\n * a touchbarItemObject or nil if an error occurs\n\nNotes:\n * You can change the button's title with [hs._asm.undocumented.touchbar.item:title](#title) only if you initially assign one with this constructor.\n * You can change the button's image with [hs._asm.undocumented.touchbar.item:image](#title) only if you initially assign one with this constructor.\n * If you intend to allow customization of the touch bar, it is highly recommended that you specify an identifier, since the UUID will change each time the item is regenerated (when Hammerspoon reloads or restarts).",
@@ -1948,7 +1948,7 @@
           "Create a new button touchbarItem object.",
           ""
         ],
-        "desc" : "Create a new button touchbarItem object.",
+        "def" : "hs._asm.undocumented.touchbar.item.newButton([title], [image], [identifier]) -> touchbarItemObject",
         "parameters" : [
           " * `title`      - A string specifying the title for the button. Optional if `image` is specified.",
           " * `image`      - An `hs.image` object specifying the image for the button.  Optional is `title` is specified.",
@@ -1967,7 +1967,7 @@
           ""
         ],
         "name" : "newButton",
-        "def" : "hs._asm.undocumented.touchbar.item.newButton([title], [image], [identifier]) -> touchbarItemObject"
+        "desc" : "Create a new button touchbarItem object."
       },
       {
         "doc" : "Add or remove the touchbar item from the System Tray in the touch bar display.\n\nParameters:\n * `state` - a boolean specifying if the item should be displayed in the System Tray (true) or not (false).\n\nReturns:\n * the touchbarItem object\n\nNotes:\n * The item will only be visible in the System Tray if you have \"Touch Bar Shows\" set to \"App Controls With Control Strip\" set in the Keyboard System Preferences.\n\n * Initial experiments suggest that only one item *from any macOS application currently running* may be added to the System Tray at a time.\n * Adding a new item will hide any previous item assigned; however they do appear to stack, so removing an existing item with this method, or if it has bar object attached with [hs._asm.undocumented.touchbar.item:presentModalBar](#presentModalBar) and you dismiss the bar with `hs._asm.undocumented.touchbar.bar:dismissModalBar`, the previous item should become visible again.\n\n * At present, there is no known way to determine which item is currently displayed in the System Tray or detect when a specific item is replaced ([hs._asm.undocumented.touchbar.item:isVisible](#isVisible) returns false). Please submit an issue if you know of a solution.\n\n * This method uses undocumented functions and\/or framework methods and is not guaranteed to work with future updates to macOS. It has currently been tested with 10.12.6.",
@@ -1975,7 +1975,7 @@
           "Add or remove the touchbar item from the System Tray in the touch bar display.",
           ""
         ],
-        "desc" : "Add or remove the touchbar item from the System Tray in the touch bar display.",
+        "def" : "hs._asm.undocumented.touchbar.item:addToSystemTray(state) -> touchbarItemObject",
         "parameters" : [
           " * `state` - a boolean specifying if the item should be displayed in the System Tray (true) or not (false).",
           ""
@@ -1997,7 +1997,7 @@
           ""
         ],
         "name" : "addToSystemTray",
-        "def" : "hs._asm.undocumented.touchbar.item:addToSystemTray(state) -> touchbarItemObject"
+        "desc" : "Add or remove the touchbar item from the System Tray in the touch bar display."
       },
       {
         "doc" : "Get or set the callback function for the touchbar item.\n\nParameters:\n * `fn` - an optional function, or explicit nil to remove, specifying the callback to be invoked when the item is pressed.\n\nReturns:\n * if an argument is provided, returns the touchbarItem object; otherwise returns the current value\n\nNotes:\n * The callback function should expect one argument, the touchbarItemObject, and return none.",
@@ -2005,7 +2005,7 @@
           "Get or set the callback function for the touchbar item.",
           ""
         ],
-        "desc" : "Get or set the callback function for the touchbar item.",
+        "def" : "hs._asm.undocumented.touchbar.item:callback([fn | nil]) -> touchbarItemObject | fn",
         "parameters" : [
           " * `fn` - an optional function, or explicit nil to remove, specifying the callback to be invoked when the item is pressed.",
           ""
@@ -2020,7 +2020,7 @@
           ""
         ],
         "name" : "callback",
-        "def" : "hs._asm.undocumented.touchbar.item:callback([fn | nil]) -> touchbarItemObject | fn"
+        "desc" : "Get or set the callback function for the touchbar item."
       },
       {
         "doc" : "Get or set the label displayed for the item when the customization panel is being displayed for the touch bar.\n\nParameters:\n * `label` - an optional string, or explicit nil to reset to an empty string, specifying the label to be displayed with the item when the customization panel is being displayed for the touch bar.  Defaults to an empty string.\n\nReturns:\n * if an argument is provided, returns the touchbarItem object; otherwise returns the current value",
@@ -2028,7 +2028,7 @@
           "Get or set the label displayed for the item when the customization panel is being displayed for the touch bar.",
           ""
         ],
-        "desc" : "Get or set the label displayed for the item when the customization panel is being displayed for the touch bar.",
+        "def" : "hs._asm.undocumented.touchbar.item:customizationLabel([label]) -> touchbarItemObject | string",
         "parameters" : [
           " * `label` - an optional string, or explicit nil to reset to an empty string, specifying the label to be displayed with the item when the customization panel is being displayed for the touch bar.  Defaults to an empty string.",
           ""
@@ -2042,7 +2042,7 @@
           " * if an argument is provided, returns the touchbarItem object; otherwise returns the current value"
         ],
         "name" : "customizationLabel",
-        "def" : "hs._asm.undocumented.touchbar.item:customizationLabel([label]) -> touchbarItemObject | string"
+        "desc" : "Get or set the label displayed for the item when the customization panel is being displayed for the touch bar."
       },
       {
         "doc" : "Returns the identifier for the touchbarItem object\n\nParameters:\n * None\n\nReturns:\n * the identifier for the item as a string",
@@ -2050,7 +2050,7 @@
           "Returns the identifier for the touchbarItem object",
           ""
         ],
-        "desc" : "Returns the identifier for the touchbarItem object",
+        "def" : "hs._asm.undocumented.touchbar.item:identifier() -> string",
         "parameters" : [
           " * None",
           ""
@@ -2064,7 +2064,7 @@
           " * the identifier for the item as a string"
         ],
         "name" : "identifier",
-        "def" : "hs._asm.undocumented.touchbar.item:identifier() -> string"
+        "desc" : "Returns the identifier for the touchbarItem object"
       },
       {
         "doc" : "Get or set the image for a button item which was initially given an image when created.\n\nParameters:\n * `image` - an optional `hs.image` object, or explicit nil, specifying the image for the button item.\n\nReturns:\n * if an argument is provided, returns the touchbarItem object; otherwise returns the current value\n\nNotes:\n * This method will generate an error if an image was not provided when the object was created.\n * Setting the image to nil will remove the image and shrink the button, but not as tightly as the button would appear if it had been initially created without an image at all.",
@@ -2072,7 +2072,7 @@
           "Get or set the image for a button item which was initially given an image when created.",
           ""
         ],
-        "desc" : "Get or set the image for a button item which was initially given an image when created.",
+        "def" : "hs._asm.undocumented.touchbar.item:image([image]) -> touchbarItemObject | hs.image object",
         "parameters" : [
           " * `image` - an optional `hs.image` object, or explicit nil, specifying the image for the button item.",
           ""
@@ -2088,21 +2088,21 @@
           ""
         ],
         "name" : "image",
-        "def" : "hs._asm.undocumented.touchbar.item:image([image]) -> touchbarItemObject | hs.image object"
+        "desc" : "Get or set the image for a button item which was initially given an image when created."
       },
       {
-        "doc" : "Returns a boolean indicating whether or not the item is currently visible in the bar that it is assigned to.\n\nParameters:\n * None\n\nReturns:\n * a boolean specifying whether or not the item is currently visible in the bar that it is assigned to.\n\nNotes:\n * If the bar that the item is assigned to has been visible at some point in the past, and the item was visible at that time, this method will return true even if the bar is not currently visible. If you want to know if the item is visible in the touch bar display *right now*, you should use `bar:isVisible() and item:isVisible()`",
+        "doc" : "Returns a boolean indicating whether or not the item is currently visible in the bar that it is assigned to.\n\nParameters:\n * None\n\nReturns:\n * a boolean specifying whether or not the item is currently visible in the bar that it is assigned to.\n\nNotes:\n * If the bar that the item is assigned to has been visible at some point in the past, and the item was visible at that time, this method will return true even if the bar is not currently visible. If you want to know if the item is visible in the touch bar display *right now*, you should use `reallyVisible = bar:isVisible() and item:isVisible()`",
         "stripped_doc" : [
           "Returns a boolean indicating whether or not the item is currently visible in the bar that it is assigned to.",
           ""
         ],
-        "desc" : "Returns a boolean indicating whether or not the item is currently visible in the bar that it is assigned to.",
+        "def" : "hs._asm.undocumented.touchbar.item:isVisible() -> boolean",
         "parameters" : [
           " * None",
           ""
         ],
         "notes" : [
-          " * If the bar that the item is assigned to has been visible at some point in the past, and the item was visible at that time, this method will return true even if the bar is not currently visible. If you want to know if the item is visible in the touch bar display *right now*, you should use `bar:isVisible() and item:isVisible()`"
+          " * If the bar that the item is assigned to has been visible at some point in the past, and the item was visible at that time, this method will return true even if the bar is not currently visible. If you want to know if the item is visible in the touch bar display *right now*, you should use `reallyVisible = bar:isVisible() and item:isVisible()`"
         ],
         "signature" : "hs._asm.undocumented.touchbar.item:isVisible() -> boolean",
         "type" : "Method",
@@ -2111,7 +2111,7 @@
           ""
         ],
         "name" : "isVisible",
-        "def" : "hs._asm.undocumented.touchbar.item:isVisible() -> boolean"
+        "desc" : "Returns a boolean indicating whether or not the item is currently visible in the bar that it is assigned to."
       },
       {
         "doc" : "Presents a bar in the touch bar display modally and hides this item if it is present in the System Tray of the touch bar display.\n\nParameters:\n * `touchbar` - An `hs._asm.undocumented.touchbar.bar` object of the bar to display modally in the touch bar display.\n * `dismissButton` - an optional boolean, default true, specifying whether or not the system escape (or its current replacement) button should be replaced by a button to remove the modal bar from the touch bar display when pressed.\n\nReturns:\n * the touchbarItem object\n\nNotes:\n * If you specify `dismissButton` as false, then you must use `hs._asm.undocumented.touchbar.bar:minimizeModalBar` or `hs._asm.undocumented.touchbar.bar:dismissModalBar` to remove the modal bar from the touch bar display.\n   * Use `hs._asm.undocumented.touchbar.bar:minimizeModalBar` if you want the item to reappear in the System Tray (if it was present before displaying the bar).\n\n * If you do not have \"Touch Bar Shows\" set to \"App Controls With Control Strip\" set in the Keyboard System Preferences, the modal bar will only be displayed when the Hammerspoon application is the frontmost application.\n\n * This method is actually a wrapper to `hs._asm.undocumented.touchbar.bar:presentModalBar` provided for convenience.\n\n * This method uses undocumented functions and\/or framework methods and is not guaranteed to work with future updates to macOS. It has currently been tested with 10.12.6.",
@@ -2119,7 +2119,7 @@
           "Presents a bar in the touch bar display modally and hides this item if it is present in the System Tray of the touch bar display.",
           ""
         ],
-        "desc" : "Presents a bar in the touch bar display modally and hides this item if it is present in the System Tray of the touch bar display.",
+        "def" : "hs._asm.undocumented.touchbar.item:presentModalBar(touchbar, [dismissButton]) -> touchbarItemObject",
         "parameters" : [
           " * `touchbar` - An `hs._asm.undocumented.touchbar.bar` object of the bar to display modally in the touch bar display.",
           " * `dismissButton` - an optional boolean, default true, specifying whether or not the system escape (or its current replacement) button should be replaced by a button to remove the modal bar from the touch bar display when pressed.",
@@ -2142,7 +2142,7 @@
           ""
         ],
         "name" : "presentModalBar",
-        "def" : "hs._asm.undocumented.touchbar.item:presentModalBar(touchbar, [dismissButton]) -> touchbarItemObject"
+        "desc" : "Presents a bar in the touch bar display modally and hides this item if it is present in the System Tray of the touch bar display."
       },
       {
         "doc" : "Get or set the title for a button item which was initially given a title when created.\n\nParameters:\n * `title` - an optional string, or explicit nil, specifying the title for the button item.\n\nReturns:\n * if an argument is provided, returns the touchbarItem object; otherwise returns the current value\n\nNotes:\n * This method will generate an error if a title was not provided when the object was created.\n * Setting the title to nil will remove the title and shrink the button, but not as tightly as the button would appear if it had been initially created without a title at all.",
@@ -2150,7 +2150,7 @@
           "Get or set the title for a button item which was initially given a title when created.",
           ""
         ],
-        "desc" : "Get or set the title for a button item which was initially given a title when created.",
+        "def" : "hs._asm.undocumented.touchbar.item:title([title]) -> touchbarItemObject | string",
         "parameters" : [
           " * `title` - an optional string, or explicit nil, specifying the title for the button item.",
           ""
@@ -2166,7 +2166,7 @@
           ""
         ],
         "name" : "title",
-        "def" : "hs._asm.undocumented.touchbar.item:title([title]) -> touchbarItemObject | string"
+        "desc" : "Get or set the title for a button item which was initially given a title when created."
       },
       {
         "doc" : "Get or set the visibility priority for the touchbar item.\n\nParameters:\n * `priority` - an optional number specifying the visibility priority for the item.\n\nReturns:\n * if an argument is provided, returns the touchbarItem object; otherwise returns the current value\n\nNotes:\n * If their are more items to be presented in the touch bar display than space permits, items with a lower visibility priority will be hidden first.\n * Some predefined visibility values are defined in [hs._asm.undocumented.touchbar.item.visibilityPriorities](#visibilityPriorities), though others are allowed. The default priority for an item object is `hs._asm.undocumented.touchbar.item.visibilityPriorities.normal`.",
@@ -2174,7 +2174,7 @@
           "Get or set the visibility priority for the touchbar item.",
           ""
         ],
-        "desc" : "Get or set the visibility priority for the touchbar item.",
+        "def" : "hs._asm.undocumented.touchbar.item:visibilityPriority([priority]) -> touchbarItemObject | number",
         "parameters" : [
           " * `priority` - an optional number specifying the visibility priority for the item.",
           ""
@@ -2190,7 +2190,7 @@
           ""
         ],
         "name" : "visibilityPriority",
-        "def" : "hs._asm.undocumented.touchbar.item:visibilityPriority([priority]) -> touchbarItemObject | number"
+        "desc" : "Get or set the visibility priority for the touchbar item."
       }
     ],
     "name" : "hs._asm.undocumented.touchbar.item"

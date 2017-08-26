@@ -35,7 +35,7 @@ bar = require("hs._asm.undocumented.touchbar.bar")
 * <a href="#defaultIdentifiers">bar:defaultIdentifiers([identifiersTable]) -> barObject | table</a>
 * <a href="#dismissModalBar">bar:dismissModalBar() -> barObject</a>
 * <a href="#escapeKeyReplacement">bar:escapeKeyReplacement([identifier]) -> barObject | string</a>
-* <a href="#isVisivle">bar:isVisivle() -> boolean</a>
+* <a href="#isVisible">bar:isVisible() -> boolean</a>
 * <a href="#itemForIdentifier">bar:itemForIdentifier([identifier]) -> touchbarItemObject | nil</a>
 * <a href="#itemIdentifiers">bar:itemIdentifiers() -> table</a>
 * <a href="#minimizeModalBar">bar:minimizeModalBar() -> barObject</a>
@@ -171,9 +171,9 @@ Notes:
 
 - - -
 
-<a name="isVisivle"></a>
+<a name="isVisible"></a>
 ~~~lua
-bar:isVisivle() -> boolean
+bar:isVisible() -> boolean
 ~~~
 Returns a boolean indicating whether the bar object is currently visible in the laptop or virtual Touch Bar.
 

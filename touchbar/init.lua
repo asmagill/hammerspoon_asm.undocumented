@@ -10,12 +10,13 @@
 --- If you wish to use this module in an environment where the end-user's machine may not have the correct macOS release version, you should always check the value of `hs._asm.undocumented.touchbar.supported` before trying to create the Touch Bar and provide your own fallback or message.  Failure to do so will cause your code to break to the Hammerspoon Console when you attempt to create and use the Touch Bar.
 
 local USERDATA_TAG = "hs._asm.undocumented.touchbar"
-local module       = require(USERDATA_TAG .. ".supported")
-if not module.supported() then return module end
+local wrapper      = require(USERDATA_TAG .. ".supported")
+if not wrapper.supported() then return wrapper end
 
-module      = require(USERDATA_TAG .. ".internal")
-module.item = require(USERDATA_TAG .. ".item")
-module.bar  = require(USERDATA_TAG .. ".bar")
+local module     = require(USERDATA_TAG .. ".internal")
+module.supported = wrapper.supported
+module.item      = require(USERDATA_TAG .. ".item")
+module.bar       = require(USERDATA_TAG .. ".bar")
 
 local basePath = package.searchpath(USERDATA_TAG, package.path)
 if basePath then

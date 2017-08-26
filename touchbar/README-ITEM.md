@@ -165,7 +165,7 @@ Returns:
  * a boolean specifying whether or not the item is currently visible in the bar that it is assigned to.
 
 Notes:
- * If the bar that the item is assigned to has been visible at some point in the past, and the item was visible at that time, this method will return true even if the bar is not currently visible. If you want to know if the item is visible in the touch bar display *right now*, you should use `bar:isVisible() and item:isVisible()`
+ * If the bar that the item is assigned to has been visible at some point in the past, and the item was visible at that time, this method will return true even if the bar is not currently visible. If you want to know if the item is visible in the touch bar display *right now*, you should use `reallyVisible = bar:isVisible() and item:isVisible()`
 
 - - -
 

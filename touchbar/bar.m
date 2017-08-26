@@ -141,7 +141,7 @@ static int touchbar_toggleCustomization(__unused lua_State *L) {
 
 #pragma mark - Module Methods
 
-/// hs._asm.undocumented.touchbar.bar:isVisivle() -> boolean
+/// hs._asm.undocumented.touchbar.bar:isVisible() -> boolean
 /// Method
 /// Returns a boolean indicating whether the bar object is currently visible in the laptop or virtual Touch Bar.
 ///

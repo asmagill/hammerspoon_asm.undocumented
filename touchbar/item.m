@@ -21,28 +21,113 @@
 #import "TouchBar.h"
 
 static const char * const USERDATA_TAG = "hs._asm.undocumented.touchbar.item" ;
-// static const char * const BAR_UD_TAG   = "hs._asm.undocumented.touchbar.bar" ;
+static const char * const BAR_UD_TAG   = "hs._asm.undocumented.touchbar.bar" ;
 static int refTable = LUA_NOREF;
 
 #define get_objectFromUserdata(objType, L, idx, tag) (objType*)*((void**)luaL_checkudata(L, idx, tag))
 // #define get_structFromUserdata(objType, L, idx, tag) ((objType *)luaL_checkudata(L, idx, tag))
 // #define get_cfobjectFromUserdata(objType, L, idx, tag) *((objType *)luaL_checkudata(L, idx, tag))
 
-typedef NS_ENUM(NSUInteger, TB_ItemTypes) {
+typedef NS_ENUM(NSInteger, TB_ItemTypes) {
+    TBIT_unknown = -1,
     TBIT_buttonWithText = 0,
     TBIT_buttonWithImage,
     TBIT_buttonWithImageAndText,
+    TBIT_candidateList,
+    TBIT_colorPicker,
+    TBIT_group,
+    TBIT_popover,
+    TBIT_sharingServicePicker,
+    TBIT_slider,
+    TBIT_canvas,
 } ;
 
 #pragma mark - Support Functions and Classes
 
-@interface HSASMButtonTouchBarItem : NSCustomTouchBarItem
-@property int          callbackRef ;
-@property int          selfRefCount ;
-@property TB_ItemTypes itemType ;
+@interface CanvasWrapper : NSControl
 @end
 
-@implementation HSASMButtonTouchBarItem
+@interface CanvasActionCell : NSActionCell
+@property NSColor *clickColor ;
+@end
+
+@interface HSASMCustomTouchBarItem : NSCustomTouchBarItem
+@property            int          callbackRef ;
+@property            int          selfRefCount ;
+@property (readonly) TB_ItemTypes itemType ;
+@end
+
+@interface HSASMGroupTouchBarItem : NSGroupTouchBarItem
+@property            int          callbackRef ;
+@property            int          selfRefCount ;
+@property (readonly) TB_ItemTypes itemType ;
+@end
+//
+// @interface HSASMPopoverTouchBarItem : NSPopoverTouchBarItem
+// @property            int          callbackRef ;
+// @property            int          selfRefCount ;
+// @property (readonly) TB_ItemTypes itemType ;
+// @end
+//
+// @interface HSASMSliderTouchBarItem : NSSliderTouchBarItem
+// @property            int          callbackRef ;
+// @property            int          selfRefCount ;
+// @property (readonly) TB_ItemTypes itemType ;
+// @end
+//
+// @interface HSASMColorPickerTouchBarItem : NSColorPickerTouchBarItem
+// @property            int          callbackRef ;
+// @property            int          selfRefCount ;
+// @property (readonly) TB_ItemTypes itemType ;
+// @end
+
+// @interface HSASMSharingServicePickerTouchBarItem : NSSharingServicePickerTouchBarItem
+// @property            int          callbackRef ;
+// @property            int          selfRefCount ;
+// @property (readonly) TB_ItemTypes itemType ;
+// @end
+
+// @interface HSASMColorPickerTouchBarItem : NSCandidateListTouchBarItem
+// @property            int          callbackRef ;
+// @property            int          selfRefCount ;
+// @property (readonly) TB_ItemTypes itemType ;
+// @end
+
+// NSScrubber ?
+
+@implementation CanvasActionCell
+
+- (instancetype)init {
+    self = [super init] ;
+    if (self) {
+        _clickColor = nil ;
+    }
+    return self ;
+}
+
+- (NSColor *)highlightColorWithFrame:(__unused NSRect)cellFrame inView:(__unused NSView *)controlView {
+    if(_clickColor) {
+        return _clickColor ;
+    } else {
+        return [NSColor selectedControlColor] ;
+    }
+}
+
+@end
+
+@implementation CanvasWrapper
+
+- (instancetype)initWithFrame:(NSRect)frameRect {
+    self = [super initWithFrame:frameRect] ;
+    if (self) {
+        self.cell   = [[CanvasActionCell alloc] init] ;
+    }
+    return self ;
+}
+
+@end
+
+@implementation HSASMCustomTouchBarItem
 
 - (instancetype)initItemType:(TB_ItemTypes)itemType withIdentifier:(NSString *)identifier {
     self = [super initWithIdentifier:identifier] ;
@@ -72,7 +157,75 @@ typedef NS_ENUM(NSUInteger, TB_ItemTypes) {
 
 @end
 
+@implementation HSASMGroupTouchBarItem
+
+- (instancetype)initWithIdentifier:(NSString *)identifier {
+    self = [super initWithIdentifier:identifier] ;
+    if (self) {
+        _callbackRef  = LUA_NOREF ;
+        _selfRefCount = 0 ;
+        _itemType     = TBIT_group ;
+    }
+    return self ;
+}
+
+@end
+
 #pragma mark - Module Functions
+
+// Requires tweak to canvas - (id)getElementValueFor:(NSString *)keyName atIndex:(NSUInteger)index resolvePercentages:(BOOL)resolvePercentages
+
+static int grouptouchbaritem_newGroup(lua_State *L) {
+    LuaSkin      *skin       = [LuaSkin shared] ;
+    [skin checkArgs:LS_TSTRING | LS_TOPTIONAL, LS_TBREAK] ;
+    NSString *identifier = (lua_gettop(L) == 1) ? [skin toNSObjectAtIndex:1] : [[NSUUID UUID] UUIDString] ;
+
+    HSASMGroupTouchBarItem *obj = [[HSASMGroupTouchBarItem alloc] initWithIdentifier:identifier] ;
+    if (obj) {
+        [skin pushNSObject:obj] ;
+    } else {
+        lua_pushnil(L) ;
+    }
+    return 1 ;
+}
+
+static int customtouchbaritem_newCanvas(lua_State *L) {
+    LuaSkin      *skin       = [LuaSkin shared] ;
+    [skin checkArgs:LS_TUSERDATA, "hs.canvas", LS_TSTRING | LS_TOPTIONAL, LS_TBREAK] ;
+
+    NSView   *canvas     = [skin toNSObjectAtIndex:1] ;
+    NSString *identifier = (lua_gettop(L) == 2) ? [skin toNSObjectAtIndex:2] : [[NSUUID UUID] UUIDString] ;
+
+    HSASMCustomTouchBarItem *obj = [[HSASMCustomTouchBarItem alloc] initItemType:TBIT_canvas withIdentifier:identifier] ;
+
+    if (obj) {
+        NSRect canvasFrame = canvas.frame ;
+        NSRect itemFrame   = NSMakeRect(0, 0, canvasFrame.size.width * 30 / canvasFrame.size.height, 30) ;
+
+        CanvasWrapper *itemWrapper = [[CanvasWrapper alloc] initWithFrame:itemFrame] ;
+//         NSControl *itemWrapper = [[NSControl alloc] initWithFrame:itemFrame] ;
+//         itemWrapper.cell   = [[NSActionCell alloc] init] ;
+        itemWrapper.target = obj ;
+        itemWrapper.action = @selector(performCallback:) ;
+        obj.view = itemWrapper ;
+
+        canvas.frame = itemFrame ;
+        [obj.view addSubview:canvas] ;
+        [obj.view addConstraint:[NSLayoutConstraint constraintWithItem:obj.view
+                                                             attribute:NSLayoutAttributeWidth
+                                                             relatedBy:NSLayoutRelationEqual
+                                                                toItem:canvas
+                                                             attribute:NSLayoutAttributeWidth
+                                                            multiplier:1.0
+                                                              constant:0.0]] ;
+        canvas.needsDisplay = YES ;
+
+        [skin pushNSObject:obj] ;
+    } else {
+        lua_pushnil(L) ;
+    }
+    return 1 ;
+}
 
 /// hs._asm.undocumented.touchbar.item.newButton([title], [image], [identifier]) -> touchbarItemObject
 /// Constructor
@@ -90,12 +243,12 @@ typedef NS_ENUM(NSUInteger, TB_ItemTypes) {
 ///  * You can change the button's title with [hs._asm.undocumented.touchbar.item:title](#title) only if you initially assign one with this constructor.
 ///  * You can change the button's image with [hs._asm.undocumented.touchbar.item:image](#title) only if you initially assign one with this constructor.
 ///  * If you intend to allow customization of the touch bar, it is highly recommended that you specify an identifier, since the UUID will change each time the item is regenerated (when Hammerspoon reloads or restarts).
-static int touchbaritem_newButton(lua_State *L) {
+static int customtouchbaritem_newButton(lua_State *L) {
     LuaSkin      *skin       = [LuaSkin shared] ;
     NSString     *title      = nil ;
     NSImage      *image      = nil ;
     NSString     *identifier = [[NSUUID UUID] UUIDString] ;
-    TB_ItemTypes itemType ;
+    TB_ItemTypes itemType    = TBIT_unknown ;
 
     switch(lua_gettop(L)) {
         case 1: {
@@ -134,10 +287,12 @@ static int touchbaritem_newButton(lua_State *L) {
         }
     }
 
-    HSASMButtonTouchBarItem *obj = [[HSASMButtonTouchBarItem alloc] initItemType:itemType withIdentifier:identifier] ;
+    HSASMCustomTouchBarItem *obj = [[HSASMCustomTouchBarItem alloc] initItemType:itemType withIdentifier:identifier] ;
 
     if (obj) {
-    NSButton *button ;
+        NSButton *button ;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wswitch-enum"
         switch(itemType) {
             case TBIT_buttonWithText: {
                 button = [NSButton buttonWithTitle:title target:obj action:@selector(performCallback:)] ;
@@ -148,7 +303,11 @@ static int touchbaritem_newButton(lua_State *L) {
             case TBIT_buttonWithImageAndText: {
                 button = [NSButton buttonWithTitle:title image:image target:obj action:@selector(performCallback:)] ;
             } break ;
+            default:
+                return luaL_error(L, "unknown item type %l; this should not happen, contact developers", itemType) ;
         }
+#pragma clang diagnostic pop
+
         obj.view            = button ;
 //         obj.view.appearance = [NSAppearance appearanceNamed:@"NSAppearanceNameControlStrip"] ;
 
@@ -160,6 +319,25 @@ static int touchbaritem_newButton(lua_State *L) {
 }
 
 #pragma mark - Module Methods
+
+static int grouptouchbaritem_groupTouchBar(lua_State *L) {
+    LuaSkin *skin = [LuaSkin shared] ;
+    [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBREAK | LS_TVARARG] ;
+    HSASMGroupTouchBarItem *obj = [skin toNSObjectAtIndex:1] ;
+
+    if (obj.itemType == TBIT_group) {
+        if (lua_gettop(L) == 1) {
+            [skin pushNSObject:obj.groupTouchBar] ;
+        } else {
+            [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TUSERDATA, BAR_UD_TAG, LS_TBREAK] ;
+            obj.groupTouchBar = [skin toNSObjectAtIndex:2] ;
+            lua_pushvalue(L, 1) ;
+        }
+    } else {
+        return luaL_argerror(L, 1, "method only valid for group type") ;
+    }
+    return  1 ;
+}
 
 /// hs._asm.undocumented.touchbar.item:customizationLabel([label]) -> touchbarItemObject | string
 /// Method
@@ -201,10 +379,10 @@ static int touchbaritem_customizationLabel(lua_State *L) {
 /// Notes:
 ///  * This method will generate an error if an image was not provided when the object was created.
 ///  * Setting the image to nil will remove the image and shrink the button, but not as tightly as the button would appear if it had been initially created without an image at all.
-static int touchbaritem_image(lua_State *L) {
+static int customtouchbaritem_image(lua_State *L) {
     LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TANY | LS_TOPTIONAL, LS_TBREAK] ;
-    HSASMButtonTouchBarItem *obj = [skin toNSObjectAtIndex:1] ;
+    HSASMCustomTouchBarItem *obj = [skin toNSObjectAtIndex:1] ;
 
     if (obj.itemType == TBIT_buttonWithImage || obj.itemType == TBIT_buttonWithImageAndText) {
         if (lua_gettop(L) == 1) {
@@ -237,10 +415,10 @@ static int touchbaritem_image(lua_State *L) {
 /// Notes:
 ///  * This method will generate an error if a title was not provided when the object was created.
 ///  * Setting the title to nil will remove the title and shrink the button, but not as tightly as the button would appear if it had been initially created without a title at all.
-static int touchbaritem_title(lua_State *L) {
+static int customtouchbaritem_title(lua_State *L) {
     LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TSTRING | LS_TNIL | LS_TOPTIONAL, LS_TBREAK] ;
-    HSASMButtonTouchBarItem *obj = [skin toNSObjectAtIndex:1] ;
+    HSASMCustomTouchBarItem *obj = [skin toNSObjectAtIndex:1] ;
 
     if (obj.itemType == TBIT_buttonWithText || obj.itemType == TBIT_buttonWithImageAndText) {
         if (lua_gettop(L) == 1) {
@@ -256,6 +434,128 @@ static int touchbaritem_title(lua_State *L) {
     } else {
         return luaL_argerror(L, 1, "method only valid for button types initialized with a title") ;
     }
+    return 1 ;
+}
+
+static int customtouchbaritem_width(lua_State *L) {
+    LuaSkin *skin = [LuaSkin shared] ;
+    [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TNUMBER | LS_TNIL | LS_TOPTIONAL, LS_TBREAK] ;
+    HSASMCustomTouchBarItem *obj = [skin toNSObjectAtIndex:1] ;
+
+    if (obj.itemType == TBIT_canvas) {
+        if (lua_gettop(L) == 1) {
+            // if constraint exists, return nil
+            lua_pushnumber(L, obj.view.subviews.firstObject.frame.size.width) ;
+        } else {
+            if (lua_type(L, 2) == LUA_TNIL) {
+                [skin logWarn:@"constraint removal not supported yet"] ;
+                // remove constraint
+            } else {
+                // make sure constraint is in place
+                NSRect itemRect = obj.view.subviews.firstObject.frame ;
+                itemRect.size.width = lua_tonumber(L, 2) ;
+                obj.view.subviews.firstObject.frame = itemRect ;
+            }
+            lua_pushvalue(L, 1) ;
+        }
+    } else {
+        return luaL_argerror(L, 1, "method only valid for canvas type") ;
+    }
+    return 1 ;
+}
+
+static int customtouchbaritem_highlightColor(lua_State *L) {
+    LuaSkin *skin = [LuaSkin shared] ;
+    [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TTABLE | LS_TNIL | LS_TOPTIONAL, LS_TBREAK] ;
+    HSASMCustomTouchBarItem *obj = [skin toNSObjectAtIndex:1] ;
+
+    if (obj.itemType == TBIT_canvas) {
+        CanvasActionCell *cell = ((CanvasWrapper *)obj.view).cell ;
+        if (lua_gettop(L) == 1) {
+            NSColor *result = cell.clickColor ;
+            if (result) {
+                [skin pushNSObject:result] ;
+            } else {
+                [skin pushNSObject:[NSColor selectedControlColor]] ;
+            }
+        } else {
+            if (lua_type(L, 2) == LUA_TNIL) {
+                cell.clickColor = nil ;
+            } else {
+                cell.clickColor = [skin luaObjectAtIndex:2 toClass:"NSColor"] ;
+            }
+            lua_pushvalue(L, 1) ;
+        }
+    } else {
+        return luaL_argerror(L, 1, "method only valid for canvas type") ;
+    }
+    return 1 ;
+}
+
+static int customtouchbaritem_enabled(lua_State *L) {
+    LuaSkin *skin = [LuaSkin shared] ;
+    [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBOOLEAN | LS_TOPTIONAL, LS_TBREAK] ;
+    HSASMCustomTouchBarItem *obj = [skin toNSObjectAtIndex:1] ;
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wswitch-enum"
+    switch(obj.itemType) {
+        case TBIT_buttonWithImage:
+        case TBIT_buttonWithText:
+        case TBIT_buttonWithImageAndText:
+        case TBIT_canvas: {
+            if (lua_gettop(L) == 1) {
+                lua_pushboolean(L, ((NSButton *)obj.view).enabled) ;
+            } else {
+                ((NSButton *)obj.view).enabled = (BOOL)lua_toboolean(L, 2) ;
+                lua_pushvalue(L, 1) ;
+            }
+        } break ;
+        default:
+            return luaL_argerror(L, 1, "method only valid for button and canvas types") ;
+    }
+#pragma clang diagnostic pop
+    return 1 ;
+}
+
+static int customtouchbaritem_size(lua_State *L) {
+    LuaSkin *skin = [LuaSkin shared] ;
+    [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TSTRING | LS_TOPTIONAL, LS_TBREAK] ;
+    HSASMCustomTouchBarItem *obj = [skin toNSObjectAtIndex:1] ;
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wswitch-enum"
+    switch(obj.itemType) {
+        case TBIT_buttonWithImage:
+        case TBIT_buttonWithText:
+        case TBIT_buttonWithImageAndText: {
+            if (lua_gettop(L) == 1) {
+                NSControlSize size = ((NSButton *)obj.view).controlSize ;
+                switch (size) {
+                    case NSControlSizeMini:    lua_pushstring(L, "mini") ; break ;
+                    case NSControlSizeSmall:   lua_pushstring(L, "small") ; break ;
+                    case NSControlSizeRegular: lua_pushstring(L, "regular") ; break ;
+                    default:
+                        [skin pushNSObject:[NSString stringWithFormat:@"unrcognized control size: %lu", size]] ;
+                }
+            } else {
+                NSString *sizeString = [skin toNSObjectAtIndex:2] ;
+                NSControlSize size = ((NSButton *)obj.view).controlSize ;
+
+                if      ([sizeString isEqualToString:@"mini"])    { size = NSControlSizeMini ; }
+                else if ([sizeString isEqualToString:@"small"])   { size = NSControlSizeSmall ; }
+                else if ([sizeString isEqualToString:@"regular"]) { size = NSControlSizeRegular ; }
+                else {
+                    return luaL_argerror(L, 2, "must be one of mini, small, or regular") ;
+                }
+                ((NSButton *)obj.view).controlSize = size ;
+                lua_pushvalue(L, 1) ;
+            }
+        } break ;
+        default:
+            return luaL_argerror(L, 1, "method only valid for button types") ;
+    }
+#pragma clang diagnostic pop
     return 1 ;
 }
 
@@ -288,7 +588,7 @@ static int touchbaritem_identifier(__unused lua_State *L) {
 ///  * a boolean specifying whether or not the item is currently visible in the bar that it is assigned to.
 ///
 /// Notes:
-///  * If the bar that the item is assigned to has been visible at some point in the past, and the item was visible at that time, this method will return true even if the bar is not currently visible. If you want to know if the item is visible in the touch bar display *right now*, you should use `bar:isVisible() and item:isVisible()`
+///  * If the bar that the item is assigned to has been visible at some point in the past, and the item was visible at that time, this method will return true even if the bar is not currently visible. If you want to know if the item is visible in the touch bar display *right now*, you should use `reallyVisible = bar:isVisible() and item:isVisible()`
 static int touchbaritem_isVisible(lua_State *L) {
     LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBREAK] ;
@@ -340,7 +640,7 @@ static int touchbaritem_visibilityPriority(lua_State *L) {
 static int touchbaritem_callback(lua_State *L) {
     LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TFUNCTION | LS_TNIL | LS_TOPTIONAL, LS_TBREAK] ;
-    HSASMButtonTouchBarItem *obj = [skin toNSObjectAtIndex:1] ;
+    HSASMCustomTouchBarItem *obj = [skin toNSObjectAtIndex:1] ;
 
     if (lua_gettop(L) == 2) {
         obj.callbackRef = [skin luaUnref:refTable ref:obj.callbackRef] ;
@@ -426,21 +726,43 @@ static int push_visibilityPriorities(lua_State *L) {
 // These must not throw a lua error to ensure LuaSkin can safely be used from Objective-C
 // delegates and blocks.
 
-static int pushHSASMButtonTouchBarItem(lua_State *L, id obj) {
-    HSASMButtonTouchBarItem *value = obj;
+static int pushHSASMCustomTouchBarItem(lua_State *L, id obj) {
+    HSASMCustomTouchBarItem *value = obj;
     value.selfRefCount++ ;
-    void** valuePtr = lua_newuserdata(L, sizeof(HSASMButtonTouchBarItem *));
+    void** valuePtr = lua_newuserdata(L, sizeof(HSASMCustomTouchBarItem *));
     *valuePtr = (__bridge_retained void *)value;
     luaL_getmetatable(L, USERDATA_TAG);
     lua_setmetatable(L, -2);
     return 1;
 }
 
-id toHSASMButtonTouchBarItemFromLua(lua_State *L, int idx) {
+id toHSASMCustomTouchBarItemFromLua(lua_State *L, int idx) {
     LuaSkin *skin = [LuaSkin shared] ;
-    HSASMButtonTouchBarItem *value ;
+    HSASMCustomTouchBarItem *value ;
     if (luaL_testudata(L, idx, USERDATA_TAG)) {
-        value = get_objectFromUserdata(__bridge HSASMButtonTouchBarItem, L, idx, USERDATA_TAG) ;
+        value = get_objectFromUserdata(__bridge HSASMCustomTouchBarItem, L, idx, USERDATA_TAG) ;
+    } else {
+        [skin logError:[NSString stringWithFormat:@"expected %s object, found %s", USERDATA_TAG,
+                                                   lua_typename(L, lua_type(L, idx))]] ;
+    }
+    return value ;
+}
+
+static int pushHSASMGroupTouchBarItem(lua_State *L, id obj) {
+    HSASMGroupTouchBarItem *value = obj;
+    value.selfRefCount++ ;
+    void** valuePtr = lua_newuserdata(L, sizeof(HSASMGroupTouchBarItem *));
+    *valuePtr = (__bridge_retained void *)value;
+    luaL_getmetatable(L, USERDATA_TAG);
+    lua_setmetatable(L, -2);
+    return 1;
+}
+
+id toHSASMGroupTouchBarItemFromLua(lua_State *L, int idx) {
+    LuaSkin *skin = [LuaSkin shared] ;
+    HSASMGroupTouchBarItem *value ;
+    if (luaL_testudata(L, idx, USERDATA_TAG)) {
+        value = get_objectFromUserdata(__bridge HSASMGroupTouchBarItem, L, idx, USERDATA_TAG) ;
     } else {
         [skin logError:[NSString stringWithFormat:@"expected %s object, found %s", USERDATA_TAG,
                                                    lua_typename(L, lua_type(L, idx))]] ;
@@ -473,7 +795,7 @@ static int userdata_eq(lua_State* L) {
 }
 
 static int userdata_gc(lua_State* L) {
-    HSASMButtonTouchBarItem *obj = get_objectFromUserdata(__bridge_transfer HSASMButtonTouchBarItem, L, 1, USERDATA_TAG) ;
+    HSASMCustomTouchBarItem *obj = get_objectFromUserdata(__bridge_transfer HSASMCustomTouchBarItem, L, 1, USERDATA_TAG) ;
     if (obj) {
         obj.selfRefCount-- ;
         if (obj.selfRefCount == 0) {
@@ -496,12 +818,20 @@ static int userdata_gc(lua_State* L) {
 // Metatable for userdata objects
 static const luaL_Reg userdata_metaLib[] = {
     {"customizationLabel", touchbaritem_customizationLabel},
-    {"image",              touchbaritem_image},
-    {"title",              touchbaritem_title},
     {"identifier",         touchbaritem_identifier},
     {"isVisible",          touchbaritem_isVisible},
     {"visibilityPriority", touchbaritem_visibilityPriority},
     {"callback",           touchbaritem_callback},
+
+    {"image",              customtouchbaritem_image},
+    {"title",              customtouchbaritem_title},
+    {"enabled",            customtouchbaritem_enabled},       // may need to overload
+    {"size",               customtouchbaritem_size},          // may need to overload
+
+    {"width",              customtouchbaritem_width},
+    {"highlightColor",     customtouchbaritem_highlightColor},
+
+    {"touchbar",           grouptouchbaritem_groupTouchBar},
 
     {"addToSystemTray",    touchbaritem_systemTray},
 
@@ -513,8 +843,10 @@ static const luaL_Reg userdata_metaLib[] = {
 
 // Functions for returned object when module loads
 static luaL_Reg moduleLib[] = {
-    {"newButton", touchbaritem_newButton},
-    {NULL, NULL}
+    {"newButton",    customtouchbaritem_newButton},
+    {"newCanvas",    customtouchbaritem_newCanvas},
+    {"newItemGroup", grouptouchbaritem_newGroup},
+    {NULL,           NULL}
 };
 
 // // Metatable for module, if needed
@@ -534,9 +866,13 @@ int luaopen_hs__asm_undocumented_touchbar_item(lua_State* L) {
 
         push_visibilityPriorities(L) ; lua_setfield(L, -2, "visibilityPriorities") ;
 
-        [skin registerPushNSHelper:pushHSASMButtonTouchBarItem         forClass:"HSASMButtonTouchBarItem"] ;
-        [skin registerLuaObjectHelper:toHSASMButtonTouchBarItemFromLua forClass:"HSASMButtonTouchBarItem"
+        [skin registerPushNSHelper:pushHSASMCustomTouchBarItem         forClass:"HSASMCustomTouchBarItem"] ;
+        [skin registerLuaObjectHelper:toHSASMCustomTouchBarItemFromLua forClass:"HSASMCustomTouchBarItem"
                                                             withUserdataMapping:USERDATA_TAG] ;
+
+        [skin registerPushNSHelper:pushHSASMGroupTouchBarItem         forClass:"HSASMGroupTouchBarItem"] ;
+        [skin registerLuaObjectHelper:toHSASMGroupTouchBarItemFromLua forClass:"HSASMGroupTouchBarItem"] ;
+
     } else {
         [skin logWarn:[NSString stringWithFormat:@"%s requires NSTouchBarItem which is only available in 10.12.2 and later", USERDATA_TAG]] ;
         lua_newtable(L) ;
