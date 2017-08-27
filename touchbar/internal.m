@@ -1,11 +1,11 @@
 @import Cocoa ;
 @import LuaSkin ;
+@import Accelerate ;
+@import QuartzCore ;
+
 #import "TouchBar.h"
 
 // NOTE: should probably rework documentation to refer to it as a Virtual Touch Bar.
-
-// An attempt at gathering info to learn more about what private framework this is using
-// #define INCLUDE_DUMP_THREAD
 
 static const char *USERDATA_TAG = "hs._asm.undocumented.touchbar" ;
 static int        refTable      = LUA_NOREF ;
@@ -26,10 +26,7 @@ static inline NSRect RectWithFlippedYCoordinate(NSRect theRect) {
 @property CGDisplayStreamRef stream ;
 @property NSView             *displayView ;
 @property BOOL               passMouseEvents ;
-
-#ifdef INCLUDE_DUMP_THREAD
-@property BOOL               dumpThread ;
-#endif
+@property CGContextRef       context ;
 @end
 
 @implementation ASMTouchBarView {}
@@ -52,13 +49,52 @@ static inline NSRect RectWithFlippedYCoordinate(NSRect theRect) {
                                                                                __unused CGDisplayStreamUpdateRef updateRef) {
             if (status != kCGDisplayStreamFrameStatusFrameComplete) return ;
             self->_displayView.layer.contents = (__bridge id)(frameSurface) ;
-            // thread dump shows that we're invoked from within the SkyLight private framework
-#ifdef INCLUDE_DUMP_THREAD
-            if (self->_dumpThread) {
-                [LuaSkin logDebug:[NSString stringWithFormat:@"%s:%@", USERDATA_TAG, [NSThread callStackSymbols]]] ;
-                self->_dumpThread = NO ;
+
+// https://github.com/steventroughtonsmith/TouchBarScreenshotter/blob/master/TouchBarScreenshotter/AppDelegate.m
+            IOSurfaceRef surface = frameSurface ;
+
+            IOSurfaceLock(surface, kIOSurfaceLockReadOnly, nil) ;
+            void   *frameBase  = IOSurfaceGetBaseAddress(surface) ;
+            size_t bytesPerRow = IOSurfaceGetBytesPerRow(surface) ;
+            size_t height      = IOSurfaceGetHeight(surface) ;
+            size_t width       = IOSurfaceGetWidth(surface) ;
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunguarded-availability"
+            CGColorSpaceRef colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceDisplayP3) ;
+#pragma clang diagnostic pop
+
+            vImage_Buffer src ;
+            src.height   = height ;
+            src.width    = width ;
+            src.rowBytes = bytesPerRow ;
+            src.data     = frameBase ;
+
+            vImage_Buffer dest ;
+            dest.height   = height ;
+            dest.width    = width ;
+            dest.rowBytes = bytesPerRow ;
+            dest.data     = malloc(bytesPerRow*height) ;
+
+            // Swap pixel channels from BGRA to RGBA.
+            const uint8_t map[4] = { 2, 1, 0, 3 } ;
+            vImagePermuteChannels_ARGB8888(&src, &dest, map, kvImageNoFlags) ;
+
+            self->_context = CGBitmapContextCreate (dest.data,
+                                             width,
+                                             height,
+                                             8,
+                                             bytesPerRow,
+                                             colorSpace,
+                                             kCGImageAlphaPremultipliedLast) ;
+
+            CGColorSpaceRelease(colorSpace) ;
+            IOSurfaceUnlock(surface, kIOSurfaceLockReadOnly, nil) ;
+
+            if (self->_context == NULL) {
+                [LuaSkin logDebug:@"%s:unable to create context for toolbar image creation"] ;
             }
-#endif
+
         }) ;
 
         // Enables applications to put things into the touch bar
@@ -77,10 +113,6 @@ static inline NSRect RectWithFlippedYCoordinate(NSRect theRect) {
                                                           userInfo:nil]] ;
 #pragma clang diagnostic pop
     }
-
-#ifdef INCLUDE_DUMP_THREAD
-        _dumpThread = NO ;
-#endif
 
     return self ;
 }
@@ -286,6 +318,19 @@ static int touchbar_show(lua_State *L) {
             [[touchbar animator] setAlphaValue:1.0] ;
             [NSAnimationContext endGrouping] ;
         }
+    }
+    lua_pushvalue(L, 1) ;
+    return 1 ;
+}
+
+static int touchbar_streaming(lua_State *L) {
+    LuaSkin *skin = [LuaSkin shared] ;
+    [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBOOLEAN, LS_TBREAK] ;
+    ASMTouchBarWindow *touchbar = [skin toNSObjectAtIndex:1] ;
+    if (lua_toboolean(L, 2)) {
+        [(ASMTouchBarView *)touchbar.contentView startStreaming] ;
+    } else {
+        [(ASMTouchBarView *)touchbar.contentView stopStreaming] ;
     }
     lua_pushvalue(L, 1) ;
     return 1 ;
@@ -557,24 +602,30 @@ static int touchbar_setCallback(lua_State *L) {
     return 1 ;
 }
 
-#ifdef INCLUDE_DUMP_THREAD
-static int touchbar_dumpThread(lua_State *L) {
+static int touchbar_asImage(lua_State *L) {
     LuaSkin *skin = [LuaSkin shared] ;
-    [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBOOLEAN | LS_TOPTIONAL, LS_TBREAK] ;
+    [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBREAK] ;
     ASMTouchBarWindow *touchbar = [skin toNSObjectAtIndex:1] ;
+    ASMTouchBarView   *touchBarView = touchbar.contentView ;
 
-    if (lua_gettop(L) == 1) {
-        lua_pushboolean(L, ((ASMTouchBarView *)touchbar.contentView).dumpThread) ;
+
+    CGImageRef imgRef  = CGBitmapContextCreateImage(touchBarView.context) ;
+    if (imgRef == NULL) {
+        lua_pushnil(L) ;
     } else {
-        ((ASMTouchBarView *)touchbar.contentView).dumpThread = (BOOL)lua_toboolean(L, 2) ;
-        lua_pushvalue(L, 1) ;
+        CGSize     imgSize = DFRGetScreenSize() ;
+
+        NSBitmapImageRep *imageRep = [[NSBitmapImageRep alloc] initWithCGImage:imgRef] ;
+        NSImage          *image    = [[NSImage alloc] initWithSize:imgSize] ;
+        [image addRepresentation:imageRep];
+
+        [skin pushNSObject:image] ;
     }
     return 1 ;
 }
-#endif
+
 
 //       during __gc do we need to remove callback from dispatch queue?
-
 
 #pragma mark - Module Constants
 
@@ -668,10 +719,9 @@ static const luaL_Reg userdata_metaLib[] = {
     {"backgroundColor",    touchbar_backgroundColor},
     {"setCallback",        touchbar_setCallback},
     {"acceptsMouseEvents", touchbar_acceptsMouseEvents},
+    {"image",              touchbar_asImage},
+    {"streaming",          touchbar_streaming},
 
-#ifdef INCLUDE_DUMP_THREAD
-    {"dumpThread",         touchbar_dumpThread},
-#endif
     {"__tostring",         userdata_tostring},
     {"__eq",               userdata_eq},
     {"__gc",               userdata_gc},

@@ -8,6 +8,8 @@
 --- This module requires that you are running macOS 10.12.1 build 16B2657 or greater.  Most people who have received the 10.12.1 update have an earlier build, which you can check by selecting "About this Mac" from the Apple menu and then clicking the mouse pointer on the version number displayed in the dialog box.  If you require an update, you can find it at https://support.apple.com/kb/dl1897.
 ---
 --- If you wish to use this module in an environment where the end-user's machine may not have the correct macOS release version, you should always check the value of `hs._asm.undocumented.touchbar.supported` before trying to create the Touch Bar and provide your own fallback or message.  Failure to do so will cause your code to break to the Hammerspoon Console when you attempt to create and use the Touch Bar.
+---
+--- Image generation code found at https://github.com/steventroughtonsmith/TouchBarScreenshotter/blob/master/TouchBarScreenshotter
 
 local USERDATA_TAG = "hs._asm.undocumented.touchbar"
 local wrapper      = require(USERDATA_TAG .. ".supported")
