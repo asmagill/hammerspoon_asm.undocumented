@@ -15,6 +15,7 @@
 /// TODO:
 ///  * touch bars for the console and webviews
 ///  * `isVisible` is KVO, so add a watcher
+///  * rework orginization so bar in root, current root in virtual
 
 @import Cocoa ;
 @import LuaSkin ;
@@ -48,6 +49,57 @@ static NSDictionary *builtInIdentifiers ;
     return self ;
 }
 
+// override this so we can adjust item selfRefCounts in one place rather than everywhere it might be set
+- (void)setTemplateItems:(NSSet<NSTouchBarItem *> *)templateItems {
+    NSSet *currentItems = self.templateItems ;
+
+// This is because we want to access a property in another custom subclass but because both this class and
+// the one we want to access are in separate shared libraries, we can't access them directly at runtime.
+//
+// Another solution is to merge the libraries together into one shared library, but this is also a proof of
+// concept to prove to myself that this is starting to make sense to me :-)
+
+    // returns int, 16 byte frame: id at offset 0, selector at offset 8
+    NSMethodSignature *getSignature  = [NSMethodSignature signatureWithObjCTypes:"i16@0:8"] ;
+    NSInvocation      *getInvocation = [NSInvocation invocationWithMethodSignature:getSignature] ;
+    [getInvocation setSelector:NSSelectorFromString(@"selfRefCount")] ;
+
+    // returns void, 20 byte frame: id at offset 0, selector at offset 8, int at offset 16
+    NSMethodSignature *setSignature  = [NSMethodSignature signatureWithObjCTypes:"v20@0:8i16"] ;
+    NSInvocation      *setInvocation = [NSInvocation invocationWithMethodSignature:setSignature] ;
+    [setInvocation setSelector:NSSelectorFromString(@"setSelfRefCount:")] ;
+
+    // decrease the selfRefCount for the current items
+    [currentItems enumerateObjectsUsingBlock:^(NSTouchBarItem *item, __unused BOOL *stop) {
+        if ([item respondsToSelector:NSSelectorFromString(@"selfRefCount")]) {
+            int currentCount ;
+            [getInvocation invokeWithTarget:item] ;
+            [getInvocation getReturnValue:&currentCount] ;
+            currentCount-- ;
+            [setInvocation setArgument:&currentCount atIndex:2] ; // 0 is the object itself and 1 is the selector
+            [setInvocation invokeWithTarget:item] ;
+        } else {
+            [LuaSkin logWarn:[NSString stringWithFormat:@"%s:setTemplateItems (decreasing) - item %@ does not recognize selfRefCount", USERDATA_TAG, item]] ;
+        }
+    }] ;
+
+    [super setTemplateItems:templateItems] ;
+
+    // increase the selfRefCount for the ones we've just set
+    [templateItems enumerateObjectsUsingBlock:^(NSTouchBarItem *item, __unused BOOL *stop) {
+        if ([item respondsToSelector:NSSelectorFromString(@"selfRefCount")]) {
+            int currentCount ;
+            [getInvocation invokeWithTarget:item] ;
+            [getInvocation getReturnValue:&currentCount] ;
+            currentCount++ ;
+            [setInvocation setArgument:&currentCount atIndex:2] ; // 0 is the object itself and 1 is the selector
+            [setInvocation invokeWithTarget:item] ;
+        } else {
+            [LuaSkin logWarn:[NSString stringWithFormat:@"%s:setTemplateItems (increasing) - item %@ does not recognize selfRefCount", USERDATA_TAG, item]] ;
+        }
+    }] ;
+}
+
 // - (NSTouchBarItem *)touchBar:(NSTouchBar *)touchBar makeItemForIdentifier:(NSTouchBarItemIdentifier)identifier {
 //
 // }
@@ -57,12 +109,6 @@ static NSDictionary *builtInIdentifiers ;
 static BOOL itemWithIdentifierExists(NSTouchBar *bar, NSString *identifier, BOOL includeBuiltIn) {
     __block BOOL found = includeBuiltIn && (builtInIdentifiers && [builtInIdentifiers.allValues containsObject:identifier]) ;
     if (!found) {
-//         [bar.templateItems.allObjects enumerateObjectsUsingBlock:^(NSTouchBarItem *item, __unused NSUInteger idx, BOOL *stop) {
-//             if ([item.identifier isEqualToString:identifier]) {
-//                 found = YES ;
-//                 *stop = YES ;
-//             }
-//         }] ;
         found = [[bar.templateItems.allObjects valueForKey:@"identifier"] containsObject:identifier] ;
     }
     return found ;
@@ -577,26 +623,26 @@ id toHSASMTouchBarFromLua(lua_State *L, int idx) {
     return value ;
 }
 
-// "promote" NSTouchBar to one of us; will probably break if touchbar comes from outside; this is added so default
-// touchbars used by NSPopoverTouchBarItem, etc. can be properly handled.
-static int pushNSTouchBar(lua_State *L, id obj) {
-// search order for registered handlers is non-deterministic IIRC; should probably explore that at some point...
-    if ([obj isKindOfClass:[HSASMTouchBar class]]) {
-        return pushHSASMTouchBar(L, obj) ;
-    } else {
-        NSTouchBar *initialBar = obj ;
-        HSASMTouchBar *newBar = [[HSASMTouchBar alloc] init] ;
-        newBar.customizationIdentifier              = initialBar.customizationIdentifier ;
-        newBar.customizationAllowedItemIdentifiers  = initialBar.customizationAllowedItemIdentifiers ;
-        newBar.customizationRequiredItemIdentifiers = initialBar.customizationRequiredItemIdentifiers ;
-        newBar.defaultItemIdentifiers               = initialBar.defaultItemIdentifiers ;
-        newBar.principalItemIdentifier              = initialBar.principalItemIdentifier ;
-        newBar.escapeKeyReplacementItemIdentifier   = initialBar.escapeKeyReplacementItemIdentifier ;
-        newBar.templateItems                        = initialBar.templateItems ;
-        [[LuaSkin shared] pushNSObject:newBar] ;
-        return 1;
-    }
-}
+// // "promote" NSTouchBar to one of us; will probably break if touchbar comes from outside; this is added so default
+// // touchbars used by NSPopoverTouchBarItem, etc. can be properly handled.
+// static int pushNSTouchBar(lua_State *L, id obj) {
+// // search order for registered handlers is non-deterministic IIRC; should probably explore that at some point...
+//     if ([obj isKindOfClass:[HSASMTouchBar class]]) {
+//         return pushHSASMTouchBar(L, obj) ;
+//     } else {
+//         NSTouchBar *initialBar = obj ;
+//         HSASMTouchBar *newBar = [[HSASMTouchBar alloc] init] ;
+//         newBar.customizationIdentifier              = initialBar.customizationIdentifier ;
+//         newBar.customizationAllowedItemIdentifiers  = initialBar.customizationAllowedItemIdentifiers ;
+//         newBar.customizationRequiredItemIdentifiers = initialBar.customizationRequiredItemIdentifiers ;
+//         newBar.defaultItemIdentifiers               = initialBar.defaultItemIdentifiers ;
+//         newBar.principalItemIdentifier              = initialBar.principalItemIdentifier ;
+//         newBar.escapeKeyReplacementItemIdentifier   = initialBar.escapeKeyReplacementItemIdentifier ;
+//         newBar.templateItems                        = initialBar.templateItems ;
+//         [[LuaSkin shared] pushNSObject:newBar] ;
+//         return 1;
+//     }
+// }
 
 #pragma mark - Hammerspoon/Lua Infrastructure
 
@@ -696,7 +742,7 @@ int luaopen_hs__asm_undocumented_touchbar_bar(lua_State* L) {
         [skin registerLuaObjectHelper:toHSASMTouchBarFromLua forClass:"HSASMTouchBar"
                                                   withUserdataMapping:USERDATA_TAG];
 
-        [skin registerPushNSHelper:pushNSTouchBar            forClass:"NSTouchBar"];
+//         [skin registerPushNSHelper:pushNSTouchBar            forClass:"NSTouchBar"];
 
     } else {
         [skin logWarn:[NSString stringWithFormat:@"%s requires NSTouchBar which is only available in 10.12.2 and later", USERDATA_TAG]] ;

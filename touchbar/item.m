@@ -12,8 +12,8 @@
 /// This module is very experimental and is still under development, so the exact functions and methods are subject to change without notice.
 ///
 /// TODO:
-///  * More item types
 ///  * `isVisible` is KVO, so add a watcher
+///  * Why does popover fail to show expanded items?  I think fixing this will also allow colorPicker and sharingService to work
 
 @import Cocoa ;
 @import LuaSkin ;
@@ -26,6 +26,7 @@ static int refTable = LUA_NOREF;
 
 #define get_objectFromUserdata(objType, L, idx, tag) (objType*)*((void**)luaL_checkudata(L, idx, tag))
 
+// see also init.lua itemTypeStrings if you change this
 typedef NS_ENUM(NSInteger, TB_ItemTypes) {
     TBIT_unknown = -1,
     TBIT_buttonWithText = 0,
@@ -41,38 +42,6 @@ typedef NS_ENUM(NSInteger, TB_ItemTypes) {
 } ;
 
 #pragma mark - Support Functions and Classes
-
-static BOOL applyTouchbarItemsToTouchbar(lua_State *L, int idx, NSTouchBar *bar) {
-    LuaSkin *skin = [LuaSkin shared] ;
-
-    NSArray *itemArray = [skin toNSObjectAtIndex:idx] ;
-    __block NSString *errMsg = nil ;
-    if ([itemArray isKindOfClass:[NSArray class]]) {
-        __block NSMutableArray *identifiers   = [[NSMutableArray alloc] init] ;
-        __block NSMutableSet   *touchbarItems = [[NSMutableSet alloc] init] ;
-        [itemArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx2, BOOL *stop) {
-            if ([obj isKindOfClass:[NSTouchBarItem class]]) {
-                NSTouchBarItem *theItem = obj ;
-                [touchbarItems addObject:theItem] ;
-                [identifiers   addObject:theItem.identifier] ;
-            } else {
-                errMsg = [NSString stringWithFormat:@"expected %s object at index %lu", USERDATA_TAG, (idx2 + 1)] ;
-                *stop = YES ;
-            }
-        }] ;
-        if (!errMsg) {
-            bar.templateItems = touchbarItems ;
-            bar.defaultItemIdentifiers = identifiers ;
-        }
-    } else {
-        errMsg = [NSString stringWithFormat:@"expected array of %s objects", USERDATA_TAG] ;
-    }
-    if (errMsg) {
-        luaL_argerror(L, idx, errMsg.UTF8String) ;
-        return NO ;
-    }
-    return YES ;
-}
 
 @interface CanvasWrapper : NSControl
 @end
@@ -197,6 +166,57 @@ static BOOL applyTouchbarItemsToTouchbar(lua_State *L, int idx, NSTouchBar *bar)
         _itemType     = TBIT_group ;
     }
     return self ;
+}
+
+// override this so we can adjust toolbar selfRefCounts in one place rather than everywhere it might be set
+- (void)setGroupTouchBar:(NSTouchBar *)groupTouchBar {
+    NSTouchBar *currentTouchBar = self.groupTouchBar ;
+
+// This is because we want to access a property in another custom subclass but because both this class and
+// the one we want to access are in separate shared libraries, we can't access them directly at runtime.
+//
+// Another solution is to merge the libraries together into one shared library, but this is also a proof of
+// concept to prove to myself that this is starting to make sense to me :-)
+
+    // returns int, 16 byte frame: id at offset 0, selector at offset 8
+    NSMethodSignature *getSignature  = [NSMethodSignature signatureWithObjCTypes:"i16@0:8"] ;
+    NSInvocation      *getInvocation = [NSInvocation invocationWithMethodSignature:getSignature] ;
+    [getInvocation setSelector:NSSelectorFromString(@"selfRefCount")] ;
+
+    // returns void, 20 byte frame: id at offset 0, selector at offset 8, int at offset 16
+    NSMethodSignature *setSignature  = [NSMethodSignature signatureWithObjCTypes:"v20@0:8i16"] ;
+    NSInvocation      *setInvocation = [NSInvocation invocationWithMethodSignature:setSignature] ;
+    [setInvocation setSelector:NSSelectorFromString(@"setSelfRefCount:")] ;
+
+    if (currentTouchBar && [currentTouchBar isKindOfClass:NSClassFromString(@"HSASMTouchBar")]) {
+        // decrease the selfRefCount for the current touchbar
+        if ([currentTouchBar respondsToSelector:NSSelectorFromString(@"selfRefCount")]) {
+            int currentCount ;
+            [getInvocation invokeWithTarget:currentTouchBar] ;
+            [getInvocation getReturnValue:&currentCount] ;
+            currentCount-- ;
+            [setInvocation setArgument:&currentCount atIndex:2] ; // 0 is the object itself and 1 is the selector
+            [setInvocation invokeWithTarget:currentTouchBar] ;
+        } else {
+            [LuaSkin logWarn:[NSString stringWithFormat:@"%s:setGroupTouchBar (decreasing) - touchbar %@ does not recognize selfRefCount", USERDATA_TAG, currentTouchBar]] ;
+        }
+    }
+
+    [super setGroupTouchBar:groupTouchBar] ;
+
+    if (groupTouchBar && [groupTouchBar isKindOfClass:NSClassFromString(@"HSASMTouchBar")]) {
+        // increase the selfRefCount for the new touchbar
+        if ([groupTouchBar respondsToSelector:NSSelectorFromString(@"selfRefCount")]) {
+            int currentCount ;
+            [getInvocation invokeWithTarget:groupTouchBar] ;
+            [getInvocation getReturnValue:&currentCount] ;
+            currentCount++ ;
+            [setInvocation setArgument:&currentCount atIndex:2] ; // 0 is the object itself and 1 is the selector
+            [setInvocation invokeWithTarget:groupTouchBar] ;
+        } else {
+            [LuaSkin logWarn:[NSString stringWithFormat:@"%s:setGroupTouchBar (increasing) - touchbar %@ does not recognize selfRefCount", USERDATA_TAG, currentTouchBar]] ;
+        }
+    }
 }
 
 @end
@@ -531,32 +551,6 @@ static int grouptouchbaritem_groupTouchBar(lua_State *L) {
     return  1 ;
 }
 
-static int grouptouchbaritem_groupTouchBarItems(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
-    [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TTABLE | LS_TOPTIONAL, LS_TBREAK] ;
-    HSASMGroupTouchBarItem *obj = [skin toNSObjectAtIndex:1] ;
-
-    if (obj.itemType == TBIT_group) {
-        if (lua_gettop(L) == 1) {
-            NSMutableArray *orderedItems = [NSMutableArray array] ;
-            [obj.groupTouchBar.defaultItemIdentifiers enumerateObjectsUsingBlock:^(NSString *identifier, __unused NSUInteger idx, __unused BOOL *stop) {
-                NSTouchBarItem *item = [obj.groupTouchBar itemForIdentifier:identifier] ;
-                if (item) [orderedItems addObject:item] ;
-            }] ;
-            [skin pushNSObject:orderedItems] ;
-        } else {
-            if (applyTouchbarItemsToTouchbar(L, 2, obj.groupTouchBar)) {
-                lua_pushvalue(L, 1) ;
-            } else {
-                lua_pushnil(L) ; // shouldn't happend since it should error out in applyTouchbarItemsToTouchbar
-            }
-        }
-    } else {
-        return luaL_argerror(L, 1, "method only valid for group type") ;
-    }
-    return  1 ;
-}
-
 /// hs._asm.undocumented.touchbar.item:customizationLabel([label]) -> touchbarItemObject | string
 /// Method
 /// Get or set the label displayed for the item when the customization panel is being displayed for the touch bar.
@@ -797,6 +791,15 @@ static int touchbaritem_identifier(__unused lua_State *L) {
     NSTouchBarItem *obj = [skin toNSObjectAtIndex:1] ;
 
     [skin pushNSObject:obj.identifier] ;
+    return 1 ;
+}
+
+
+static int touchbaritem_itemType(lua_State *L) {
+    LuaSkin *skin = [LuaSkin shared] ;
+    [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBREAK] ;
+    HSASMCustomTouchBarItem *obj = [skin toNSObjectAtIndex:1] ;
+    lua_pushinteger(L, obj.itemType) ;
     return 1 ;
 }
 
@@ -1067,6 +1070,7 @@ static const luaL_Reg userdata_metaLib[] = {
     {"isVisible",           touchbaritem_isVisible},
     {"visibilityPriority",  touchbaritem_visibilityPriority},
     {"callback",            touchbaritem_callback},
+    {"itemType",            touchbaritem_itemType},
 
     {"image",               customtouchbaritem_image},
     {"title",               customtouchbaritem_title},
@@ -1077,7 +1081,6 @@ static const luaL_Reg userdata_metaLib[] = {
     {"canvasClickColor",    customtouchbaritem_canvasHighlightColor},
 
     {"groupTouchbar",       grouptouchbaritem_groupTouchBar},
-    {"groupItems",          grouptouchbaritem_groupTouchBarItems},
 
     {"sliderMin",           slidertouchbaritem_minValue},
     {"sliderMax",           slidertouchbaritem_maxValue},

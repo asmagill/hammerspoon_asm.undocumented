@@ -38,6 +38,23 @@ require("hs.image")
 
 -- private variables and methods -----------------------------------------
 
+local itemTypeStrings = setmetatable({
+    [-1] = "unknown",
+    [0]  = "buttonWithText",
+           "buttonWithImage",
+           "buttonWithImageAndText",
+           "candidateList",
+           "colorPicker",
+           "group",
+           "popover",
+           "sharingServicePicker",
+           "slider",
+           "canvas",
+}, {
+    __index = function(self, key) return "invalid:" .. tostring(key) .. ", notify developers" end,
+    __newindex = function(self, key, value) end,
+})
+
 -- Public interface ------------------------------------------------------
 
 --- hs._asm.undocumented.touchbar:toggle([duration]) -> touchbarObject
@@ -131,6 +148,39 @@ module.bar.builtInIdentifiers    = ls.makeConstantsTable(module.bar.builtInIdent
 itemMT.presentModalBar = function(self, touchbar, ...)
     barMT.presentModalBar(touchbar, self, ...)
     return self
+end
+
+itemMT.itemTypeString = function(self, ...) return itemTypeStrings[self:itemType(...)] end
+
+itemMT.groupItems = function(self, ...)
+    if self:itemTypeString() == "group" then
+        local args = table.pack(...)
+        if args.n == 0 then
+            local itemsArray = {}
+            for i,v in ipairs(self:groupTouchbar():itemIdentifiers()) do
+                table.insert(itemsArray, self:groupTouchbar():itemForIdentifier(v))
+            end
+            return itemsArray
+        else
+            if args.n == 1 and type(args[1]) == "table" then
+                args = args[1]
+            else
+                args.n = nil
+            end
+            local itemsIdentifiers = {}
+            for i,v in ipairs(args) do
+                local s, r = pcall(itemMT.identifier, v)
+                if s then
+                    table.insert(itemsIdentifiers, r)
+                else
+                    return error("expected " .. USERDATA_TAG .. " object at index " .. tostring(i), 2)
+                end
+            end
+            return self:groupTouchbar(module.bar.new():templateItems(args):defaultIdentifiers(itemsIdentifiers))
+        end
+    else
+        return error("method only valid for group type", 2)
+    end
 end
 
 -- Return Module Object --------------------------------------------------
