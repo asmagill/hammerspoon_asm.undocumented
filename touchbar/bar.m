@@ -577,6 +577,27 @@ id toHSASMTouchBarFromLua(lua_State *L, int idx) {
     return value ;
 }
 
+// "promote" NSTouchBar to one of us; will probably break if touchbar comes from outside; this is added so default
+// touchbars used by NSPopoverTouchBarItem, etc. can be properly handled.
+static int pushNSTouchBar(lua_State *L, id obj) {
+// search order for registered handlers is non-deterministic IIRC; should probably explore that at some point...
+    if ([obj isKindOfClass:[HSASMTouchBar class]]) {
+        return pushHSASMTouchBar(L, obj) ;
+    } else {
+        NSTouchBar *initialBar = obj ;
+        HSASMTouchBar *newBar = [[HSASMTouchBar alloc] init] ;
+        newBar.customizationIdentifier              = initialBar.customizationIdentifier ;
+        newBar.customizationAllowedItemIdentifiers  = initialBar.customizationAllowedItemIdentifiers ;
+        newBar.customizationRequiredItemIdentifiers = initialBar.customizationRequiredItemIdentifiers ;
+        newBar.defaultItemIdentifiers               = initialBar.defaultItemIdentifiers ;
+        newBar.principalItemIdentifier              = initialBar.principalItemIdentifier ;
+        newBar.escapeKeyReplacementItemIdentifier   = initialBar.escapeKeyReplacementItemIdentifier ;
+        newBar.templateItems                        = initialBar.templateItems ;
+        [[LuaSkin shared] pushNSObject:newBar] ;
+        return 1;
+    }
+}
+
 #pragma mark - Hammerspoon/Lua Infrastructure
 
 static int userdata_tostring(lua_State* L) {
@@ -674,6 +695,9 @@ int luaopen_hs__asm_undocumented_touchbar_bar(lua_State* L) {
         [skin registerPushNSHelper:pushHSASMTouchBar         forClass:"HSASMTouchBar"];
         [skin registerLuaObjectHelper:toHSASMTouchBarFromLua forClass:"HSASMTouchBar"
                                                   withUserdataMapping:USERDATA_TAG];
+
+        [skin registerPushNSHelper:pushNSTouchBar            forClass:"NSTouchBar"];
+
     } else {
         [skin logWarn:[NSString stringWithFormat:@"%s requires NSTouchBar which is only available in 10.12.2 and later", USERDATA_TAG]] ;
         lua_newtable(L) ;

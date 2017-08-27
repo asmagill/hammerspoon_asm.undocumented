@@ -25,8 +25,6 @@ static const char * const BAR_UD_TAG   = "hs._asm.undocumented.touchbar.bar" ;
 static int refTable = LUA_NOREF;
 
 #define get_objectFromUserdata(objType, L, idx, tag) (objType*)*((void**)luaL_checkudata(L, idx, tag))
-// #define get_structFromUserdata(objType, L, idx, tag) ((objType *)luaL_checkudata(L, idx, tag))
-// #define get_cfobjectFromUserdata(objType, L, idx, tag) *((objType *)luaL_checkudata(L, idx, tag))
 
 typedef NS_ENUM(NSInteger, TB_ItemTypes) {
     TBIT_unknown = -1,
@@ -43,6 +41,38 @@ typedef NS_ENUM(NSInteger, TB_ItemTypes) {
 } ;
 
 #pragma mark - Support Functions and Classes
+
+static BOOL applyTouchbarItemsToTouchbar(lua_State *L, int idx, NSTouchBar *bar) {
+    LuaSkin *skin = [LuaSkin shared] ;
+
+    NSArray *itemArray = [skin toNSObjectAtIndex:idx] ;
+    __block NSString *errMsg = nil ;
+    if ([itemArray isKindOfClass:[NSArray class]]) {
+        __block NSMutableArray *identifiers   = [[NSMutableArray alloc] init] ;
+        __block NSMutableSet   *touchbarItems = [[NSMutableSet alloc] init] ;
+        [itemArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx2, BOOL *stop) {
+            if ([obj isKindOfClass:[NSTouchBarItem class]]) {
+                NSTouchBarItem *theItem = obj ;
+                [touchbarItems addObject:theItem] ;
+                [identifiers   addObject:theItem.identifier] ;
+            } else {
+                errMsg = [NSString stringWithFormat:@"expected %s object at index %lu", USERDATA_TAG, (idx2 + 1)] ;
+                *stop = YES ;
+            }
+        }] ;
+        if (!errMsg) {
+            bar.templateItems = touchbarItems ;
+            bar.defaultItemIdentifiers = identifiers ;
+        }
+    } else {
+        errMsg = [NSString stringWithFormat:@"expected array of %s objects", USERDATA_TAG] ;
+    }
+    if (errMsg) {
+        luaL_argerror(L, idx, errMsg.UTF8String) ;
+        return NO ;
+    }
+    return YES ;
+}
 
 @interface CanvasWrapper : NSControl
 @end
@@ -62,20 +92,20 @@ typedef NS_ENUM(NSInteger, TB_ItemTypes) {
 @property            int          selfRefCount ;
 @property (readonly) TB_ItemTypes itemType ;
 @end
-//
+
+@interface HSASMSliderTouchBarItem : NSSliderTouchBarItem
+@property            int          callbackRef ;
+@property            int          selfRefCount ;
+@property (readonly) TB_ItemTypes itemType ;
+@end
+
 // @interface HSASMPopoverTouchBarItem : NSPopoverTouchBarItem
 // @property            int          callbackRef ;
 // @property            int          selfRefCount ;
 // @property (readonly) TB_ItemTypes itemType ;
 // @end
-//
-// @interface HSASMSliderTouchBarItem : NSSliderTouchBarItem
-// @property            int          callbackRef ;
-// @property            int          selfRefCount ;
-// @property (readonly) TB_ItemTypes itemType ;
-// @end
-//
-// @interface HSASMColorPickerTouchBarItem : NSColorPickerTouchBarItem
+
+// @interface HSASMCandidateListTouchBarItem : NSCandidateListTouchBarItem
 // @property            int          callbackRef ;
 // @property            int          selfRefCount ;
 // @property (readonly) TB_ItemTypes itemType ;
@@ -171,6 +201,52 @@ typedef NS_ENUM(NSInteger, TB_ItemTypes) {
 
 @end
 
+@implementation HSASMSliderTouchBarItem
+
+- (instancetype)initWithIdentifier:(NSString *)identifier {
+    self = [super initWithIdentifier:identifier] ;
+    if (self) {
+        _callbackRef  = LUA_NOREF ;
+        _selfRefCount = 0 ;
+        _itemType     = TBIT_slider ;
+        self.target   = self ;
+        self.action   = @selector(performSlideCallback:) ;
+    }
+    return self ;
+}
+
+- (void)performCallbackWithValue:(id)value {
+    if (_callbackRef != LUA_NOREF) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            LuaSkin   *skin = [LuaSkin shared] ;
+            lua_State *L    = skin.L ;
+            [skin pushLuaRef:refTable ref:self->_callbackRef] ;
+            [skin pushNSObject:self] ;
+            [skin pushNSObject:value] ;
+            if (![skin protectedCallAndTraceback:2 nresults:0]) {
+                [skin logError:[NSString stringWithFormat:@"%s:sliderCallback error:%s", USERDATA_TAG, lua_tostring(L, -1)]] ;
+                lua_pop(L, 1) ;
+            }
+        }) ;
+    }
+}
+
+- (void)performSlideCallback:(HSASMSliderTouchBarItem *)sender {
+    [self performCallbackWithValue:@(sender.slider.doubleValue)] ;
+}
+
+- (void)performMinCallback:(id)sender {
+    [LuaSkin logDebug:[NSString stringWithFormat:@"%s:sliderCallback (min accessory) sender == %@ (waiting to see if this is useful as more types are added)", USERDATA_TAG, sender]] ;
+    [self performCallbackWithValue:@"minimum"] ;
+}
+
+- (void)performMaxCallback:(id)sender {
+    [LuaSkin logDebug:[NSString stringWithFormat:@"%s:sliderCallback (max accessory) sender == %@ (waiting to see if this is useful as more types are added)", USERDATA_TAG, sender]] ;
+    [self performCallbackWithValue:@"maximum"] ;
+}
+
+@end
+
 #pragma mark - Module Functions
 
 // Requires tweak to canvas - (id)getElementValueFor:(NSString *)keyName atIndex:(NSUInteger)index resolvePercentages:(BOOL)resolvePercentages
@@ -181,6 +257,20 @@ static int grouptouchbaritem_newGroup(lua_State *L) {
     NSString *identifier = (lua_gettop(L) == 1) ? [skin toNSObjectAtIndex:1] : [[NSUUID UUID] UUIDString] ;
 
     HSASMGroupTouchBarItem *obj = [[HSASMGroupTouchBarItem alloc] initWithIdentifier:identifier] ;
+    if (obj) {
+        [skin pushNSObject:obj] ;
+    } else {
+        lua_pushnil(L) ;
+    }
+    return 1 ;
+}
+
+static int slidertouchbaritem_newSlider(lua_State *L) {
+    LuaSkin      *skin       = [LuaSkin shared] ;
+    [skin checkArgs:LS_TSTRING | LS_TOPTIONAL, LS_TBREAK] ;
+    NSString *identifier = (lua_gettop(L) == 1) ? [skin toNSObjectAtIndex:1] : [[NSUUID UUID] UUIDString] ;
+
+    HSASMSliderTouchBarItem *obj = [[HSASMSliderTouchBarItem alloc] initWithIdentifier:identifier] ;
     if (obj) {
         [skin pushNSObject:obj] ;
     } else {
@@ -203,8 +293,6 @@ static int customtouchbaritem_newCanvas(lua_State *L) {
         NSRect itemFrame   = NSMakeRect(0, 0, canvasFrame.size.width * 30 / canvasFrame.size.height, 30) ;
 
         CanvasWrapper *itemWrapper = [[CanvasWrapper alloc] initWithFrame:itemFrame] ;
-//         NSControl *itemWrapper = [[NSControl alloc] initWithFrame:itemFrame] ;
-//         itemWrapper.cell   = [[NSActionCell alloc] init] ;
         itemWrapper.target = obj ;
         itemWrapper.action = @selector(performCallback:) ;
         obj.view = itemWrapper ;
@@ -320,6 +408,110 @@ static int customtouchbaritem_newButton(lua_State *L) {
 
 #pragma mark - Module Methods
 
+static int slidertouchbaritem_minImage(lua_State *L) {
+    LuaSkin *skin = [LuaSkin shared] ;
+    [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TANY, LS_TBREAK] ;
+    HSASMSliderTouchBarItem *obj   = [skin toNSObjectAtIndex:1] ;
+    NSImage                 *image = nil ;
+
+    if (lua_type(L, 2) != LUA_TNIL) {
+        [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TUSERDATA, "hs.image", LS_TBREAK] ;
+        image = [skin toNSObjectAtIndex:2] ;
+    }
+
+    if (obj.itemType == TBIT_slider) {
+        NSSliderAccessory *accessory = nil ;
+        if (image) {
+            accessory = [NSSliderAccessory accessoryWithImage:image] ;
+            accessory.behavior = [NSSliderAccessoryBehavior behaviorWithTarget:obj action:@selector(performMinCallback:)] ;
+        }
+        obj.minimumValueAccessory = accessory ;
+        lua_pushvalue(L, 1) ;
+    } else {
+        return luaL_argerror(L, 1, "method only valid for slider type") ;
+    }
+    return 1 ;
+}
+
+static int slidertouchbaritem_maxImage(lua_State *L) {
+    LuaSkin *skin = [LuaSkin shared] ;
+    [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TANY, LS_TBREAK] ;
+    HSASMSliderTouchBarItem *obj   = [skin toNSObjectAtIndex:1] ;
+    NSImage                 *image = nil ;
+
+    if (lua_type(L, 2) != LUA_TNIL) {
+        [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TUSERDATA, "hs.image", LS_TBREAK] ;
+        image = [skin toNSObjectAtIndex:2] ;
+    }
+
+    if (obj.itemType == TBIT_slider) {
+        NSSliderAccessory *accessory = nil ;
+        if (image) {
+            accessory = [NSSliderAccessory accessoryWithImage:image] ;
+            accessory.behavior = [NSSliderAccessoryBehavior behaviorWithTarget:obj action:@selector(performMaxCallback:)] ;
+        }
+        obj.maximumValueAccessory = accessory ;
+        lua_pushvalue(L, 1) ;
+    } else {
+        return luaL_argerror(L, 1, "method only valid for slider type") ;
+    }
+    return 1 ;
+}
+
+static int slidertouchbaritem_minValue(lua_State *L) {
+    LuaSkin *skin = [LuaSkin shared] ;
+    [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TNUMBER | LS_TOPTIONAL, LS_TBREAK] ;
+    HSASMSliderTouchBarItem *obj = [skin toNSObjectAtIndex:1] ;
+
+    if (obj.itemType == TBIT_slider) {
+        if (lua_gettop(L) == 1) {
+            lua_pushnumber(L, obj.slider.minValue) ;
+        } else {
+            obj.slider.minValue = lua_tonumber(L, 2) ;
+            lua_pushvalue(L, 1) ;
+        }
+    } else {
+        return luaL_argerror(L, 1, "method only valid for slider type") ;
+    }
+    return  1 ;
+}
+
+static int slidertouchbaritem_maxValue(lua_State *L) {
+    LuaSkin *skin = [LuaSkin shared] ;
+    [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TNUMBER | LS_TOPTIONAL, LS_TBREAK] ;
+    HSASMSliderTouchBarItem *obj = [skin toNSObjectAtIndex:1] ;
+
+    if (obj.itemType == TBIT_slider) {
+        if (lua_gettop(L) == 1) {
+            lua_pushnumber(L, obj.slider.maxValue) ;
+        } else {
+            obj.slider.maxValue = lua_tonumber(L, 2) ;
+            lua_pushvalue(L, 1) ;
+        }
+    } else {
+        return luaL_argerror(L, 1, "method only valid for slider type") ;
+    }
+    return  1 ;
+}
+
+static int slidertouchbaritem_currentValue(lua_State *L) {
+    LuaSkin *skin = [LuaSkin shared] ;
+    [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TNUMBER | LS_TOPTIONAL, LS_TBREAK] ;
+    HSASMSliderTouchBarItem *obj = [skin toNSObjectAtIndex:1] ;
+
+    if (obj.itemType == TBIT_slider) {
+        if (lua_gettop(L) == 1) {
+            lua_pushnumber(L, obj.slider.doubleValue) ;
+        } else {
+            obj.slider.doubleValue = lua_tonumber(L, 2) ;
+            lua_pushvalue(L, 1) ;
+        }
+    } else {
+        return luaL_argerror(L, 1, "method only valid for slider type") ;
+    }
+    return  1 ;
+}
+
 static int grouptouchbaritem_groupTouchBar(lua_State *L) {
     LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBREAK | LS_TVARARG] ;
@@ -332,6 +524,32 @@ static int grouptouchbaritem_groupTouchBar(lua_State *L) {
             [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TUSERDATA, BAR_UD_TAG, LS_TBREAK] ;
             obj.groupTouchBar = [skin toNSObjectAtIndex:2] ;
             lua_pushvalue(L, 1) ;
+        }
+    } else {
+        return luaL_argerror(L, 1, "method only valid for group type") ;
+    }
+    return  1 ;
+}
+
+static int grouptouchbaritem_groupTouchBarItems(lua_State *L) {
+    LuaSkin *skin = [LuaSkin shared] ;
+    [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TTABLE | LS_TOPTIONAL, LS_TBREAK] ;
+    HSASMGroupTouchBarItem *obj = [skin toNSObjectAtIndex:1] ;
+
+    if (obj.itemType == TBIT_group) {
+        if (lua_gettop(L) == 1) {
+            NSMutableArray *orderedItems = [NSMutableArray array] ;
+            [obj.groupTouchBar.defaultItemIdentifiers enumerateObjectsUsingBlock:^(NSString *identifier, __unused NSUInteger idx, __unused BOOL *stop) {
+                NSTouchBarItem *item = [obj.groupTouchBar itemForIdentifier:identifier] ;
+                if (item) [orderedItems addObject:item] ;
+            }] ;
+            [skin pushNSObject:orderedItems] ;
+        } else {
+            if (applyTouchbarItemsToTouchbar(L, 2, obj.groupTouchBar)) {
+                lua_pushvalue(L, 1) ;
+            } else {
+                lua_pushnil(L) ; // shouldn't happend since it should error out in applyTouchbarItemsToTouchbar
+            }
         }
     } else {
         return luaL_argerror(L, 1, "method only valid for group type") ;
@@ -397,7 +615,7 @@ static int customtouchbaritem_image(lua_State *L) {
             lua_pushvalue(L, 1) ;
         }
     } else {
-        return luaL_argerror(L, 1, "method only valid for button types initialized with an image") ;
+        return luaL_argerror(L, 1, "method only valid for buttons initialized with a title or slider types") ;
     }
     return 1 ;
 }
@@ -431,31 +649,36 @@ static int customtouchbaritem_title(lua_State *L) {
             }
             lua_pushvalue(L, 1) ;
         }
+    } else if (obj.itemType == TBIT_slider) {
+        HSASMSliderTouchBarItem *slider = (HSASMSliderTouchBarItem *)obj ;
+        if (lua_gettop(L) == 1) {
+            [skin pushNSObject:slider.label] ;
+        } else {
+            if (lua_type(L, 2) == LUA_TNIL) {
+                slider.label = nil ;
+            } else {
+                slider.label = [skin toNSObjectAtIndex:2] ;
+            }
+            lua_pushvalue(L, 1) ;
+        }
     } else {
-        return luaL_argerror(L, 1, "method only valid for button types initialized with a title") ;
+        return luaL_argerror(L, 1, "method only valid for button initialized with a title or slider types") ;
     }
     return 1 ;
 }
 
-static int customtouchbaritem_width(lua_State *L) {
+static int customtouchbaritem_canvasWidth(lua_State *L) {
     LuaSkin *skin = [LuaSkin shared] ;
-    [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TNUMBER | LS_TNIL | LS_TOPTIONAL, LS_TBREAK] ;
+    [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TNUMBER | LS_TOPTIONAL, LS_TBREAK] ;
     HSASMCustomTouchBarItem *obj = [skin toNSObjectAtIndex:1] ;
 
     if (obj.itemType == TBIT_canvas) {
         if (lua_gettop(L) == 1) {
-            // if constraint exists, return nil
             lua_pushnumber(L, obj.view.subviews.firstObject.frame.size.width) ;
         } else {
-            if (lua_type(L, 2) == LUA_TNIL) {
-                [skin logWarn:@"constraint removal not supported yet"] ;
-                // remove constraint
-            } else {
-                // make sure constraint is in place
-                NSRect itemRect = obj.view.subviews.firstObject.frame ;
-                itemRect.size.width = lua_tonumber(L, 2) ;
-                obj.view.subviews.firstObject.frame = itemRect ;
-            }
+            NSRect itemRect = obj.view.subviews.firstObject.frame ;
+            itemRect.size.width = lua_tonumber(L, 2) ;
+            obj.view.subviews.firstObject.frame = itemRect ;
             lua_pushvalue(L, 1) ;
         }
     } else {
@@ -464,7 +687,7 @@ static int customtouchbaritem_width(lua_State *L) {
     return 1 ;
 }
 
-static int customtouchbaritem_highlightColor(lua_State *L) {
+static int customtouchbaritem_canvasHighlightColor(lua_State *L) {
     LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TTABLE | LS_TNIL | LS_TOPTIONAL, LS_TBREAK] ;
     HSASMCustomTouchBarItem *obj = [skin toNSObjectAtIndex:1] ;
@@ -770,6 +993,28 @@ id toHSASMGroupTouchBarItemFromLua(lua_State *L, int idx) {
     return value ;
 }
 
+static int pushHSASMSliderTouchBarItem(lua_State *L, id obj) {
+    HSASMSliderTouchBarItem *value = obj;
+    value.selfRefCount++ ;
+    void** valuePtr = lua_newuserdata(L, sizeof(HSASMSliderTouchBarItem *));
+    *valuePtr = (__bridge_retained void *)value;
+    luaL_getmetatable(L, USERDATA_TAG);
+    lua_setmetatable(L, -2);
+    return 1;
+}
+
+id toHSASMSliderTouchBarItemFromLua(lua_State *L, int idx) {
+    LuaSkin *skin = [LuaSkin shared] ;
+    HSASMSliderTouchBarItem *value ;
+    if (luaL_testudata(L, idx, USERDATA_TAG)) {
+        value = get_objectFromUserdata(__bridge HSASMSliderTouchBarItem, L, idx, USERDATA_TAG) ;
+    } else {
+        [skin logError:[NSString stringWithFormat:@"expected %s object, found %s", USERDATA_TAG,
+                                                   lua_typename(L, lua_type(L, idx))]] ;
+    }
+    return value ;
+}
+
 #pragma mark - Hammerspoon/Lua Infrastructure
 
 static int userdata_tostring(lua_State* L) {
@@ -817,36 +1062,44 @@ static int userdata_gc(lua_State* L) {
 
 // Metatable for userdata objects
 static const luaL_Reg userdata_metaLib[] = {
-    {"customizationLabel", touchbaritem_customizationLabel},
-    {"identifier",         touchbaritem_identifier},
-    {"isVisible",          touchbaritem_isVisible},
-    {"visibilityPriority", touchbaritem_visibilityPriority},
-    {"callback",           touchbaritem_callback},
+    {"customizationLabel",  touchbaritem_customizationLabel},
+    {"identifier",          touchbaritem_identifier},
+    {"isVisible",           touchbaritem_isVisible},
+    {"visibilityPriority",  touchbaritem_visibilityPriority},
+    {"callback",            touchbaritem_callback},
 
-    {"image",              customtouchbaritem_image},
-    {"title",              customtouchbaritem_title},
-    {"enabled",            customtouchbaritem_enabled},       // may need to overload
-    {"size",               customtouchbaritem_size},          // may need to overload
+    {"image",               customtouchbaritem_image},
+    {"title",               customtouchbaritem_title},
+    {"enabled",             customtouchbaritem_enabled},
+    {"size",                customtouchbaritem_size},
 
-    {"width",              customtouchbaritem_width},
-    {"highlightColor",     customtouchbaritem_highlightColor},
+    {"canvasWidth",         customtouchbaritem_canvasWidth},
+    {"canvasClickColor",    customtouchbaritem_canvasHighlightColor},
 
-    {"touchbar",           grouptouchbaritem_groupTouchBar},
+    {"groupTouchbar",       grouptouchbaritem_groupTouchBar},
+    {"groupItems",          grouptouchbaritem_groupTouchBarItems},
 
-    {"addToSystemTray",    touchbaritem_systemTray},
+    {"sliderMin",           slidertouchbaritem_minValue},
+    {"sliderMax",           slidertouchbaritem_maxValue},
+    {"sliderValue",         slidertouchbaritem_currentValue},
+    {"sliderMinImage",      slidertouchbaritem_minImage},
+    {"sliderMaxImage",      slidertouchbaritem_maxImage},
 
-    {"__tostring",         userdata_tostring},
-    {"__eq",               userdata_eq},
-    {"__gc",               userdata_gc},
-    {NULL,                 NULL}
+    {"addToSystemTray",     touchbaritem_systemTray},
+
+    {"__tostring",          userdata_tostring},
+    {"__eq",                userdata_eq},
+    {"__gc",                userdata_gc},
+    {NULL,                  NULL}
 };
 
 // Functions for returned object when module loads
 static luaL_Reg moduleLib[] = {
-    {"newButton",    customtouchbaritem_newButton},
-    {"newCanvas",    customtouchbaritem_newCanvas},
-    {"newItemGroup", grouptouchbaritem_newGroup},
-    {NULL,           NULL}
+    {"newButton", customtouchbaritem_newButton},
+    {"newCanvas", customtouchbaritem_newCanvas},
+    {"newGroup",  grouptouchbaritem_newGroup},
+    {"newSlider", slidertouchbaritem_newSlider},
+    {NULL,        NULL}
 };
 
 // // Metatable for module, if needed
@@ -872,6 +1125,9 @@ int luaopen_hs__asm_undocumented_touchbar_item(lua_State* L) {
 
         [skin registerPushNSHelper:pushHSASMGroupTouchBarItem         forClass:"HSASMGroupTouchBarItem"] ;
         [skin registerLuaObjectHelper:toHSASMGroupTouchBarItemFromLua forClass:"HSASMGroupTouchBarItem"] ;
+
+        [skin registerPushNSHelper:pushHSASMSliderTouchBarItem         forClass:"HSASMSliderTouchBarItem"] ;
+        [skin registerLuaObjectHelper:toHSASMSliderTouchBarItemFromLua forClass:"HSASMSliderTouchBarItem"] ;
 
     } else {
         [skin logWarn:[NSString stringWithFormat:@"%s requires NSTouchBarItem which is only available in 10.12.2 and later", USERDATA_TAG]] ;
