@@ -579,24 +579,13 @@ static int touchbar_backgroundColor(lua_State *L) {
 ///      * `message` - the message to the callback, in this case "didEnter"
 static int touchbar_setCallback(lua_State *L) {
     LuaSkin *skin = [LuaSkin shared] ;
-    [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TFUNCTION | LS_TTABLE | LS_TNIL, LS_TBREAK] ;
+    [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TFUNCTION | LS_TNIL, LS_TBREAK] ;
     ASMTouchBarWindow *touchbar = [skin toNSObjectAtIndex:1] ;
 
-    if (lua_type(L, 2) == LUA_TTABLE) {
-        if (luaL_getmetafield(L, 2, "__call") != LUA_TNIL) {
-            lua_pop(L, 1) ;
-            touchbar.callbackRef = [skin luaUnref:refTable ref:touchbar.callbackRef] ;
-            lua_pushvalue(L, 2) ;
-            touchbar.callbackRef = [skin luaRef:refTable] ;
-        } else {
-            return luaL_argerror(L, 2, "a table must have a __call metamethod to be a callback function") ;
-        }
-    } else {
-        touchbar.callbackRef = [skin luaUnref:refTable ref:touchbar.callbackRef] ;
-        if (lua_type(L, 2) == LUA_TFUNCTION) {
-            lua_pushvalue(L, 2) ;
-            touchbar.callbackRef = [skin luaRef:refTable] ;
-        }
+    touchbar.callbackRef = [skin luaUnref:refTable ref:touchbar.callbackRef] ;
+    if (lua_type(L, 2) != LUA_TNIL) {
+        lua_pushvalue(L, 2) ;
+        touchbar.callbackRef = [skin luaRef:refTable] ;
     }
     lua_pushvalue(L, 1) ;
     return 1 ;

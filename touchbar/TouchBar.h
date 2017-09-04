@@ -13,10 +13,27 @@ extern CGSize DFRGetScreenSize() ;
 
 extern void DFRElementSetControlStripPresenceForIdentifier(NSString *identifier, BOOL display) ;
 
-// always returns false for our identifiers. Based upon disassembly with Hopper, I think it may be limited to
-// the items which can "officially" be in the system tray since it looks in an array that the set function doesn't
-// update, and I haven't found a way to programmatically trigger an update of the array either.
+// Limited to built-in items; can't detect ones we inject; reads ~/Library/Preferences/com.apple.controlstrip.plist
 extern BOOL DFRElementGetControlStripPresenceForIdentifier(NSString *identifier) ;
+//   Per http://blog.eriknicolasgomez.com/2016/11/28/managing-or-setting-the-mini-touchbar-control-strip/
+//     com.apple.system.brightness
+//     com.apple.system.dashboard
+//     com.apple.system.dictation
+//     com.apple.system.do-not-disturb
+//     com.apple.system.input-menu
+//     com.apple.system.launchpad
+//     com.apple.system.media-play-pause
+//     com.apple.system.mission-control
+//     com.apple.system.mute
+//     com.apple.system.notification-center
+//     com.apple.system.screen-lock
+//     com.apple.system.screen-saver
+//     com.apple.system.screencapture
+//     com.apple.system.search
+//     com.apple.system.show-desktop
+//     com.apple.system.siri
+//     com.apple.system.sleep
+//     com.apple.system.volume
 
 extern void DFRSystemModalShowsCloseBoxWhenFrontMost(BOOL flag) ;
 

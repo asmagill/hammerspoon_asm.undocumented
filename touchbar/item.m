@@ -13,7 +13,12 @@
 ///
 /// TODO:
 ///  * `isVisible` is KVO, so add a watcher
+///  * more functions to modify button style/appearance? attributed string support? background color? width?
 ///  * Why does popover fail to show expanded items?  I think fixing this will also allow colorPicker and sharingService to work
+///    * try minimizing while popover is supposed to show, maybe because we're already a "pop over" and it would work with "Hammerspoon application" touchbars?
+///
+///  * get canvas max width ala `canvasItem("view")("window")("frame").w`... can we get without creating canvas item first?
+///  * why is an NSActionCell required for canvas?  how do we get the mouse events directly so we can forward them to the canvas callback with position info? and if we can get these, do we need to add `mouseDragged` to canvas?
 
 @import Cocoa ;
 @import LuaSkin ;
@@ -23,6 +28,9 @@
 static const char * const USERDATA_TAG = "hs._asm.undocumented.touchbar.item" ;
 static const char * const BAR_UD_TAG   = "hs._asm.undocumented.touchbar.bar" ;
 static int refTable = LUA_NOREF;
+
+// establish a unique context for identifying our observers
+static void *myKVOContext = &myKVOContext ; // See http://nshipster.com/key-value-observing/
 
 #define get_objectFromUserdata(objType, L, idx, tag) (objType*)*((void**)luaL_checkudata(L, idx, tag))
 
@@ -39,7 +47,24 @@ typedef NS_ENUM(NSInteger, TB_ItemTypes) {
     TBIT_sharingServicePicker,
     TBIT_slider,
     TBIT_canvas,
+    TBIT_button,
 } ;
+
+static NSDictionary *itemTypeStrings ; // assigned in luaopen_hs__asm_undocumented_touchbar_item
+#define TB_ItemTypeStrings @{                                   \
+    @(TBIT_unknown)                : @"unknown",                \
+    @(TBIT_buttonWithText)         : @"buttonWithText",         \
+    @(TBIT_buttonWithImage)        : @"buttonWithImage",        \
+    @(TBIT_buttonWithImageAndText) : @"buttonWithImageAndText", \
+    @(TBIT_candidateList)          : @"candidateList",          \
+    @(TBIT_colorPicker)            : @"colorPicker",            \
+    @(TBIT_group)                  : @"group",                  \
+    @(TBIT_popover)                : @"popover",                \
+    @(TBIT_sharingServicePicker)   : @"sharingServicePicker",   \
+    @(TBIT_slider)                 : @"slider",                 \
+    @(TBIT_canvas)                 : @"canvas",                 \
+    @(TBIT_button)                 : @"button",                 \
+}
 
 #pragma mark - Support Functions and Classes
 
@@ -795,11 +820,11 @@ static int touchbaritem_identifier(__unused lua_State *L) {
 }
 
 
-static int touchbaritem_itemType(lua_State *L) {
+static int touchbaritem_itemType(__unused lua_State *L) {
     LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBREAK] ;
     HSASMCustomTouchBarItem *obj = [skin toNSObjectAtIndex:1] ;
-    lua_pushinteger(L, obj.itemType) ;
+    [skin pushNSObject:itemTypeStrings[@(obj.itemType)]] ;
     return 1 ;
 }
 
@@ -870,7 +895,7 @@ static int touchbaritem_callback(lua_State *L) {
 
     if (lua_gettop(L) == 2) {
         obj.callbackRef = [skin luaUnref:refTable ref:obj.callbackRef] ;
-        if (lua_type(L, 2) == LUA_TFUNCTION) {
+        if (lua_type(L, 2) != LUA_TNIL) {
             lua_pushvalue(L, 2) ;
             obj.callbackRef = [skin luaRef:refTable] ;
             lua_pushvalue(L, 1) ;
@@ -1072,10 +1097,12 @@ static const luaL_Reg userdata_metaLib[] = {
     {"callback",            touchbaritem_callback},
     {"itemType",            touchbaritem_itemType},
 
-    {"image",               customtouchbaritem_image},
-    {"title",               customtouchbaritem_title},
+    {"buttonImage",         customtouchbaritem_image},
+    {"buttonTitle",         customtouchbaritem_title},
+    {"buttonSize",          customtouchbaritem_size},
+
+
     {"enabled",             customtouchbaritem_enabled},
-    {"size",                customtouchbaritem_size},
 
     {"canvasWidth",         customtouchbaritem_canvasWidth},
     {"canvasClickColor",    customtouchbaritem_canvasHighlightColor},
@@ -1098,11 +1125,12 @@ static const luaL_Reg userdata_metaLib[] = {
 
 // Functions for returned object when module loads
 static luaL_Reg moduleLib[] = {
-    {"newButton", customtouchbaritem_newButton},
-    {"newCanvas", customtouchbaritem_newCanvas},
-    {"newGroup",  grouptouchbaritem_newGroup},
-    {"newSlider", slidertouchbaritem_newSlider},
-    {NULL,        NULL}
+    {"newButton",  customtouchbaritem_newButton},
+//     {"newButton2", customtouchbaritem_newButton2},
+    {"newCanvas",  customtouchbaritem_newCanvas},
+    {"newGroup",   grouptouchbaritem_newGroup},
+    {"newSlider",  slidertouchbaritem_newSlider},
+    {NULL,         NULL}
 };
 
 // // Metatable for module, if needed
@@ -1113,6 +1141,7 @@ static luaL_Reg moduleLib[] = {
 
 int luaopen_hs__asm_undocumented_touchbar_item(lua_State* L) {
     LuaSkin *skin = [LuaSkin shared] ;
+    itemTypeStrings = TB_ItemTypeStrings ;
 
     if (NSClassFromString(@"NSTouchBarItem")) {
         refTable = [skin registerLibraryWithObject:USERDATA_TAG

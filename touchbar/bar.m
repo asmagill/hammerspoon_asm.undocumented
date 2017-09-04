@@ -14,8 +14,11 @@
 ///
 /// TODO:
 ///  * touch bars for the console and webviews
-///  * `isVisible` is KVO, so add a watcher
+///  * *DONE* but see notes -- `isVisible` is KVO, so add a watcher
+///    * but doesn't detect when built in dismiss button clicked.
+///    * does detect :dismissModalBar and :minimizeModalBar, though.
 ///  * rework orginization so bar in root, current root in virtual
+///  * modifying plist directly to change touchbar settings didn't work... will using defaults? do we need additions to plist for modifying settings through SCPreferences instead?
 
 @import Cocoa ;
 @import LuaSkin ;
@@ -25,6 +28,9 @@
 static const char * const USERDATA_TAG = "hs._asm.undocumented.touchbar.bar" ;
 static const char * const ITEM_UD_TAG  = "hs._asm.undocumented.touchbar.item" ;
 static int refTable = LUA_NOREF;
+
+// establish a unique context for identifying our observers
+static void *myKVOContext = &myKVOContext ; // See http://nshipster.com/key-value-observing/
 
 static NSDictionary *builtInIdentifiers ;
 
@@ -36,6 +42,7 @@ static NSDictionary *builtInIdentifiers ;
 
 @interface HSASMTouchBar : NSTouchBar <NSTouchBarDelegate>
 @property int selfRefCount ;
+@property int visibilityCallbackRef ;
 @end
 
 @implementation HSASMTouchBar
@@ -44,6 +51,7 @@ static NSDictionary *builtInIdentifiers ;
     self = [super init] ;
     if (self) {
         _selfRefCount = 0 ;
+        _visibilityCallbackRef  = LUA_NOREF ;
         self.delegate = self ;
     }
     return self ;
@@ -98,6 +106,24 @@ static NSDictionary *builtInIdentifiers ;
             [LuaSkin logWarn:[NSString stringWithFormat:@"%s:setTemplateItems (increasing) - item %@ does not recognize selfRefCount", USERDATA_TAG, item]] ;
         }
     }] ;
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+    if (context == myKVOContext && [keyPath isEqualToString:@"visible"]) {
+        if (_visibilityCallbackRef != LUA_NOREF) {
+            LuaSkin *skin = [LuaSkin shared] ;
+            lua_State *L  = [skin L] ;
+            [skin pushLuaRef:refTable ref:_visibilityCallbackRef] ;
+            [skin pushNSObject:self] ;
+            lua_pushboolean(L, self.visible) ;
+            if (![skin protectedCallAndTraceback:2 nresults:0]) {
+                [skin logError:[NSString stringWithFormat:@"%s:visibilityCallback error:%s", USERDATA_TAG, lua_tostring(L, -1)]] ;
+                lua_pop(L, 1) ;
+            }
+        }
+    } else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context] ;
+    }
 }
 
 // - (NSTouchBarItem *)touchBar:(NSTouchBar *)touchBar makeItemForIdentifier:(NSTouchBarItemIdentifier)identifier {
@@ -473,9 +499,52 @@ static int touchbar_itemForIdentifier(lua_State *L) {
 
     NSTouchBarItem *item = [obj itemForIdentifier:identifier] ;
     if (item) {
-        [skin pushNSObject:item withOptions:LS_NSDescribeUnknownTypes] ;
+        if ([item respondsToSelector:NSSelectorFromString(@"selfRefCount")]) {
+            [skin pushNSObject:item withOptions:LS_NSDescribeUnknownTypes] ;
+        } else {
+            [skin logWarn:[NSString stringWithFormat:@"%s:itemForIdentifier(%@) does not refer to an %s object", USERDATA_TAG, identifier, ITEM_UD_TAG]] ;
+            lua_pushnil(L) ;
+        }
     } else {
         lua_pushnil(L) ;
+    }
+    return 1 ;
+}
+
+/// hs._asm.undocumented.touchbar.bar:visibilityCallback([fn | nil]) -> barObject | fn
+/// Method
+/// Get or set the visibility callback function for the touch bar object.
+///
+/// Parameters:
+///  * `fn` - an optional function, or explicit nil to remove, specifying the visibility callback for the touch bar object.
+///
+/// Returns:
+///  * if an argument is provided, returns the barObject; otherwise returns the current value
+///
+/// Notes:
+///  * The callback function should expect two arguments, the barObject itself and a boolean indicating the new visibility of the touch bar.  It should return none.
+static int touchbar_visibilityCallback(lua_State *L) {
+    LuaSkin *skin = [LuaSkin shared] ;
+    [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TFUNCTION | LS_TNIL | LS_TOPTIONAL, LS_TBREAK] ;
+    HSASMTouchBar *obj = [skin toNSObjectAtIndex:1] ;
+
+    if (lua_gettop(L) == 2) {
+        if (obj.visibilityCallbackRef != LUA_NOREF) {
+            obj.visibilityCallbackRef = [skin luaUnref:refTable ref:obj.visibilityCallbackRef] ;
+            [obj removeObserver:obj forKeyPath:@"visible" context:myKVOContext] ;
+        }
+        if (lua_type(L, 2) != LUA_TNIL) {
+            lua_pushvalue(L, 2) ;
+            obj.visibilityCallbackRef = [skin luaRef:refTable] ;
+            [obj addObserver:obj forKeyPath:@"visible" options:NSKeyValueObservingOptionNew context:myKVOContext] ;
+            lua_pushvalue(L, 1) ;
+        }
+    } else {
+        if (obj.visibilityCallbackRef != LUA_NOREF) {
+            [skin pushLuaRef:refTable ref:obj.visibilityCallbackRef] ;
+        } else {
+            lua_pushnil(L) ;
+        }
     }
     return 1 ;
 }
@@ -674,7 +743,11 @@ static int userdata_gc(lua_State* L) {
     if (obj) {
         obj.selfRefCount-- ;
         if (obj.selfRefCount == 0) {
-//             LuaSkin *skin = [LuaSkin shared] ;
+            LuaSkin *skin = [LuaSkin shared] ;
+            if (obj.visibilityCallbackRef != LUA_NOREF) {
+                obj.visibilityCallbackRef = [skin luaUnref:refTable ref:obj.visibilityCallbackRef] ;
+                [obj removeObserver:obj forKeyPath:@"visible" context:myKVOContext] ;
+            }
             obj.delegate = nil ; // it's weak, so not necessary, but lets be explicit... not all delegates *are* weak
             obj.templateItems = [NSSet set] ;
             obj = nil ;
@@ -703,6 +776,7 @@ static const luaL_Reg userdata_metaLib[] = {
     {"defaultIdentifiers",      touchbar_defaultItemIdentifiers},
     {"templateItems",           touchbar_templateItems},
     {"itemForIdentifier",       touchbar_itemForIdentifier},
+    {"visibilityCallback",      touchbar_visibilityCallback},
 
     {"presentModalBar",         touchbar_presentSystemModalFunctionBar},
     {"minimizeModalBar",        touchbar_minimizeSystemModalFunctionBar},
@@ -718,7 +792,7 @@ static const luaL_Reg userdata_metaLib[] = {
 static luaL_Reg moduleLib[] = {
     {"new",                 touchbar_new},
     {"toggleCustomization", touchbar_toggleCustomization},
-    {NULL, NULL}
+    {NULL,                  NULL}
 };
 
 // // Metatable for module, if needed

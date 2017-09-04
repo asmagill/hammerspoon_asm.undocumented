@@ -37,25 +37,9 @@ local screen       = require("hs.screen")
 
 require("hs.drawing.color")
 require("hs.image")
+require("hs.styledtext")
 
 -- private variables and methods -----------------------------------------
-
-local itemTypeStrings = setmetatable({
-    [-1] = "unknown",
-    [0]  = "buttonWithText",
-           "buttonWithImage",
-           "buttonWithImageAndText",
-           "candidateList",
-           "colorPicker",
-           "group",
-           "popover",
-           "sharingServicePicker",
-           "slider",
-           "canvas",
-}, {
-    __index = function(self, key) return "invalid:" .. tostring(key) .. ", notify developers" end,
-    __newindex = function(self, key, value) end,
-})
 
 -- Public interface ------------------------------------------------------
 
@@ -152,10 +136,8 @@ itemMT.presentModalBar = function(self, touchbar, ...)
     return self
 end
 
-itemMT.itemTypeString = function(self, ...) return itemTypeStrings[self:itemType(...)] end
-
 itemMT.groupItems = function(self, ...)
-    if self:itemTypeString() == "group" then
+    if self:itemType() == "group" then
         local args = table.pack(...)
         if args.n == 0 then
             local itemsArray = {}
