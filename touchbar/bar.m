@@ -12,13 +12,10 @@
 ///
 /// This module is very experimental and is still under development, so the exact functions and methods are subject to change without notice.
 ///
-/// TODO:
-///  * touch bars for the console and webviews
-///  * *DONE* but see notes -- `isVisible` is KVO, so add a watcher
-///    * but doesn't detect when built in dismiss button clicked.
-///    * does detect :dismissModalBar and :minimizeModalBar, though.
-///  * rework orginization so bar in root, current root in virtual
-///  * modifying plist directly to change touchbar settings didn't work... will using defaults? do we need additions to plist for modifying settings through SCPreferences instead?
+
+// TODO:
+//  * touch bars for the console and webviews
+//  * rework orginization so bar in root, current root in `virtual`
 
 @import Cocoa ;
 @import LuaSkin ;
@@ -113,11 +110,15 @@ static NSDictionary *builtInIdentifiers ;
         if (_visibilityCallbackRef != LUA_NOREF) {
             LuaSkin *skin = [LuaSkin shared] ;
             lua_State *L  = [skin L] ;
-            [skin pushLuaRef:refTable ref:_visibilityCallbackRef] ;
-            [skin pushNSObject:self] ;
-            lua_pushboolean(L, self.visible) ;
-            if (![skin protectedCallAndTraceback:2 nresults:0]) {
-                [skin logError:[NSString stringWithFormat:@"%s:visibilityCallback error:%s", USERDATA_TAG, lua_tostring(L, -1)]] ;
+            // KVO seems to be slow and may not invoke the callback until after gc during a reload
+            if ([skin pushLuaRef:refTable ref:_visibilityCallbackRef] != LUA_TNIL) {
+                [skin pushNSObject:self] ;
+                lua_pushboolean(L, self.visible) ;
+                if (![skin protectedCallAndTraceback:2 nresults:0]) {
+                    [skin logError:[NSString stringWithFormat:@"%s:visibilityCallback error:%s", USERDATA_TAG, lua_tostring(L, -1)]] ;
+                    lua_pop(L, 1) ;
+                }
+            } else {
                 lua_pop(L, 1) ;
             }
         }
@@ -222,6 +223,11 @@ static int touchbar_toggleCustomization(__unused lua_State *L) {
 ///
 /// Returns:
 ///  * a boolean value indicating whether or not the touchbar represented by the object is currently being displayed in the laptop or virtual Touch Bar.
+///
+/// Notes:
+///  * The value returned by this method changes as expected when the [hs._asm.undocumented.touchbar.bar:dismissModalBar](#dismissModalBar) or [hs._asm.undocumented.touchbar.bar:minimizeModalBar](#minimizeModalBar) methods are used.
+///  * It does *NOT* reliably change when when the system dismiss button is used (when the second argument to [hs._asm.undocumented.touchbar.bar:presentModalBar](#presentModalBar) or `hs._asm.undocumented.touchbar.item:presentModalBar` is true (or not present)).  This is being investigated but at present no workaround is known.
+
 static int touchbar_isVisible(lua_State *L) {
     LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBREAK] ;
@@ -523,6 +529,9 @@ static int touchbar_itemForIdentifier(lua_State *L) {
 ///
 /// Notes:
 ///  * The callback function should expect two arguments, the barObject itself and a boolean indicating the new visibility of the touch bar.  It should return none.
+///
+///  * This callback is invoked when the [hs._asm.undocumented.touchbar.bar:dismissModalBar](#dismissModalBar) or [hs._asm.undocumented.touchbar.bar:minimizeModalBar](#minimizeModalBar) methods are used.
+///  * This callback is *NOT* invoked when the system dismiss button is used (when the second argument to [hs._asm.undocumented.touchbar.bar:presentModalBar](#presentModalBar) or `hs._asm.undocumented.touchbar.item:presentModalBar` is true (or not present)). This is being investigated but at present no workaround is known.
 static int touchbar_visibilityCallback(lua_State *L) {
     LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TFUNCTION | LS_TNIL | LS_TOPTIONAL, LS_TBREAK] ;
@@ -691,27 +700,6 @@ id toHSASMTouchBarFromLua(lua_State *L, int idx) {
     }
     return value ;
 }
-
-// // "promote" NSTouchBar to one of us; will probably break if touchbar comes from outside; this is added so default
-// // touchbars used by NSPopoverTouchBarItem, etc. can be properly handled.
-// static int pushNSTouchBar(lua_State *L, id obj) {
-// // search order for registered handlers is non-deterministic IIRC; should probably explore that at some point...
-//     if ([obj isKindOfClass:[HSASMTouchBar class]]) {
-//         return pushHSASMTouchBar(L, obj) ;
-//     } else {
-//         NSTouchBar *initialBar = obj ;
-//         HSASMTouchBar *newBar = [[HSASMTouchBar alloc] init] ;
-//         newBar.customizationIdentifier              = initialBar.customizationIdentifier ;
-//         newBar.customizationAllowedItemIdentifiers  = initialBar.customizationAllowedItemIdentifiers ;
-//         newBar.customizationRequiredItemIdentifiers = initialBar.customizationRequiredItemIdentifiers ;
-//         newBar.defaultItemIdentifiers               = initialBar.defaultItemIdentifiers ;
-//         newBar.principalItemIdentifier              = initialBar.principalItemIdentifier ;
-//         newBar.escapeKeyReplacementItemIdentifier   = initialBar.escapeKeyReplacementItemIdentifier ;
-//         newBar.templateItems                        = initialBar.templateItems ;
-//         [[LuaSkin shared] pushNSObject:newBar] ;
-//         return 1;
-//     }
-// }
 
 #pragma mark - Hammerspoon/Lua Infrastructure
 

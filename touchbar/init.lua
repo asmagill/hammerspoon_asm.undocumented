@@ -136,6 +136,20 @@ itemMT.presentModalBar = function(self, touchbar, ...)
     return self
 end
 
+--- hs._asm.undocumented.touchbar.item:groupItems([itemsTable]) -> touchbarItemObject | current value
+--- Method
+--- Get or set the touchbar item objects which belong to this group touchbar item.
+---
+--- Parameters:
+---  * `itemsTable` - an optional table as an array of touchbar item objects to display when this group touchbar item is present in the touchbar.
+---
+--- Returns:
+---  * if an argument is provided, returns the touchbarItem object; otherwise returns the current value
+---
+--- Notes:
+---  * This method will generate an error if the touchbar item was not created with the [hs._asm.undocumented.touchbar.item.newGroup](#newGroup) constructor.
+---  * The group touchbar item's callback, if set, is never invoked; instead the callback for the items within the group item is invoked when the item is touched.
+---  * This is a convenience method which creates an `hs._asm.undocumented.touchbar.bar` object and uses [hs._asm.undocumented.touchbar.item:groupTouchbar](#groupTouchbar) to assign the items to the group item.
 itemMT.groupItems = function(self, ...)
     if self:itemType() == "group" then
         local args = table.pack(...)

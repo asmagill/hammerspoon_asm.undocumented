@@ -11,13 +11,13 @@
 ///
 /// This module is very experimental and is still under development, so the exact functions and methods are subject to change without notice.
 ///
-/// TODO:
-///  * `isVisible` is KVO, so add a watcher
-///  * more functions to modify button style/appearance? attributed string support? background color? width?
-///  * Why does popover fail to show expanded items?  I think fixing this will also allow colorPicker and sharingService to work
-///    * try minimizing while popover is supposed to show, maybe because we're already a "pop over" and it would work with "Hammerspoon application" touchbars?
-///
-///  * get canvas max width ala `canvasItem("view")("window")("frame").w`... can we get without creating canvas item first?
+
+// TODO:
+//  * more functions to modify button style/appearance? attributed string support? background color? width?
+//  * Why does popover fail to show expanded items?  I think fixing this will also allow colorPicker and sharingService to work
+//    * try minimizing while popover is supposed to show, maybe because we're already a "pop over" and it would work with "Hammerspoon application" touchbars?
+//
+//  * get canvas max width ala `canvasItem("view")("window")("frame").w`... can we get without creating canvas item first?
 
 @import Cocoa ;
 @import LuaSkin ;
@@ -79,42 +79,49 @@ static NSDictionary *itemTypeStrings ; // assigned in luaopen_hs__asm_undocument
 @interface HSASMCustomTouchBarItem : NSCustomTouchBarItem
 @property            int          callbackRef ;
 @property            int          selfRefCount ;
+@property            int          visibilityCallbackRef ;
 @property (readonly) TB_ItemTypes itemType ;
 @end
 
 @interface HSASMGroupTouchBarItem : NSGroupTouchBarItem
 @property            int          callbackRef ;
 @property            int          selfRefCount ;
+@property            int          visibilityCallbackRef ;
 @property (readonly) TB_ItemTypes itemType ;
 @end
 
 @interface HSASMSliderTouchBarItem : NSSliderTouchBarItem
 @property            int          callbackRef ;
 @property            int          selfRefCount ;
+@property            int          visibilityCallbackRef ;
 @property (readonly) TB_ItemTypes itemType ;
 @end
 
 // @interface HSASMPopoverTouchBarItem : NSPopoverTouchBarItem
 // @property            int          callbackRef ;
 // @property            int          selfRefCount ;
+// @property            int          visibilityCallbackRef ;
 // @property (readonly) TB_ItemTypes itemType ;
 // @end
 
 // @interface HSASMCandidateListTouchBarItem : NSCandidateListTouchBarItem
 // @property            int          callbackRef ;
 // @property            int          selfRefCount ;
+// @property            int          visibilityCallbackRef ;
 // @property (readonly) TB_ItemTypes itemType ;
 // @end
 
 // @interface HSASMSharingServicePickerTouchBarItem : NSSharingServicePickerTouchBarItem
 // @property            int          callbackRef ;
 // @property            int          selfRefCount ;
+// @property            int          visibilityCallbackRef ;
 // @property (readonly) TB_ItemTypes itemType ;
 // @end
 
 // @interface HSASMColorPickerTouchBarItem : NSCandidateListTouchBarItem
 // @property            int          callbackRef ;
 // @property            int          selfRefCount ;
+// @property            int          visibilityCallbackRef ;
 // @property (readonly) TB_ItemTypes itemType ;
 // @end
 
@@ -267,11 +274,19 @@ static NSDictionary *itemTypeStrings ; // assigned in luaopen_hs__asm_undocument
 - (instancetype)initItemType:(TB_ItemTypes)itemType withIdentifier:(NSString *)identifier {
     self = [super initWithIdentifier:identifier] ;
     if (self) {
-        _callbackRef  = LUA_NOREF ;
-        _selfRefCount = 0 ;
-        _itemType     = itemType ;
+        _callbackRef           = LUA_NOREF ;
+        _visibilityCallbackRef = LUA_NOREF ;
+        _selfRefCount          = 0 ;
+        _itemType              = itemType ;
     }
     return self ;
+}
+
+- (void)dealloc {
+    if (_visibilityCallbackRef != LUA_NOREF) {
+        _visibilityCallbackRef = LUA_NOREF ;
+        [self removeObserver:self forKeyPath:@"visible" context:myKVOContext] ;
+    }
 }
 
 - (void)performCallback:(id)sender {
@@ -291,6 +306,28 @@ static NSDictionary *itemTypeStrings ; // assigned in luaopen_hs__asm_undocument
     }
 }
 
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+    if (context == myKVOContext && [keyPath isEqualToString:@"visible"]) {
+        if (_visibilityCallbackRef != LUA_NOREF) {
+            LuaSkin *skin = [LuaSkin shared] ;
+            lua_State *L  = [skin L] ;
+            // KVO seems to be slow and may not invoke the callback until after gc during a reload
+            if ([skin pushLuaRef:refTable ref:_visibilityCallbackRef] != LUA_TNIL) {
+                [skin pushNSObject:self] ;
+                lua_pushboolean(L, self.visible) ;
+                if (![skin protectedCallAndTraceback:2 nresults:0]) {
+                    [skin logError:[NSString stringWithFormat:@"%s:visibilityCallback error:%s", USERDATA_TAG, lua_tostring(L, -1)]] ;
+                    lua_pop(L, 1) ;
+                }
+            } else {
+                lua_pop(L, 1) ;
+            }
+        }
+    } else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context] ;
+    }
+}
+
 @end
 
 @implementation HSASMGroupTouchBarItem
@@ -298,11 +335,19 @@ static NSDictionary *itemTypeStrings ; // assigned in luaopen_hs__asm_undocument
 - (instancetype)initWithIdentifier:(NSString *)identifier {
     self = [super initWithIdentifier:identifier] ;
     if (self) {
-        _callbackRef  = LUA_NOREF ;
-        _selfRefCount = 0 ;
-        _itemType     = TBIT_group ;
+        _callbackRef           = LUA_NOREF ;
+        _visibilityCallbackRef = LUA_NOREF ;
+        _selfRefCount          = 0 ;
+        _itemType              = TBIT_group ;
     }
     return self ;
+}
+
+- (void)dealloc {
+    if (_visibilityCallbackRef != LUA_NOREF) {
+        _visibilityCallbackRef = LUA_NOREF ;
+        [self removeObserver:self forKeyPath:@"visible" context:myKVOContext] ;
+    }
 }
 
 // override this so we can adjust toolbar selfRefCounts in one place rather than everywhere it might be set
@@ -356,6 +401,28 @@ static NSDictionary *itemTypeStrings ; // assigned in luaopen_hs__asm_undocument
     }
 }
 
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+    if (context == myKVOContext && [keyPath isEqualToString:@"visible"]) {
+        if (_visibilityCallbackRef != LUA_NOREF) {
+            LuaSkin *skin = [LuaSkin shared] ;
+            lua_State *L  = [skin L] ;
+            // KVO seems to be slow and may not invoke the callback until after gc during a reload
+            if ([skin pushLuaRef:refTable ref:_visibilityCallbackRef] != LUA_TNIL) {
+                [skin pushNSObject:self] ;
+                lua_pushboolean(L, self.visible) ;
+                if (![skin protectedCallAndTraceback:2 nresults:0]) {
+                    [skin logError:[NSString stringWithFormat:@"%s:visibilityCallback error:%s", USERDATA_TAG, lua_tostring(L, -1)]] ;
+                    lua_pop(L, 1) ;
+                }
+            } else {
+                lua_pop(L, 1) ;
+            }
+        }
+    } else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context] ;
+    }
+}
+
 @end
 
 @implementation HSASMSliderTouchBarItem
@@ -363,13 +430,21 @@ static NSDictionary *itemTypeStrings ; // assigned in luaopen_hs__asm_undocument
 - (instancetype)initWithIdentifier:(NSString *)identifier {
     self = [super initWithIdentifier:identifier] ;
     if (self) {
-        _callbackRef  = LUA_NOREF ;
-        _selfRefCount = 0 ;
-        _itemType     = TBIT_slider ;
-        self.target   = self ;
-        self.action   = @selector(performSlideCallback:) ;
+        _callbackRef           = LUA_NOREF ;
+        _visibilityCallbackRef = LUA_NOREF ;
+        _selfRefCount          = 0 ;
+        _itemType              = TBIT_slider ;
+        self.target            = self ;
+        self.action            = @selector(performSlideCallback:) ;
     }
     return self ;
+}
+
+- (void)dealloc {
+    if (_visibilityCallbackRef != LUA_NOREF) {
+        _visibilityCallbackRef = LUA_NOREF ;
+        [self removeObserver:self forKeyPath:@"visible" context:myKVOContext] ;
+    }
 }
 
 - (void)performCallbackWithValue:(id)value {
@@ -402,12 +477,41 @@ static NSDictionary *itemTypeStrings ; // assigned in luaopen_hs__asm_undocument
     [self performCallbackWithValue:@"maximum"] ;
 }
 
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+    if (context == myKVOContext && [keyPath isEqualToString:@"visible"]) {
+        if (_visibilityCallbackRef != LUA_NOREF) {
+            LuaSkin *skin = [LuaSkin shared] ;
+            lua_State *L  = [skin L] ;
+            // KVO seems to be slow and may not invoke the callback until after gc during a reload
+            if ([skin pushLuaRef:refTable ref:_visibilityCallbackRef] != LUA_TNIL) {
+                [skin pushNSObject:self] ;
+                lua_pushboolean(L, self.visible) ;
+                if (![skin protectedCallAndTraceback:2 nresults:0]) {
+                    [skin logError:[NSString stringWithFormat:@"%s:visibilityCallback error:%s", USERDATA_TAG, lua_tostring(L, -1)]] ;
+                    lua_pop(L, 1) ;
+                }
+            } else {
+                lua_pop(L, 1) ;
+            }
+        }
+    } else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context] ;
+    }
+}
+
 @end
 
 #pragma mark - Module Functions
 
-// Requires tweak to canvas - (id)getElementValueFor:(NSString *)keyName atIndex:(NSUInteger)index resolvePercentages:(BOOL)resolvePercentages
-
+/// hs._asm.undocumented.touchbar.item.newGroup([title], [image], [identifier]) -> touchbarItemObject
+/// Constructor
+/// Create a new group touchbarItem object which can contain other touchbar items.
+///
+/// Parameters:
+///  * `identifier` - An optional string specifying the identifier for this touchbar item. Must be unique within the bar the item will be assigned to if specified. If not specified, a new UUID is generated for the item.
+///
+/// Returns:
+///  * a touchbarItemObject or nil if an error occurs
 static int grouptouchbaritem_newGroup(lua_State *L) {
     LuaSkin      *skin       = [LuaSkin shared] ;
     [skin checkArgs:LS_TSTRING | LS_TOPTIONAL, LS_TBREAK] ;
@@ -422,6 +526,18 @@ static int grouptouchbaritem_newGroup(lua_State *L) {
     return 1 ;
 }
 
+/// hs._asm.undocumented.touchbar.item.newSlider([identifier]) -> touchbarItemObject
+/// Constructor
+/// Create a new slider touchbarItem object.
+///
+/// Parameters:
+///  * `identifier` - An optional string specifying the identifier for this touchbar item. Must be unique within the bar the item will be assigned to if specified. If not specified, a new UUID is generated for the item.
+///
+/// Returns:
+///  * a touchbarItemObject or nil if an error occurs
+///
+/// Notes:
+///  * The slider object will expand to fill as much space as it can within the touchbar.
 static int slidertouchbaritem_newSlider(lua_State *L) {
     LuaSkin      *skin       = [LuaSkin shared] ;
     [skin checkArgs:LS_TSTRING | LS_TOPTIONAL, LS_TBREAK] ;
@@ -436,6 +552,20 @@ static int slidertouchbaritem_newSlider(lua_State *L) {
     return 1 ;
 }
 
+/// hs._asm.undocumented.touchbar.item.newCanvas(canvas, [identifier]) -> touchbarItemObject
+/// Constructor
+/// Create a new touchbarItem object from an `hs.canvas` object..
+///
+/// Parameters:
+///  * `canvas`     - The `hs.canvas` object to use as a touchbar item.
+///  * `identifier` - An optional string specifying the identifier for this touchbar item. Must be unique within the bar the item will be assigned to if specified. If not specified, a new UUID is generated for the item.
+///
+/// Returns:
+///  * a touchbarItemObject or nil if an error occurs
+///
+/// Notes:
+///  * The touch bar object will be proportionally resized so that it has a height of 30 if it does not already.
+///  * If canvas callbacks for `mouseDown`, `mouseUp`, `mouseEnterExit`, and `mouseMove` are enabled, the canvas callback will be invoked as if the left mouse button had been used.
 static int customtouchbaritem_newCanvas(lua_State *L) {
     LuaSkin      *skin       = [LuaSkin shared] ;
     [skin checkArgs:LS_TUSERDATA, "hs.canvas", LS_TSTRING | LS_TOPTIONAL, LS_TBREAK] ;
@@ -565,6 +695,59 @@ static int customtouchbaritem_newButton(lua_State *L) {
 
 #pragma mark - Module Methods
 
+/// hs._asm.undocumented.touchbar.item:visibilityCallback([fn | nil]) -> touchbarItemObject | current value
+/// Method
+/// Get or set the visibility callback function for the touchbar item object.
+///
+/// Parameters:
+///  * `fn` - an optional function, or explicit nil to remove, specifying the visibility callback for the touchbar item object.
+///
+/// Returns:
+///  * if an argument is provided, returns the touchbarItem object; otherwise returns the current value
+///
+/// Notes:
+///  * The callback function should expect two arguments, the touchbarItem itself and a boolean indicating the new visibility of the item.  It should return none.
+///
+///  * See also the notes for [hs._asm.undocumented.touchbar.item:isVisible](#isVisible) and `hs._asm.undocumented.touchbar.bar.visibilityCallback`.
+static int touchbaritem_visibilityCallback(lua_State *L) {
+    LuaSkin *skin = [LuaSkin shared] ;
+    [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TFUNCTION | LS_TNIL | LS_TOPTIONAL, LS_TBREAK] ;
+    HSASMCustomTouchBarItem *obj = [skin toNSObjectAtIndex:1] ;
+
+    if (lua_gettop(L) == 2) {
+        if (obj.visibilityCallbackRef != LUA_NOREF) {
+            obj.visibilityCallbackRef = [skin luaUnref:refTable ref:obj.visibilityCallbackRef] ;
+            [obj removeObserver:obj forKeyPath:@"visible" context:myKVOContext] ;
+        }
+        if (lua_type(L, 2) != LUA_TNIL) {
+            lua_pushvalue(L, 2) ;
+            obj.visibilityCallbackRef = [skin luaRef:refTable] ;
+            [obj addObserver:obj forKeyPath:@"visible" options:NSKeyValueObservingOptionNew context:myKVOContext] ;
+            lua_pushvalue(L, 1) ;
+        }
+    } else {
+        if (obj.visibilityCallbackRef != LUA_NOREF) {
+            [skin pushLuaRef:refTable ref:obj.visibilityCallbackRef] ;
+        } else {
+            lua_pushnil(L) ;
+        }
+    }
+    return 1 ;
+}
+
+/// hs._asm.undocumented.touchbar.item:sliderMinImage([image]) -> touchbarItemObject | current value
+/// Method
+/// Get or set the image displayed at the left side of a slider touchbar item.
+///
+/// Parameters:
+///  * `image` - an optional image, or explicit nil to remove, specifying the image to be displayed at the left side of a slider touchbar item.  Defaults to nil.
+///
+/// Returns:
+///  * if an argument is provided, returns the touchbarItem object; otherwise returns the current value
+///
+/// Notes:
+///  * This method will generate an error if the touchbar item was not created with the [hs._asm.undocumented.touchbar.item.newSlider](#newSlider) constructor.
+///  * When this image is clicked on, the touchbar item's callback, if set, will receive the string "minimum" as it's second argument.
 static int slidertouchbaritem_minImage(lua_State *L) {
     LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TANY, LS_TBREAK] ;
@@ -590,6 +773,19 @@ static int slidertouchbaritem_minImage(lua_State *L) {
     return 1 ;
 }
 
+/// hs._asm.undocumented.touchbar.item:sliderMaxImage([image]) -> touchbarItemObject | current value
+/// Method
+/// Get or set the image displayed at the right side of a slider touchbar item.
+///
+/// Parameters:
+///  * `image` - an optional image, or explicit nil to remove, specifying the image to be displayed at the right side of a slider touchbar item.  Defaults to nil.
+///
+/// Returns:
+///  * if an argument is provided, returns the touchbarItem object; otherwise returns the current value
+///
+/// Notes:
+///  * This method will generate an error if the touchbar item was not created with the [hs._asm.undocumented.touchbar.item.newSlider](#newSlider) constructor.
+///  * When this image is clicked on, the touchbar item's callback, if set, will receive the string "maximum" as it's second argument.
 static int slidertouchbaritem_maxImage(lua_State *L) {
     LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TANY, LS_TBREAK] ;
@@ -615,6 +811,18 @@ static int slidertouchbaritem_maxImage(lua_State *L) {
     return 1 ;
 }
 
+/// hs._asm.undocumented.touchbar.item:sliderMin([value]) -> touchbarItemObject | current value
+/// Method
+/// Get or set the minimum value for a slider touchbar item.
+///
+/// Parameters:
+///  * `value` - an optional number specifying the minimum value for a slider touchbar item. This represents the slider's value when the knob of the slider is all the way to the left. Defaults to 0.0.
+///
+/// Returns:
+///  * if an argument is provided, returns the touchbarItem object; otherwise returns the current value
+///
+/// Notes:
+///  * This method will generate an error if the touchbar item was not created with the [hs._asm.undocumented.touchbar.item.newSlider](#newSlider) constructor.
 static int slidertouchbaritem_minValue(lua_State *L) {
     LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TNUMBER | LS_TOPTIONAL, LS_TBREAK] ;
@@ -633,6 +841,18 @@ static int slidertouchbaritem_minValue(lua_State *L) {
     return  1 ;
 }
 
+/// hs._asm.undocumented.touchbar.item:sliderMax([value]) -> touchbarItemObject | current value
+/// Method
+/// Get or set the maximum value for a slider touchbar item.
+///
+/// Parameters:
+///  * `value` - an optional number specifying the maximum value for a slider touchbar item. This represents the slider's value when the knob of the slider is all the way to the right. Defaults to 1.0.
+///
+/// Returns:
+///  * if an argument is provided, returns the touchbarItem object; otherwise returns the current value
+///
+/// Notes:
+///  * This method will generate an error if the touchbar item was not created with the [hs._asm.undocumented.touchbar.item.newSlider](#newSlider) constructor.
 static int slidertouchbaritem_maxValue(lua_State *L) {
     LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TNUMBER | LS_TOPTIONAL, LS_TBREAK] ;
@@ -651,6 +871,19 @@ static int slidertouchbaritem_maxValue(lua_State *L) {
     return  1 ;
 }
 
+/// hs._asm.undocumented.touchbar.item:sliderValue([value]) -> touchbarItemObject | current value
+/// Method
+/// Get or set the current value for a slider touchbar item.
+///
+/// Parameters:
+///  * `value` - an optional number specifying the value to set for the slider. This value will be automatically constrained to the current minimum and maximum as set by [hs._asm.undocumented.touchbar.item:sliderMin](#sliderMin) and [hs._asm.undocumented.touchbar.item:sliderMax](#sliderMax).
+///
+/// Returns:
+///  * if an argument is provided, returns the touchbarItem object; otherwise returns the current value
+///
+/// Notes:
+///  * This method will generate an error if the touchbar item was not created with the [hs._asm.undocumented.touchbar.item.newSlider](#newSlider) constructor.
+///  * The slider touchbar items callback, if set, will not be invoked if you use this method to change the slider's value.
 static int slidertouchbaritem_currentValue(lua_State *L) {
     LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TNUMBER | LS_TOPTIONAL, LS_TBREAK] ;
@@ -669,6 +902,20 @@ static int slidertouchbaritem_currentValue(lua_State *L) {
     return  1 ;
 }
 
+/// hs._asm.undocumented.touchbar.item:groupTouchbar([touchbar]) -> touchbarItemObject | current value
+/// Method
+/// Get or set the bar object which contains the touchbar items that belong to the group touchbar item.
+///
+/// Parameters:
+///  * `touchbar` - an optional `hs._asm.undocumented.touchbar.bar` object containing the touchbar items to display when this group touchbar item is present in the touchbar.
+///
+/// Returns:
+///  * if an argument is provided, returns the touchbarItem object; otherwise returns the current value
+///
+/// Notes:
+///  * This method will generate an error if the touchbar item was not created with the [hs._asm.undocumented.touchbar.item.newGroup](#newGroup) constructor.
+///  * The group touchbar item's callback, if set, is never invoked; instead the callback for the items within the group item is invoked when the item is touched.
+///  * See also [hs._asm.undocumented.touchbar.item:groupItems](#groupItems)
 static int grouptouchbaritem_groupTouchBar(lua_State *L) {
     LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBREAK | LS_TVARARG] ;
@@ -688,7 +935,7 @@ static int grouptouchbaritem_groupTouchBar(lua_State *L) {
     return  1 ;
 }
 
-/// hs._asm.undocumented.touchbar.item:customizationLabel([label]) -> touchbarItemObject | string
+/// hs._asm.undocumented.touchbar.item:customizationLabel([label]) -> touchbarItemObject | current value
 /// Method
 /// Get or set the label displayed for the item when the customization panel is being displayed for the touch bar.
 ///
@@ -715,7 +962,7 @@ static int touchbaritem_customizationLabel(lua_State *L) {
     return 1 ;
 }
 
-/// hs._asm.undocumented.touchbar.item:image([image]) -> touchbarItemObject | hs.image object
+/// hs._asm.undocumented.touchbar.item:buttonImage([image]) -> touchbarItemObject | hs.image object
 /// Method
 /// Get or set the image for a button item which was initially given an image when created.
 ///
@@ -726,6 +973,7 @@ static int touchbaritem_customizationLabel(lua_State *L) {
 ///  * if an argument is provided, returns the touchbarItem object; otherwise returns the current value
 ///
 /// Notes:
+///  * This method will generate an error if the touchbar item was not created with the [hs._asm.undocumented.touchbar.item.newButton](#newButton) constructor.
 ///  * This method will generate an error if an image was not provided when the object was created.
 ///  * Setting the image to nil will remove the image and shrink the button, but not as tightly as the button would appear if it had been initially created without an image at all.
 static int customtouchbaritem_image(lua_State *L) {
@@ -751,7 +999,7 @@ static int customtouchbaritem_image(lua_State *L) {
     return 1 ;
 }
 
-/// hs._asm.undocumented.touchbar.item:title([title]) -> touchbarItemObject | string
+/// hs._asm.undocumented.touchbar.item:buttonTitle([title]) -> touchbarItemObject | current value
 /// Method
 /// Get or set the title for a button item which was initially given a title when created.
 ///
@@ -762,6 +1010,7 @@ static int customtouchbaritem_image(lua_State *L) {
 ///  * if an argument is provided, returns the touchbarItem object; otherwise returns the current value
 ///
 /// Notes:
+///  * This method will generate an error if the touchbar item was not created with the [hs._asm.undocumented.touchbar.item.newButton](#newButton) constructor.
 ///  * This method will generate an error if a title was not provided when the object was created.
 ///  * Setting the title to nil will remove the title and shrink the button, but not as tightly as the button would appear if it had been initially created without a title at all.
 static int customtouchbaritem_title(lua_State *L) {
@@ -798,6 +1047,18 @@ static int customtouchbaritem_title(lua_State *L) {
     return 1 ;
 }
 
+/// hs._asm.undocumented.touchbar.item:canvasWidth([width]) -> touchbarItemObject | current value
+/// Method
+/// Get or set the width of a canvas touchbar item in the touchbar.
+///
+/// Parameters:
+///  * `width` - an optional number specifying the width of the canvas touchbar item in the touchbar.
+///
+/// Returns:
+///  * if an argument is provided, returns the touchbarItem object; otherwise returns the current value
+///
+/// Notes:
+///  * This method will generate an error if the touchbar item was not created with the [hs._asm.undocumented.touchbar.item.newCanvas](#newCanvas) constructor.
 static int customtouchbaritem_canvasWidth(lua_State *L) {
     LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TNUMBER | LS_TOPTIONAL, LS_TBREAK] ;
@@ -818,6 +1079,19 @@ static int customtouchbaritem_canvasWidth(lua_State *L) {
     return 1 ;
 }
 
+/// hs._asm.undocumented.touchbar.item:canvasClickColor([color]) -> touchbarItemObject | current value
+/// Method
+/// Get or set the background color displayed when a canvas touchbar item is currently being touched.
+///
+/// Parameters:
+///  * `color` - an optional table specifying a color as defined in the `hs.drawing.color` module, or an explicit nil to reset it to the default. Defaults to the macOS System Selected Control Color (`hs.drawing.color.colorsFor("System")["selectedControlColor"]`).
+///
+/// Returns:
+///  * if an argument is provided, returns the touchbarItem object; otherwise returns the current value
+///
+/// Notes:
+///  * This method will generate an error if the touchbar item was not created with the [hs._asm.undocumented.touchbar.item.newCanvas](#newCanvas) constructor.
+///  * To specify that no background color should be displayed when the canvas touchbar item is in an active state, specify a color with an alpha value of 0, e.g. `{ alpha = 0 }`.
 static int customtouchbaritem_canvasHighlightColor(lua_State *L) {
     LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TTABLE | LS_TNIL | LS_TOPTIONAL, LS_TBREAK] ;
@@ -846,6 +1120,18 @@ static int customtouchbaritem_canvasHighlightColor(lua_State *L) {
     return 1 ;
 }
 
+/// hs._asm.undocumented.touchbar.item:enabled([state]) -> touchbarItemObject | current value
+/// Method
+/// Get or set whether the touchbar item is enabled (accepting touches) or disabled.
+///
+/// Parameters:
+///  * `state` - an optional boolean, default true, specifying whether or not the touchbar item is currently enabled.
+///
+/// Returns:
+///  * if an argument is provided, returns the touchbarItem object; otherwise returns the current value
+///
+/// Notes:
+///  * This method will generate an error if the touchbar item was not created with the [hs._asm.undocumented.touchbar.item.newButton](#newButton) or [hs._asm.undocumented.touchbar.item.newCanvas](#newCanvas) constructors.
 static int customtouchbaritem_enabled(lua_State *L) {
     LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBOOLEAN | LS_TOPTIONAL, LS_TBREAK] ;
@@ -872,6 +1158,22 @@ static int customtouchbaritem_enabled(lua_State *L) {
     return 1 ;
 }
 
+/// hs._asm.undocumented.touchbar.item:buttonSize([size]) -> touchbarItemObject | current value
+/// Method
+/// Get or set the button touchbar item's button size.
+///
+/// Parameters:
+///  * `size` - an optional string, default "regular", specifying the button touchbar button size.  Must be one of "regular", "small", or "mini".
+///
+/// Returns:
+///  * if an argument is provided, returns the touchbarItem object; otherwise returns the current value
+///
+/// Notes:
+///  * This method will generate an error if the touchbar item was not created with the [hs._asm.undocumented.touchbar.item.newButton](#newButton) or [hs._asm.undocumented.touchbar.item.newCanvas](#newCanvas) constructors.
+///  * The button sizes are defined by the macOS operating system and under macOS 10.12 have the following visual effects (this may change with future macOS updates):
+///    * `regular` - presents the button as a rounded grey rectangle with the image and/or title inside of the grey area.
+///    * `mini`    - presents the image and/or title of the button without a rounded rectangle background. Takes up less space then `regular`.
+///    * `small`   - presents the image and/or title of the button without a rounded rectangle background. Takes up less space in the touchbar then `mini`.
 static int customtouchbaritem_size(lua_State *L) {
     LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TSTRING | LS_TOPTIONAL, LS_TBREAK] ;
@@ -932,6 +1234,18 @@ static int touchbaritem_identifier(__unused lua_State *L) {
 }
 
 
+/// hs._asm.undocumented.touchbar.item:itemType() -> string
+/// Method
+/// Returns the type of the touchbar item as a string.
+///
+/// Parameters:
+///  * None
+///
+/// Returns:
+///  * the type of the touchbar item as one of the following strings: "buttonWithText", "buttonWithImage", "buttonWithImageAndText", "group", "slider", or "canvas".
+///
+/// Notes:
+///  * other types may be added in future updates.
 static int touchbaritem_itemType(__unused lua_State *L) {
     LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBREAK] ;
@@ -961,7 +1275,7 @@ static int touchbaritem_isVisible(lua_State *L) {
     return 1 ;
 }
 
-/// hs._asm.undocumented.touchbar.item:visibilityPriority([priority]) -> touchbarItemObject | number
+/// hs._asm.undocumented.touchbar.item:visibilityPriority([priority]) -> touchbarItemObject | current value
 /// Method
 /// Get or set the visibility priority for the touchbar item.
 ///
@@ -988,7 +1302,7 @@ static int touchbaritem_visibilityPriority(lua_State *L) {
     return 1 ;
 }
 
-/// hs._asm.undocumented.touchbar.item:callback([fn | nil]) -> touchbarItemObject | fn
+/// hs._asm.undocumented.touchbar.item:callback([fn | nil]) -> touchbarItemObject | current value
 /// Method
 /// Get or set the callback function for the touchbar item.
 ///
@@ -999,7 +1313,23 @@ static int touchbaritem_visibilityPriority(lua_State *L) {
 ///  * if an argument is provided, returns the touchbarItem object; otherwise returns the current value
 ///
 /// Notes:
-///  * The callback function should expect one argument, the touchbarItemObject, and return none.
+///  * The callback function should return nothing. The arguments provided are type dependent, described here:
+///    * Items constructed with [hs._asm.undocumented.touchbar.item.newButton](#newButton):
+///      * the touchbar item itself
+///
+///    * Items constructed with [hs._asm.undocumented.touchbar.item.newCanvas](#newCanvas):
+///      * the touchbar item itself
+///    * Note that if you use `hs.canvas:canvasMouseEvents` and `hs.canvas:mouseCallback` on the canvas object, you can get `mouseDown`, `mouseUp`, `mouseEntered`, `mouseExited`, and `mouseMove` callbacks as if they were generated by the left mouse button.  You do not need to set a touchbar item callback to take advantage of the canvas callbacks.
+///
+///    * Items constructed with [hs._asm.undocumented.touchbar.item.newGroup](#newGroup):
+///    * A callback assigned to a group touchbar item will never be invoked; instead if the items within the group have a callback assigned, the specific item within the group will have its callback invoked.
+///
+///    * Items constructed with [hs._asm.undocumented.touchbar.item.newSlider](#newSlider):
+///      * the touchbar item itself
+///      * a number or string as follows:
+///        * if the image assigned with [hs._asm.undocumented.touchbar.item:sliderMinImage](#sliderMinImage) is touched, the string "minimum".
+///        * if the image assigned with [hs._asm.undocumented.touchbar.item:sliderMaxImage](#sliderMaxImage) is touched, the string "maximum".
+///        * if the slider knob is moved to a new position, returns a number between [hs._asm.undocumented.touchbar.item:sliderMin](#sliderMin) and [hs._asm.undocumented.touchbar.item:sliderMax](#sliderMax) indicating the new position.
 static int touchbaritem_callback(lua_State *L) {
     LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TFUNCTION | LS_TNIL | LS_TOPTIONAL, LS_TBREAK] ;
@@ -1186,6 +1516,10 @@ static int userdata_gc(lua_State* L) {
         if (obj.selfRefCount == 0) {
             LuaSkin *skin = [LuaSkin shared] ;
             obj.callbackRef = [skin luaUnref:refTable ref:obj.callbackRef] ;
+            if (obj.visibilityCallbackRef != LUA_NOREF) {
+                obj.visibilityCallbackRef = [skin luaUnref:refTable ref:obj.visibilityCallbackRef] ;
+                [obj removeObserver:obj forKeyPath:@"visible" context:myKVOContext] ;
+            }
             if ([NSTouchBarItem respondsToSelector:NSSelectorFromString(@"removeSystemTrayItem:")]) {
                 DFRElementSetControlStripPresenceForIdentifier(obj.identifier, NO);
                 [NSTouchBarItem removeSystemTrayItem:obj];
@@ -1208,6 +1542,7 @@ static const luaL_Reg userdata_metaLib[] = {
     {"visibilityPriority",  touchbaritem_visibilityPriority},
     {"callback",            touchbaritem_callback},
     {"itemType",            touchbaritem_itemType},
+    {"visibilityCallback",  touchbaritem_visibilityCallback},
 
     {"buttonImage",         customtouchbaritem_image},
     {"buttonTitle",         customtouchbaritem_title},

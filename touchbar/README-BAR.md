@@ -11,7 +11,7 @@ This module is very experimental and is still under development, so the exact fu
 
 TODO:
  * touch bars for the console and webviews
- * `isVisible` is KVO, so add a watcher
+ * rework orginization so bar in root, current root in `virtual`
 
 See [Examples/quickanddirtyBarExample.lua](Examples/quickanddirtyBarExample.lua) for a *very* basic example.
 
@@ -43,6 +43,7 @@ bar = require("hs._asm.undocumented.touchbar.bar")
 * <a href="#principleItem">bar:principleItem([identifier]) -> barObject | string</a>
 * <a href="#requiredIdentifiers">bar:requiredIdentifiers([identifiersTable]) -> barObject | table</a>
 * <a href="#templateItems">bar:templateItems([itemsTable]) -> barObject | table</a>
+* <a href="#visibilityCallback">bar:visibilityCallback([fn | nil]) -> barObject | fn</a>
 
 ##### Module Constants
 * <a href="#builtInIdentifiers">bar.builtInIdentifiers[]</a>
@@ -183,6 +184,10 @@ Parameters:
 Returns:
  * a boolean value indicating whether or not the touchbar represented by the object is currently being displayed in the laptop or virtual Touch Bar.
 
+Notes:
+ * The value returned by this method changes as expected when the [hs._asm.undocumented.touchbar.bar:dismissModalBar](#dismissModalBar) or [hs._asm.undocumented.touchbar.bar:minimizeModalBar](#minimizeModalBar) methods are used.
+ * It does *NOT* reliably change when when the system dismiss button is used (when the second argument to [hs._asm.undocumented.touchbar.bar:presentModalBar](#presentModalBar) or `hs._asm.undocumented.touchbar.item:presentModalBar` is true (or not present)).  This is being investigated but at present no workaround is known.
+
 - - -
 
 <a name="itemForIdentifier"></a>
@@ -311,6 +316,26 @@ Returns:
 
 Notes:
  * only the identifiers of items assigned by this method can be used by the other methods in this module that use string identifiers in their arguments.
+
+- - -
+
+<a name="visibilityCallback"></a>
+~~~lua
+bar:visibilityCallback([fn | nil]) -> barObject | fn
+~~~
+Get or set the visibility callback function for the touch bar object.
+
+Parameters:
+ * `fn` - an optional function, or explicit nil to remove, specifying the visibility callback for the touch bar object.
+
+Returns:
+ * if an argument is provided, returns the barObject; otherwise returns the current value
+
+Notes:
+ * The callback function should expect two arguments, the barObject itself and a boolean indicating the new visibility of the touch bar.  It should return none.
+
+ * This callback is invoked when the [hs._asm.undocumented.touchbar.bar:dismissModalBar](#dismissModalBar) or [hs._asm.undocumented.touchbar.bar:minimizeModalBar](#minimizeModalBar) methods are used.
+ * This callback is *NOT* invoked when the system dismiss button is used (when the second argument to [hs._asm.undocumented.touchbar.bar:presentModalBar](#presentModalBar) or `hs._asm.undocumented.touchbar.item:presentModalBar` is true (or not present)). This is being investigated but at present no workaround is known.
 
 ### Module Constants
 

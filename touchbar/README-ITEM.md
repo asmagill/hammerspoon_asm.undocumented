@@ -11,7 +11,10 @@ This module is very experimental and is still under development, so the exact fu
 
 TODO:
  * More item types
- * `isVisible` is KVO, so add a watcher
+ * more functions to modify button style/appearance? attributed string support? background color? width?
+   * Why does popover fail to show expanded items?  I think fixing this will also allow colorPicker and sharingService to work
+   * try minimizing while popover is supposed to show, maybe because we're already a "pop over" and it would work with "Hammerspoon application" touchbars?
+ * get canvas max width ala `canvasItem("view")("window")("frame").w`... can we get without creating canvas item first?
 
 See [Examples/quickanddirtyBarExample.lua](Examples/quickanddirtyBarExample.lua) for a *very* basic example.
 
@@ -25,17 +28,33 @@ item = require("hs._asm.undocumented.touchbar.item")
 
 ##### Module Constructors
 * <a href="#newButton">item.newButton([title], [image], [identifier]) -> touchbarItemObject</a>
+* <a href="#newCanvas">item.newCanvas(canvas, [identifier]) -> touchbarItemObject</a>
+* <a href="#newGroup">item.newGroup([title], [image], [identifier]) -> touchbarItemObject</a>
+* <a href="#newSlider">item.newSlider([identifier]) -> touchbarItemObject</a>
 
 ##### Module Methods
 * <a href="#addToSystemTray">item:addToSystemTray(state) -> touchbarItemObject</a>
-* <a href="#callback">item:callback([fn | nil]) -> touchbarItemObject | fn</a>
-* <a href="#customizationLabel">item:customizationLabel([label]) -> touchbarItemObject | string</a>
+* <a href="#buttonImage">item:buttonImage([image]) -> touchbarItemObject | hs.image object</a>
+* <a href="#buttonSize">item:buttonSize([size]) -> touchbarItemObject | current value</a>
+* <a href="#buttonTitle">item:buttonTitle([title]) -> touchbarItemObject | current value</a>
+* <a href="#callback">item:callback([fn | nil]) -> touchbarItemObject | current value</a>
+* <a href="#canvasClickColor">item:canvasClickColor([color]) -> touchbarItemObject | current value</a>
+* <a href="#canvasWidth">item:canvasWidth([width]) -> touchbarItemObject | current value</a>
+* <a href="#customizationLabel">item:customizationLabel([label]) -> touchbarItemObject | current value</a>
+* <a href="#enabled">item:enabled([state]) -> touchbarItemObject | current value</a>
+* <a href="#groupItems">item:groupItems([itemsTable]) -> touchbarItemObject | current value</a>
+* <a href="#groupTouchbar">item:groupTouchbar([touchbar]) -> touchbarItemObject | current value</a>
 * <a href="#identifier">item:identifier() -> string</a>
-* <a href="#image">item:image([image]) -> touchbarItemObject | hs.image object</a>
 * <a href="#isVisible">item:isVisible() -> boolean</a>
+* <a href="#itemType">item:itemType() -> string</a>
 * <a href="#presentModalBar">item:presentModalBar(touchbar, [dismissButton]) -> touchbarItemObject</a>
-* <a href="#title">item:title([title]) -> touchbarItemObject | string</a>
-* <a href="#visibilityPriority">item:visibilityPriority([priority]) -> touchbarItemObject | number</a>
+* <a href="#sliderMax">item:sliderMax([value]) -> touchbarItemObject | current value</a>
+* <a href="#sliderMaxImage">item:sliderMaxImage([image]) -> touchbarItemObject | current value</a>
+* <a href="#sliderMin">item:sliderMin([value]) -> touchbarItemObject | current value</a>
+* <a href="#sliderMinImage">item:sliderMinImage([image]) -> touchbarItemObject | current value</a>
+* <a href="#sliderValue">item:sliderValue([value]) -> touchbarItemObject | current value</a>
+* <a href="#visibilityCallback">item:visibilityCallback([fn | nil]) -> touchbarItemObject | current value</a>
+* <a href="#visibilityPriority">item:visibilityPriority([priority]) -> touchbarItemObject | current value</a>
 
 ##### Module Constants
 * <a href="#visibilityPriorities">item.visibilityPriorities[]</a>
@@ -63,6 +82,56 @@ Notes:
  * You can change the button's image with [hs._asm.undocumented.touchbar.item:image](#title) only if you initially assign one with this constructor.
  * If you intend to allow customization of the touch bar, it is highly recommended that you specify an identifier, since the UUID will change each time the item is regenerated (when Hammerspoon reloads or restarts).
 
+- - -
+
+<a name="newCanvas"></a>
+~~~lua
+item.newCanvas(canvas, [identifier]) -> touchbarItemObject
+~~~
+Create a new touchbarItem object from an `hs.canvas` object..
+
+Parameters:
+ * `canvas`     - The `hs.canvas` object to use as a touchbar item.
+ * `identifier` - An optional string specifying the identifier for this touchbar item. Must be unique within the bar the item will be assigned to if specified. If not specified, a new UUID is generated for the item.
+
+Returns:
+ * a touchbarItemObject or nil if an error occurs
+
+Notes:
+ * The touch bar object will be proportionally resized so that it has a height of 30 if it does not already.
+ * If canvas callbacks for `mouseDown`, `mouseUp`, `mouseEnterExit`, and `mouseMove` are enabled, the canvas callback will be invoked as if the left mouse button had been used.
+
+- - -
+
+<a name="newGroup"></a>
+~~~lua
+item.newGroup([title], [image], [identifier]) -> touchbarItemObject
+~~~
+Create a new group touchbarItem object which can contain other touchbar items.
+
+Parameters:
+ * `identifier` - An optional string specifying the identifier for this touchbar item. Must be unique within the bar the item will be assigned to if specified. If not specified, a new UUID is generated for the item.
+
+Returns:
+ * a touchbarItemObject or nil if an error occurs
+
+- - -
+
+<a name="newSlider"></a>
+~~~lua
+item.newSlider([identifier]) -> touchbarItemObject
+~~~
+Create a new slider touchbarItem object.
+
+Parameters:
+ * `identifier` - An optional string specifying the identifier for this touchbar item. Must be unique within the bar the item will be assigned to if specified. If not specified, a new UUID is generated for the item.
+
+Returns:
+ * a touchbarItemObject or nil if an error occurs
+
+Notes:
+ * The slider object will expand to fill as much space as it can within the touchbar.
+
 ### Module Methods
 
 <a name="addToSystemTray"></a>
@@ -89,9 +158,68 @@ Notes:
 
 - - -
 
+<a name="buttonImage"></a>
+~~~lua
+item:buttonImage([image]) -> touchbarItemObject | hs.image object
+~~~
+Get or set the image for a button item which was initially given an image when created.
+
+Parameters:
+ * `image` - an optional `hs.image` object, or explicit nil, specifying the image for the button item.
+
+Returns:
+ * if an argument is provided, returns the touchbarItem object; otherwise returns the current value
+
+Notes:
+ * This method will generate an error if the touchbar item was not created with the [hs._asm.undocumented.touchbar.item.newButton](#newButton) constructor.
+ * This method will generate an error if an image was not provided when the object was created.
+ * Setting the image to nil will remove the image and shrink the button, but not as tightly as the button would appear if it had been initially created without an image at all.
+
+- - -
+
+<a name="buttonSize"></a>
+~~~lua
+item:buttonSize([size]) -> touchbarItemObject | current value
+~~~
+Get or set the button touchbar item's button size.
+
+Parameters:
+ * `size` - an optional string, default "regular", specifying the button touchbar button size.  Must be one of "regular", "small", or "mini".
+
+Returns:
+ * if an argument is provided, returns the touchbarItem object; otherwise returns the current value
+
+Notes:
+ * This method will generate an error if the touchbar item was not created with the [hs._asm.undocumented.touchbar.item.newButton](#newButton) or [hs._asm.undocumented.touchbar.item.newCanvas](#newCanvas) constructors.
+ * The button sizes are defined by the macOS operating system and under macOS 10.12 have the following visual effects (this may change with future macOS updates):
+   * `regular` - presents the button as a rounded grey rectangle with the image and/or title inside of the grey area.
+   * `mini`    - presents the image and/or title of the button without a rounded rectangle background. Takes up less space then `regular`.
+   * `small`   - presents the image and/or title of the button without a rounded rectangle background. Takes up less space in the touchbar then `mini`.
+
+- - -
+
+<a name="buttonTitle"></a>
+~~~lua
+item:buttonTitle([title]) -> touchbarItemObject | current value
+~~~
+Get or set the title for a button item which was initially given a title when created.
+
+Parameters:
+ * `title` - an optional string, or explicit nil, specifying the title for the button item.
+
+Returns:
+ * if an argument is provided, returns the touchbarItem object; otherwise returns the current value
+
+Notes:
+ * This method will generate an error if the touchbar item was not created with the [hs._asm.undocumented.touchbar.item.newButton](#newButton) constructor.
+ * This method will generate an error if a title was not provided when the object was created.
+ * Setting the title to nil will remove the title and shrink the button, but not as tightly as the button would appear if it had been initially created without a title at all.
+
+- - -
+
 <a name="callback"></a>
 ~~~lua
-item:callback([fn | nil]) -> touchbarItemObject | fn
+item:callback([fn | nil]) -> touchbarItemObject | current value
 ~~~
 Get or set the callback function for the touchbar item.
 
@@ -102,13 +230,64 @@ Returns:
  * if an argument is provided, returns the touchbarItem object; otherwise returns the current value
 
 Notes:
- * The callback function should expect one argument, the touchbarItemObject, and return none.
+ * The callback function should return nothing. The arguments provided are type dependent, described here:
+   * Items constructed with [hs._asm.undocumented.touchbar.item.newButton](#newButton):
+     * the touchbar item itself
+
+   * Items constructed with [hs._asm.undocumented.touchbar.item.newCanvas](#newCanvas):
+     * the touchbar item itself
+   * Note that if you use `hs.canvas:canvasMouseEvents` and `hs.canvas:mouseCallback` on the canvas object, you can get `mouseDown`, `mouseUp`, `mouseEntered`, `mouseExited`, and `mouseMove` callbacks as if they were generated by the left mouse button.  You do not need to set a touchbar item callback to take advantage of the canvas callbacks.
+
+   * Items constructed with [hs._asm.undocumented.touchbar.item.newGroup](#newGroup):
+   * A callback assigned to a group touchbar item will never be invoked; instead if the items within the group have a callback assigned, the specific item within the group will have its callback invoked.
+
+   * Items constructed with [hs._asm.undocumented.touchbar.item.newSlider](#newSlider):
+     * the touchbar item itself
+     * a number or string as follows:
+       * if the image assigned with [hs._asm.undocumented.touchbar.item:sliderMinImage](#sliderMinImage) is touched, the string "minimum".
+       * if the image assigned with [hs._asm.undocumented.touchbar.item:sliderMaxImage](#sliderMaxImage) is touched, the string "maximum".
+       * if the slider knob is moved to a new position, returns a number between [hs._asm.undocumented.touchbar.item:sliderMin](#sliderMin) and [hs._asm.undocumented.touchbar.item:sliderMax](#sliderMax) indicating the new position.
+
+- - -
+
+<a name="canvasClickColor"></a>
+~~~lua
+item:canvasClickColor([color]) -> touchbarItemObject | current value
+~~~
+Get or set the background color displayed when a canvas touchbar item is currently being touched.
+
+Parameters:
+ * `color` - an optional table specifying a color as defined in the `hs.drawing.color` module, or an explicit nil to reset it to the default. Defaults to the macOS System Selected Control Color (`hs.drawing.color.colorsFor("System")["selectedControlColor"]`).
+
+Returns:
+ * if an argument is provided, returns the touchbarItem object; otherwise returns the current value
+
+Notes:
+ * This method will generate an error if the touchbar item was not created with the [hs._asm.undocumented.touchbar.item.newCanvas](#newCanvas) constructor.
+ * To specify that no background color should be displayed when the canvas touchbar item is in an active state, specify a color with an alpha value of 0, e.g. `{ alpha = 0 }`.
+
+- - -
+
+<a name="canvasWidth"></a>
+~~~lua
+item:canvasWidth([width]) -> touchbarItemObject | current value
+~~~
+Get or set the width of a canvas touchbar item in the touchbar.
+
+Parameters:
+ * `width` - an optional number specifying the width of the canvas touchbar item in the touchbar.
+
+Returns:
+ * if an argument is provided, returns the touchbarItem object; otherwise returns the current value
+
+Notes:
+ * This method will generate an error if the touchbar item was not created with the [hs._asm.undocumented.touchbar.item.newCanvas](#newCanvas) constructor.
 
 - - -
 
 <a name="customizationLabel"></a>
 ~~~lua
-item:customizationLabel([label]) -> touchbarItemObject | string
+item:customizationLabel([label]) -> touchbarItemObject | current value
 ~~~
 Get or set the label displayed for the item when the customization panel is being displayed for the touch bar.
 
@@ -117,6 +296,61 @@ Parameters:
 
 Returns:
  * if an argument is provided, returns the touchbarItem object; otherwise returns the current value
+
+- - -
+
+<a name="enabled"></a>
+~~~lua
+item:enabled([state]) -> touchbarItemObject | current value
+~~~
+Get or set whether the touchbar item is enabled (accepting touches) or disabled.
+
+Parameters:
+ * `state` - an optional boolean, default true, specifying whether or not the touchbar item is currently enabled.
+
+Returns:
+ * if an argument is provided, returns the touchbarItem object; otherwise returns the current value
+
+Notes:
+ * This method will generate an error if the touchbar item was not created with the [hs._asm.undocumented.touchbar.item.newButton](#newButton) or [hs._asm.undocumented.touchbar.item.newCanvas](#newCanvas) constructors.
+
+- - -
+
+<a name="groupItems"></a>
+~~~lua
+item:groupItems([itemsTable]) -> touchbarItemObject | current value
+~~~
+Get or set the touchbar item objects which belong to this group touchbar item.
+
+Parameters:
+ * `itemsTable` - an optional table as an array of touchbar item objects to display when this group touchbar item is present in the touchbar.
+
+Returns:
+ * if an argument is provided, returns the touchbarItem object; otherwise returns the current value
+
+Notes:
+ * This method will generate an error if the touchbar item was not created with the [hs._asm.undocumented.touchbar.item.newGroup](#newGroup) constructor.
+ * The group touchbar item's callback, if set, is never invoked; instead the callback for the items within the group item is invoked when the item is touched.
+ * This is a convenience method which creates an `hs._asm.undocumented.touchbar.bar` object and uses [hs._asm.undocumented.touchbar.item:groupTouchbar](#groupTouchbar) to assign the items to the group item.
+
+- - -
+
+<a name="groupTouchbar"></a>
+~~~lua
+item:groupTouchbar([touchbar]) -> touchbarItemObject | current value
+~~~
+Get or set the bar object which contains the touchbar items that belong to the group touchbar item.
+
+Parameters:
+ * `touchbar` - an optional `hs._asm.undocumented.touchbar.bar` object containing the touchbar items to display when this group touchbar item is present in the touchbar.
+
+Returns:
+ * if an argument is provided, returns the touchbarItem object; otherwise returns the current value
+
+Notes:
+ * This method will generate an error if the touchbar item was not created with the [hs._asm.undocumented.touchbar.item.newGroup](#newGroup) constructor.
+ * The group touchbar item's callback, if set, is never invoked; instead the callback for the items within the group item is invoked when the item is touched.
+ * See also [hs._asm.undocumented.touchbar.item:groupItems](#groupItems)
 
 - - -
 
@@ -134,24 +368,6 @@ Returns:
 
 - - -
 
-<a name="image"></a>
-~~~lua
-item:image([image]) -> touchbarItemObject | hs.image object
-~~~
-Get or set the image for a button item which was initially given an image when created.
-
-Parameters:
- * `image` - an optional `hs.image` object, or explicit nil, specifying the image for the button item.
-
-Returns:
- * if an argument is provided, returns the touchbarItem object; otherwise returns the current value
-
-Notes:
- * This method will generate an error if an image was not provided when the object was created.
- * Setting the image to nil will remove the image and shrink the button, but not as tightly as the button would appear if it had been initially created without an image at all.
-
-- - -
-
 <a name="isVisible"></a>
 ~~~lua
 item:isVisible() -> boolean
@@ -166,6 +382,23 @@ Returns:
 
 Notes:
  * If the bar that the item is assigned to has been visible at some point in the past, and the item was visible at that time, this method will return true even if the bar is not currently visible. If you want to know if the item is visible in the touch bar display *right now*, you should use `reallyVisible = bar:isVisible() and item:isVisible()`
+
+- - -
+
+<a name="itemType"></a>
+~~~lua
+item:itemType() -> string
+~~~
+Returns the type of the touchbar item as a string.
+
+Parameters:
+ * None
+
+Returns:
+ * the type of the touchbar item as one of the following strings: "buttonWithText", "buttonWithImage", "buttonWithImageAndText", "group", "slider", or "canvas".
+
+Notes:
+ * other types may be added in future updates.
 
 - - -
 
@@ -194,27 +427,116 @@ Notes:
 
 - - -
 
-<a name="title"></a>
+<a name="sliderMax"></a>
 ~~~lua
-item:title([title]) -> touchbarItemObject | string
+item:sliderMax([value]) -> touchbarItemObject | current value
 ~~~
-Get or set the title for a button item which was initially given a title when created.
+Get or set the maximum value for a slider touchbar item.
 
 Parameters:
- * `title` - an optional string, or explicit nil, specifying the title for the button item.
+ * `value` - an optional number specifying the maximum value for a slider touchbar item. This represents the slider's value when the knob of the slider is all the way to the right. Defaults to 1.0.
 
 Returns:
  * if an argument is provided, returns the touchbarItem object; otherwise returns the current value
 
 Notes:
- * This method will generate an error if a title was not provided when the object was created.
- * Setting the title to nil will remove the title and shrink the button, but not as tightly as the button would appear if it had been initially created without a title at all.
+ * This method will generate an error if the touchbar item was not created with the [hs._asm.undocumented.touchbar.item.newSlider](#newSlider) constructor.
+
+- - -
+
+<a name="sliderMaxImage"></a>
+~~~lua
+item:sliderMaxImage([image]) -> touchbarItemObject | current value
+~~~
+Get or set the image displayed at the right side of a slider touchbar item.
+
+Parameters:
+ * `image` - an optional image, or explicit nil to remove, specifying the image to be displayed at the right side of a slider touchbar item.  Defaults to nil.
+
+Returns:
+ * if an argument is provided, returns the touchbarItem object; otherwise returns the current value
+
+Notes:
+ * This method will generate an error if the touchbar item was not created with the [hs._asm.undocumented.touchbar.item.newSlider](#newSlider) constructor.
+ * When this image is clicked on, the touchbar item's callback, if set, will receive the string "maximum" as it's second argument.
+
+- - -
+
+<a name="sliderMin"></a>
+~~~lua
+item:sliderMin([value]) -> touchbarItemObject | current value
+~~~
+Get or set the minimum value for a slider touchbar item.
+
+Parameters:
+ * `value` - an optional number specifying the minimum value for a slider touchbar item. This represents the slider's value when the knob of the slider is all the way to the left. Defaults to 0.0.
+
+Returns:
+ * if an argument is provided, returns the touchbarItem object; otherwise returns the current value
+
+Notes:
+ * This method will generate an error if the touchbar item was not created with the [hs._asm.undocumented.touchbar.item.newSlider](#newSlider) constructor.
+
+- - -
+
+<a name="sliderMinImage"></a>
+~~~lua
+item:sliderMinImage([image]) -> touchbarItemObject | current value
+~~~
+Get or set the image displayed at the left side of a slider touchbar item.
+
+Parameters:
+ * `image` - an optional image, or explicit nil to remove, specifying the image to be displayed at the left side of a slider touchbar item.  Defaults to nil.
+
+Returns:
+ * if an argument is provided, returns the touchbarItem object; otherwise returns the current value
+
+Notes:
+ * This method will generate an error if the touchbar item was not created with the [hs._asm.undocumented.touchbar.item.newSlider](#newSlider) constructor.
+ * When this image is clicked on, the touchbar item's callback, if set, will receive the string "minimum" as it's second argument.
+
+- - -
+
+<a name="sliderValue"></a>
+~~~lua
+item:sliderValue([value]) -> touchbarItemObject | current value
+~~~
+Get or set the current value for a slider touchbar item.
+
+Parameters:
+ * `value` - an optional number specifying the value to set for the slider. This value will be automatically constrained to the current minimum and maximum as set by [hs._asm.undocumented.touchbar.item:sliderMin](#sliderMin) and [hs._asm.undocumented.touchbar.item:sliderMax](#sliderMax).
+
+Returns:
+ * if an argument is provided, returns the touchbarItem object; otherwise returns the current value
+
+Notes:
+ * This method will generate an error if the touchbar item was not created with the [hs._asm.undocumented.touchbar.item.newSlider](#newSlider) constructor.
+ * The slider touchbar items callback, if set, will not be invoked if you use this method to change the slider's value.
+
+- - -
+
+<a name="visibilityCallback"></a>
+~~~lua
+item:visibilityCallback([fn | nil]) -> touchbarItemObject | current value
+~~~
+Get or set the visibility callback function for the touchbar item object.
+
+Parameters:
+ * `fn` - an optional function, or explicit nil to remove, specifying the visibility callback for the touchbar item object.
+
+Returns:
+ * if an argument is provided, returns the touchbarItem object; otherwise returns the current value
+
+Notes:
+ * The callback function should expect two arguments, the touchbarItem itself and a boolean indicating the new visibility of the item.  It should return none.
+
+ * See also the notes for [hs._asm.undocumented.touchbar.item:isVisible](#isVisible) and `hs._asm.undocumented.touchbar.bar.visibilityCallback`.
 
 - - -
 
 <a name="visibilityPriority"></a>
 ~~~lua
-item:visibilityPriority([priority]) -> touchbarItemObject | number
+item:visibilityPriority([priority]) -> touchbarItemObject | current value
 ~~~
 Get or set the visibility priority for the touchbar item.
 
