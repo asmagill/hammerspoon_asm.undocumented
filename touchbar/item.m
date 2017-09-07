@@ -18,7 +18,6 @@
 ///    * try minimizing while popover is supposed to show, maybe because we're already a "pop over" and it would work with "Hammerspoon application" touchbars?
 ///
 ///  * get canvas max width ala `canvasItem("view")("window")("frame").w`... can we get without creating canvas item first?
-///  * why is an NSActionCell required for canvas?  how do we get the mouse events directly so we can forward them to the canvas callback with position info? and if we can get these, do we need to add `mouseDragged` to canvas?
 
 @import Cocoa ;
 @import LuaSkin ;
@@ -28,6 +27,8 @@
 static const char * const USERDATA_TAG = "hs._asm.undocumented.touchbar.item" ;
 static const char * const BAR_UD_TAG   = "hs._asm.undocumented.touchbar.bar" ;
 static int refTable = LUA_NOREF;
+
+static NSInteger virtualMouseEventCounter = 0 ;
 
 // establish a unique context for identifying our observers
 static void *myKVOContext = &myKVOContext ; // See http://nshipster.com/key-value-observing/
@@ -149,6 +150,116 @@ static NSDictionary *itemTypeStrings ; // assigned in luaopen_hs__asm_undocument
     return self ;
 }
 
+- (void)touchesBeganWithEvent:(NSEvent *)event {
+    [super touchesBeganWithEvent:event] ;
+    NSSet *touchSet = [event touchesMatchingPhase:NSTouchPhaseBegan inView:self] ;
+    NSUInteger touchCount = touchSet.count ;
+    if (touchCount != 1) {
+        [LuaSkin logDebug:[NSString stringWithFormat:@"%s:touchesBegan - touchSet count == %lu", USERDATA_TAG, touchCount]] ;
+    }
+    if (touchCount > 0) {
+        NSTouch *touch = touchSet.anyObject ;
+        NSPoint touchPoint = [touch locationInView:self] ;
+
+//         [LuaSkin logInfo:[NSString stringWithFormat:@"began: %@", NSStringFromPoint(touchPoint)]] ;
+        NSEvent *virtualEvent = [NSEvent mouseEventWithType:NSEventTypeLeftMouseDown
+                                                   location:[self convertPoint:touchPoint toView:nil]
+                                              modifierFlags:event.modifierFlags
+                                                  timestamp:event.timestamp
+                                               windowNumber:event.windowNumber
+                                                    context:event.context
+                                                eventNumber:(virtualMouseEventCounter++)
+                                                 clickCount:1
+                                                   pressure:1.0] ;
+        [self.subviews.firstObject mouseDown:virtualEvent] ;
+    }
+}
+
+- (void)touchesMovedWithEvent:(NSEvent *)event {
+    [super touchesMovedWithEvent:event] ;
+    NSSet *touchSet = [event touchesMatchingPhase:NSTouchPhaseMoved inView:self] ;
+    NSUInteger touchCount = touchSet.count ;
+    if (touchCount != 1) {
+        [LuaSkin logDebug:[NSString stringWithFormat:@"%s:touchesMoved - touchSet count == %lu", USERDATA_TAG, touchCount]] ;
+    }
+    if (touchCount > 0) {
+        NSRect  frame = self.frame ;
+        NSTouch *touch = touchSet.anyObject ;
+        NSPoint touchPoint = [touch locationInView:self] ;
+        NSPoint lastPoint  = [touch previousLocationInView:self] ;
+        NSEventType eventType = NSEventTypeMouseMoved ;
+        if ((touchPoint.x < frame.origin.x) || (touchPoint.x > (frame.origin.x + frame.size.width))) {
+            if ((lastPoint.x >= frame.origin.x) && (lastPoint.x <= (frame.origin.x + frame.size.width))) {
+                eventType = NSEventTypeMouseExited ;
+            } else {
+                return ;
+            }
+        } else if ((lastPoint.x < frame.origin.x) || (lastPoint.x > (frame.origin.x + frame.size.width))) {
+            if ((touchPoint.x >= frame.origin.x) && (touchPoint.x <= (frame.origin.x + frame.size.width))) {
+                eventType = NSEventTypeMouseEntered ;
+            } else {
+                return ;
+            }
+        }
+
+//         [LuaSkin logInfo:[NSString stringWithFormat:@"moved: %@ -> %@", NSStringFromPoint(lastPoint), NSStringFromPoint(touchPoint)]] ;
+        if (eventType == NSEventTypeMouseMoved) {
+            NSEvent *virtualEvent = [NSEvent mouseEventWithType:eventType
+                                                       location:[self convertPoint:touchPoint toView:nil]
+                                                  modifierFlags:event.modifierFlags
+                                                      timestamp:event.timestamp
+                                                   windowNumber:event.windowNumber
+                                                        context:event.context
+                                                    eventNumber:(virtualMouseEventCounter++)
+                                                     clickCount:1
+                                                       pressure:1.0] ;
+            [self.subviews.firstObject mouseMoved:virtualEvent] ;
+        } else {
+            NSEvent *virtualEvent = [NSEvent enterExitEventWithType:eventType
+                                                           location:[self convertPoint:touchPoint toView:nil]
+                                                      modifierFlags:event.modifierFlags
+                                                          timestamp:event.timestamp
+                                                       windowNumber:event.windowNumber
+                                                            context:event.context
+                                                        eventNumber:(virtualMouseEventCounter++)
+                                                     trackingNumber:0
+                                                           userData:nil] ;
+            if (eventType == NSEventTypeMouseEntered) {
+                [self.subviews.firstObject mouseEntered:virtualEvent] ;
+            } else if (eventType == NSEventTypeMouseExited) {
+                [self.subviews.firstObject mouseExited:virtualEvent] ;
+            }
+        }
+    }
+}
+
+- (void)touchesEndedWithEvent:(NSEvent *)event {
+    [super touchesEndedWithEvent:event] ;
+    NSSet *touchSet = [event touchesMatchingPhase:NSTouchPhaseEnded inView:self] ;
+    NSUInteger touchCount = touchSet.count ;
+    if (touchCount != 1) {
+        [LuaSkin logDebug:[NSString stringWithFormat:@"%s:touchesEnded - touchSet count == %lu", USERDATA_TAG, touchCount]] ;
+    }
+    if (touchCount > 0) {
+        NSRect  frame = self.frame ;
+        NSTouch *touch = touchSet.anyObject ;
+        NSPoint touchPoint = [touch locationInView:self] ;
+        if ((touchPoint.x < frame.origin.x) || (touchPoint.x > (frame.origin.x + frame.size.width))) return ;
+
+//         [LuaSkin logInfo:[NSString stringWithFormat:@"ended: %@", NSStringFromPoint(touchPoint)]] ;
+        NSEvent *virtualEvent = [NSEvent mouseEventWithType:NSEventTypeLeftMouseUp
+                                                   location:[self convertPoint:touchPoint toView:nil]
+                                              modifierFlags:event.modifierFlags
+                                                  timestamp:event.timestamp
+                                               windowNumber:event.windowNumber
+                                                    context:event.context
+                                                eventNumber:(virtualMouseEventCounter++)
+                                                 clickCount:0
+                                                   pressure:0.0] ;
+        [self.subviews.firstObject mouseUp:virtualEvent] ;
+    }
+}
+
 @end
 
 @implementation HSASMCustomTouchBarItem
@@ -164,6 +275,7 @@ static NSDictionary *itemTypeStrings ; // assigned in luaopen_hs__asm_undocument
 }
 
 - (void)performCallback:(id)sender {
+//     [LuaSkin logInfo:[NSString stringWithFormat:@"%s:performCallback: %@", USERDATA_TAG, [NSThread callStackSymbols]]] ;
     if (_callbackRef != LUA_NOREF) {
         dispatch_async(dispatch_get_main_queue(), ^{
             LuaSkin   *skin = [LuaSkin shared] ;
