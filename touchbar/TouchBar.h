@@ -1,3 +1,4 @@
+#import <AppKit/AppKit.h>
 
 // Undocumented functions to display mock touchbar for non-touchbar equipped systems
 
@@ -11,7 +12,7 @@ extern CGSize DFRGetScreenSize() ;
 
 // Undocumented functions and methods to access the system touchbar
 
-extern void DFRElementSetControlStripPresenceForIdentifier(NSString *identifier, BOOL display) ;
+extern void DFRElementSetControlStripPresenceForIdentifier(NSTouchBarItemIdentifier, BOOL);
 
 // Limited to built-in items; can't detect ones we inject; reads ~/Library/Preferences/com.apple.controlstrip.plist
 extern BOOL DFRElementGetControlStripPresenceForIdentifier(NSString *identifier) ;
@@ -50,12 +51,25 @@ extern void DFRSystemModalShowsCloseBoxWhenFrontMost(BOOL flag) ;
 @end
 
 @protocol NSTouchBarSystemTray
-+ (void)presentSystemModalFunctionBar:(NSTouchBar *)touchBar systemTrayItemIdentifier:(NSString *)identifier ;
+
+// macOS 10.14 and above
++ (void)presentSystemModalTouchBar:(NSTouchBar *)touchBar systemTrayItemIdentifier:(NSTouchBarItemIdentifier)identifier NS_AVAILABLE_MAC(10.14);
+
+// macOS 10.13 and below
++ (void)presentSystemModalFunctionBar:(NSTouchBar *)touchBar systemTrayItemIdentifier:(NSTouchBarItemIdentifier)identifier NS_DEPRECATED_MAC(10.12.2, 10.14);
+
 + (void)minimizeSystemModalFunctionBar:(NSTouchBar *)touchBar ;
 + (void)dismissSystemModalFunctionBar:(NSTouchBar *)touchBar ;
 @end
+
 @interface NSTouchBar (NSTouchBarSystemTray)
-+ (void)presentSystemModalFunctionBar:(NSTouchBar *)touchBar systemTrayItemIdentifier:(NSString *)identifier ;
+
+// macOS 10.14 and above
++ (void)presentSystemModalTouchBar:(NSTouchBar *)touchBar systemTrayItemIdentifier:(NSTouchBarItemIdentifier)identifier NS_AVAILABLE_MAC(10.14);
+
+// macOS 10.13 and below
++ (void)presentSystemModalFunctionBar:(NSTouchBar *)touchBar systemTrayItemIdentifier:(NSTouchBarItemIdentifier)identifier NS_DEPRECATED_MAC(10.12.2, 10.14);
+
 + (void)minimizeSystemModalFunctionBar:(NSTouchBar *)touchBar ;
 + (void)dismissSystemModalFunctionBar:(NSTouchBar *)touchBar ;
 @end

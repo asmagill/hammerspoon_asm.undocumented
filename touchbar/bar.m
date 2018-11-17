@@ -595,7 +595,11 @@ static int touchbar_presentSystemModalFunctionBar(lua_State *L) {
     }
 
     DFRSystemModalShowsCloseBoxWhenFrontMost(closeBox) ;
-    [NSTouchBar presentSystemModalFunctionBar:obj systemTrayItemIdentifier:identifier] ;
+    if (@available(macOS 10.14, *)) {
+	    [NSTouchBar presentSystemModalTouchBar:obj systemTrayItemIdentifier:identifier] ;
+	} else {
+		[NSTouchBar presentSystemModalFunctionBar:obj systemTrayItemIdentifier:identifier] ;
+	};
     lua_pushvalue(L, 1) ;
     return 1 ;
 }
