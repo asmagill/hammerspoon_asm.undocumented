@@ -654,7 +654,12 @@ static int touchbar_minimizeSystemModalFunctionBar(lua_State *L) {
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBREAK] ;
     NSTouchBar *obj = [skin toNSObjectAtIndex:1] ;
 
-    [NSTouchBar minimizeSystemModalFunctionBar:obj] ;
+    if (@available(macOS 10.14, *)) {
+    	[NSTouchBar minimizeSystemModalTouchBar:obj] ;
+	} else {
+		[NSTouchBar minimizeSystemModalFunctionBar:obj] ;
+	};
+
     lua_pushvalue(L, 1) ;
     return 1 ;
 }

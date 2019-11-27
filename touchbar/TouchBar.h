@@ -54,24 +54,28 @@ extern void DFRSystemModalShowsCloseBoxWhenFrontMost(BOOL flag) ;
 
 // macOS 10.14 and above
 + (void)presentSystemModalTouchBar:(NSTouchBar *)touchBar systemTrayItemIdentifier:(NSTouchBarItemIdentifier)identifier NS_AVAILABLE_MAC(10.14);
++ (void)minimizeSystemModalTouchBar:(NSTouchBar *)touchBar NS_AVAILABLE_MAC(10.14);
++ (void)dismissSystemModalTouchBar:(NSTouchBar *)touchBar NS_AVAILABLE_MAC(10.14);
 
 // macOS 10.13 and below
 + (void)presentSystemModalFunctionBar:(NSTouchBar *)touchBar systemTrayItemIdentifier:(NSTouchBarItemIdentifier)identifier NS_DEPRECATED_MAC(10.12.2, 10.14);
++ (void)minimizeSystemModalFunctionBar:(NSTouchBar *)touchBar NS_DEPRECATED_MAC(10.12.2, 10.14);
++ (void)dismissSystemModalFunctionBar:(NSTouchBar *)touchBar NS_DEPRECATED_MAC(10.12.2, 10.14);
 
-+ (void)minimizeSystemModalFunctionBar:(NSTouchBar *)touchBar ;
-+ (void)dismissSystemModalFunctionBar:(NSTouchBar *)touchBar ;
 @end
 
 @interface NSTouchBar (NSTouchBarSystemTray)
 
 // macOS 10.14 and above
 + (void)presentSystemModalTouchBar:(NSTouchBar *)touchBar systemTrayItemIdentifier:(NSTouchBarItemIdentifier)identifier NS_AVAILABLE_MAC(10.14);
++ (void)minimizeSystemModalTouchBar:(NSTouchBar *)touchBar NS_AVAILABLE_MAC(10.14);
++ (void)dismissSystemModalTouchBar:(NSTouchBar *)touchBar NS_AVAILABLE_MAC(10.14);
 
 // macOS 10.13 and below
 + (void)presentSystemModalFunctionBar:(NSTouchBar *)touchBar systemTrayItemIdentifier:(NSTouchBarItemIdentifier)identifier NS_DEPRECATED_MAC(10.12.2, 10.14);
++ (void)minimizeSystemModalFunctionBar:(NSTouchBar *)touchBar NS_DEPRECATED_MAC(10.12.2, 10.14);
++ (void)dismissSystemModalFunctionBar:(NSTouchBar *)touchBar NS_DEPRECATED_MAC(10.12.2, 10.14);
 
-+ (void)minimizeSystemModalFunctionBar:(NSTouchBar *)touchBar ;
-+ (void)dismissSystemModalFunctionBar:(NSTouchBar *)touchBar ;
 @end
 
 #pragma clang diagnostic pop
