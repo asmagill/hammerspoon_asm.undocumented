@@ -623,7 +623,12 @@ static int touchbar_dismissSystemModalFunctionBar(lua_State *L) {
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBREAK] ;
     NSTouchBar *obj = [skin toNSObjectAtIndex:1] ;
 
-    [NSTouchBar dismissSystemModalFunctionBar:obj] ;
+    if (@available(macOS 10.14, *)) {
+    	[NSTouchBar dismissSystemModalTouchBar:obj] ;
+	} else {
+		[NSTouchBar dismissSystemModalFunctionBar:obj] ;
+	};
+
     lua_pushvalue(L, 1) ;
     return 1 ;
 }
