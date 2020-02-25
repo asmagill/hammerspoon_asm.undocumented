@@ -1,17 +1,17 @@
-#import <Cocoa/Cocoa.h>
-// #import <Carbon/Carbon.h>
-#import <LuaSkin/LuaSkin.h>
+@import Cocoa ;
+@import LuaSkin ;
+@import IOBluetooth ;
 
-int refTable ;
+static int refTable = LUA_NOREF ;
 
 // private methods
-int IOBluetoothPreferencesAvailable();
+extern int IOBluetoothPreferencesAvailable(void) __attribute__((weak_import));
 
-int IOBluetoothPreferenceGetControllerPowerState();
-void IOBluetoothPreferenceSetControllerPowerState(int state);
+extern int IOBluetoothPreferenceGetControllerPowerState(void) __attribute__((weak_import));
+extern void IOBluetoothPreferenceSetControllerPowerState(int state) __attribute__((weak_import));
 
-int IOBluetoothPreferenceGetDiscoverableState();
-void IOBluetoothPreferenceSetDiscoverableState(int state);
+extern int IOBluetoothPreferenceGetDiscoverableState(void) __attribute__((weak_import));
+extern void IOBluetoothPreferenceSetDiscoverableState(int state) __attribute__((weak_import));
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wtautological-pointer-compare"
@@ -24,78 +24,101 @@ void IOBluetoothPreferenceSetDiscoverableState(int state);
 ///  * None
 ///
 /// Returns:
-///  * None
+///  * true if bluetooth is available on this machine, false if it is not; returns nil if bluetooth framework unavailable (this has been observed in some virtual machines)
 static int bt_available(lua_State* L) {
-   [[LuaSkin shared] checkArgs:LS_TBREAK] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
+    [skin checkArgs:LS_TBREAK] ;
 
-   if (IOBluetoothPreferencesAvailable != NULL) {
-        if (IOBluetoothPreferencesAvailable())
+    if (IOBluetoothPreferencesAvailable != NULL) {
+        if (IOBluetoothPreferencesAvailable()) {
             lua_pushboolean(L, YES) ;
-        else
+        } else {
             lua_pushboolean(L, NO) ;
-    } else
-        lua_pushboolean(L, NO) ;
+        }
+    } else {
+        lua_pushnil(L) ;
+    }
 
     return 1;
 }
 
 
-/// hs._asm.undocumented.bluetooth.power([bool]) -> bool
+/// hs._asm.undocumented.bluetooth.power([state]) -> bool
 /// Function
-/// If an argument is provided, set bluetooth power state to on (true) or off (false) and returns the (possibly new) status. If no argument is provided, then this function returns true or false, indicating whether bluetooth is currently enabled for this machine.
+/// Get or set bluetooth power state.
 ///
 /// Parameters:
-///  * state - an optional boolean value indicating whether bluetooth should be turned on (true) or off (false)
+///  * state - an optional boolean value indicating whether bluetooth power should be turned on (true) or off (false)
 ///
 /// Returns:
-///  * the (possibly changed) current value
+///  * the (possibly changed) current value; returns nil if bluetooth framework unavailable (this has been observed in some virtual machines)
 static int bt_power(lua_State* L) {
-   [[LuaSkin shared] checkArgs:LS_TBOOLEAN | LS_TOPTIONAL, LS_TBREAK] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
+    [skin checkArgs:LS_TBOOLEAN | LS_TOPTIONAL, LS_TBREAK] ;
 
     if (IOBluetoothPreferenceGetControllerPowerState != NULL && IOBluetoothPreferenceSetControllerPowerState != NULL) {
         if (!lua_isnone(L, 1)) {
             IOBluetoothPreferenceSetControllerPowerState((Boolean) lua_toboolean(L, -1));
             usleep(1000000); // Apparently it doesn't like being re-queried too quickly
         }
-        if (IOBluetoothPreferenceGetControllerPowerState())
-            lua_pushboolean(L, YES) ;
-        else
-            lua_pushboolean(L, NO) ;
-    } else
-        lua_pushboolean(L, NO) ;
 
+        if (IOBluetoothPreferenceGetControllerPowerState()) {
+            lua_pushboolean(L, YES) ;
+        } else {
+            lua_pushboolean(L, NO) ;
+        }
+    } else {
+        lua_pushnil(L) ;
+    }
     return 1;
 }
 
-// This has provided too unreliable and can actually cause some devices (my Magic mouse) to occasionally drop off,
-// so I disable it.  Add it back, if you like and can fix it, and I'll either update the module or you can take over!
+/// hs._asm.undocumented.bluetooth.discoverable([state]) -> bool
+/// Function
+/// Get or set bluetooth discoverable state.
+///
+/// Parameters:
+///  * state - an optional boolean value indicating whether bluetooth the machine should be discoverable (true) or not (false)
+///
+/// Returns:
+///  * the (possibly changed) current value; returns nil if bluetooth framework unavailable (this has been observed in some virtual machines)
+///
+/// Notes:
+///  * use of this method to change discoverability has been observed to cause connected devices to disconnect in rare cases; use at your own risk.
+///  * Opening the Bluetooth preference pane always turns on discoverability if bluetooth power is on or if it is switched on when preference pane is open; this change of discoverability is *not* reported by the API function used by this function.
+static int bt_discoverable(lua_State* L) {
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
+    [skin checkArgs:LS_TBOOLEAN | LS_TOPTIONAL, LS_TBREAK] ;
 
-// /// hs._asm.undocumented.bluetooth.discoverable([bool]) -> bool
-// /// Function
-// /// If an argument is provided, set bluetooth discoverable state to on (true) or off (false) and return the (possibly new) state. If no argument is provided, then this function returns true or false, indicating whether this machine is currently discoverable via bluetooth.
-// static int bt_discoverable(lua_State* L) {
-//     if (!lua_isnone(L, 1)) {
-//         IOBluetoothPreferenceSetDiscoverableState((Boolean) lua_toboolean(L, -1));
-//         usleep(1000000);  // Apparently it doesn't like being re-queried too quickly
-//     }
-//     if (IOBluetoothPreferenceGetDiscoverableState())
-//         lua_pushboolean(L, YES) ;
-//     else
-//         lua_pushboolean(L, NO) ;
-//     return 1;
-// }
+    if (IOBluetoothPreferenceSetDiscoverableState != NULL && IOBluetoothPreferenceGetDiscoverableState != NULL) {
+        if (!lua_isnone(L, 1)) {
+            IOBluetoothPreferenceSetDiscoverableState((Boolean) lua_toboolean(L, -1));
+            usleep(1000000);  // Apparently it doesn't like being re-queried too quickly
+        }
+
+        if (IOBluetoothPreferenceGetDiscoverableState()) {
+            lua_pushboolean(L, YES) ;
+        } else {
+            lua_pushboolean(L, NO) ;
+        }
+    } else {
+        lua_pushnil(L) ;
+    }
+    return 1;
+}
 
 #pragma clang diagnostic pop
 
 static const luaL_Reg moduleLib[] = {
     {"available",           bt_available},
     {"power",               bt_power},
-//    {"discoverable",        bt_discoverable},
+    {"discoverable",        bt_discoverable},
     {NULL, NULL}
 };
 
-int luaopen_hs__asm_undocumented_bluetooth_internal(__unused lua_State* L) {
-    refTable = [[LuaSkin shared] registerLibrary:moduleLib metaFunctions:nil] ;
+int luaopen_hs__asm_undocumented_bluetooth_internal(lua_State* L) {
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
+    refTable = [skin registerLibrary:moduleLib metaFunctions:nil] ;
 
     return 1;
 }
