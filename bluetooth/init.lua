@@ -1,3 +1,6 @@
+if package.searchpath("hs._asm.coroutineshim", package.path) then
+    require"hs._asm.coroutineshim"
+end
 --- === hs._asm.undocumented.bluetooth ===
 ---
 --- This submodule provides access to Bluetooth availability and its power state, and the ability to change it.
@@ -6,8 +9,16 @@
 ---
 ---I make no promises that these will work for you or work at all with any, past, current, or future versions of OS X.  I can confirm only that they didn't crash my machine during testing under 10.10. You have been warned.
 
+local USERDATA_TAG = "hs._asm.undocumented.bluetooth"
+local module       = require(USERDATA_TAG..".internal")
 
-local module = require("hs._asm.undocumented.bluetooth.internal")
+local basePath = package.searchpath(USERDATA_TAG, package.path)
+if basePath then
+    basePath = basePath:match("^(.+)/init.lua$")
+    if require"hs.fs".attributes(basePath .. "/docs.json") then
+        require"hs.doc".registerJSONFile(basePath .. "/docs.json")
+    end
+end
 
 -- private variables and methods -----------------------------------------
 
