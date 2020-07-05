@@ -4,3 +4,6 @@
 [submodule "touchbar"]
 	path = touchbar
 	url = https://github.com/asmagill/hs._asm.undocumented.touchbar.git
+[submodule "touchdevice"]
+	path = touchdevice
+	url = https://github.com/asmagill/hs._asm.undocumented.touchdevice.git
