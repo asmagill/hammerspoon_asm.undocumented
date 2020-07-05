@@ -1,6 +1,3 @@
-if package.searchpath("hs._asm.coroutineshim", package.path) then
-    require"hs._asm.coroutineshim"
-end
 --- === hs._asm.undocumented.bluetooth ===
 ---
 --- This submodule provides access to Bluetooth availability and its power state, and the ability to change it.
