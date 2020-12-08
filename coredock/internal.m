@@ -14,7 +14,8 @@ static int refTable = LUA_NOREF ;
 /// Returns:
 ///  * the (possibly changed) current value
 static int coredock_tilesize(lua_State* L) {
-    [[LuaSkin shared] checkArgs:LS_TNUMBER | LS_TOPTIONAL, LS_TBREAK] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
+    [skin checkArgs:LS_TNUMBER | LS_TOPTIONAL, LS_TBREAK] ;
 
     if (!lua_isnone(L, 1)) {
         float tileSize = (float) luaL_checknumber(L, -1) ;
@@ -37,7 +38,8 @@ static int coredock_tilesize(lua_State* L) {
 /// Returns:
 ///  * the (possibly changed) current value
 static int coredock_magnification_size(lua_State* L) {
-    [[LuaSkin shared] checkArgs:LS_TNUMBER | LS_TOPTIONAL, LS_TBREAK] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
+    [skin checkArgs:LS_TNUMBER | LS_TOPTIONAL, LS_TBREAK] ;
 
     if (!lua_isnone(L, 1)) {
         float magSize = (float) luaL_checknumber(L, -1) ;
@@ -74,7 +76,8 @@ static int coredock_magnification_size(lua_State* L) {
 /// Notes:
 ///  * the top orientation and dock pinning has not been supported even within the private APIs for some time and may disappear from here in a future release unless another solution can be found.  It is provided here for testing and to encourage suggestions if someone is aware of a solution that has not yet been tried.
 static int coredock_orientation(lua_State* L) {
-    [[LuaSkin shared] checkArgs:LS_TNUMBER | LS_TOPTIONAL, LS_TBREAK] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
+    [skin checkArgs:LS_TNUMBER | LS_TOPTIONAL, LS_TBREAK] ;
 
     if (!lua_isnone(L, 1)) {
         CoreDockOrientation ourOrientation = (CoreDockOrientation)(luaL_checkinteger(L, -1)) ;
@@ -101,7 +104,8 @@ static int coredock_orientation(lua_State* L) {
 /// Notes:
 ///  * the top orientation and dock pinning has not been supported even within the private APIs for some time and may disappear from here in a future release unless another solution can be found.  It is provided here for testing and to encourage suggestions if someone is aware of a solution that has not yet been tried.
 static int coredock_pinning(lua_State* L) {
-    [[LuaSkin shared] checkArgs:LS_TNUMBER | LS_TOPTIONAL, LS_TBREAK] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
+    [skin checkArgs:LS_TNUMBER | LS_TOPTIONAL, LS_TBREAK] ;
 
     if (!lua_isnone(L, 1)) {
         CoreDockOrientation ourOrientation = kCoreDockOrientationIgnore ;
@@ -126,7 +130,8 @@ static int coredock_pinning(lua_State* L) {
 /// Returns:
 ///  * the (possibly changed) current value
 static int coredock_magnification(lua_State* L) {
-    [[LuaSkin shared] checkArgs:LS_TBOOLEAN | LS_TOPTIONAL, LS_TBREAK] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
+    [skin checkArgs:LS_TBOOLEAN | LS_TOPTIONAL, LS_TBREAK] ;
 
     if (!lua_isnone(L, 1)) {
         CoreDockSetMagnificationEnabled((Boolean) lua_toboolean(L, -1)) ;
@@ -145,7 +150,8 @@ static int coredock_magnification(lua_State* L) {
 /// Returns:
 ///  * the (possibly changed) current value
 static int coredock_autohide(lua_State* L) {
-    [[LuaSkin shared] checkArgs:LS_TBOOLEAN | LS_TOPTIONAL, LS_TBREAK] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
+    [skin checkArgs:LS_TBOOLEAN | LS_TOPTIONAL, LS_TBREAK] ;
 
     if (!lua_isnone(L, 1)) {
         CoreDockSetAutoHideEnabled((Boolean) lua_toboolean(L, -1)) ;
@@ -164,7 +170,8 @@ static int coredock_autohide(lua_State* L) {
 /// Returns:
 ///  * the (possibly changed) current value
 static int coredock_animationeffect(lua_State* L) {
-    [[LuaSkin shared] checkArgs:LS_TNUMBER | LS_TOPTIONAL, LS_TBREAK] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
+    [skin checkArgs:LS_TNUMBER | LS_TOPTIONAL, LS_TBREAK] ;
 
     if (!lua_isnone(L, 1)) {
         CoreDockEffect ourEffect = (CoreDockEffect)(luaL_checkinteger(L, -1)) ;
@@ -233,7 +240,8 @@ static const luaL_Reg moduleLib[] = {
 } ;
 
 int luaopen_hs__asm_undocumented_coredock_internal(lua_State* L) {
-    refTable = [[LuaSkin shared] registerLibrary:moduleLib metaFunctions:nil] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
+    refTable = [skin registerLibrary:moduleLib metaFunctions:nil] ;
 
     coredock_options(L) ; lua_setfield(L, -2, "options") ;
     return 1 ;
