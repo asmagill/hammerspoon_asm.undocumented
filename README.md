@@ -1,8 +1,6 @@
 _asm.undocumented
 =================
 
-*NOTE: This repository no longer strives to support both Mjolnir and Hammerspoon.  The last version that should compile cleanly for use with Mjolnir can be found in the Mjolnir branch of this repository.*
-
 Organizational space for Hammerspoon modules using undocumented or Private APIs.
 
 Any module I knowingly create which uses any undocumented or private API will be listed here.  For other modules, especially those which are not part of the core Hammerspoon application please check https://github.com/asmagill/hammerspoon_asm.
@@ -21,6 +19,9 @@ The following submodules are located in this repository for organizational purpo
 | hs._asm.undocumented.coredock  | Manipulate Dock features including position, tilesize, etc.                      |
 | [hs._asm.undocumented.spaces](https://github.com/asmagill/hs._asm.undocumented.spaces)    | Access OS X Spaces functionality.                                               |
 ### Installation
+
+*See https://github.com/asmagill/hammerspoon_asm/blob/master/README.md for details about building this module as a Universal library*
+
 Each sub-module has compilation instructions in the accompanying README file.  Installing this way will ensure that you have the latest and greatest.
 
 At various points (i.e. when I feel like it or remember) I will add a precompiled release.  These will most likely contain all of the modules currently in this repository unless otherwise noted in the release notes.  You can always remove the ones you don't want, of course.
