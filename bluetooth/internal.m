@@ -2,7 +2,7 @@
 @import LuaSkin ;
 @import IOBluetooth ;
 
-static int refTable = LUA_NOREF ;
+static LSRefTable refTable = LUA_NOREF ;
 
 // private methods
 extern int IOBluetoothPreferencesAvailable(void) __attribute__((weak_import));
@@ -118,7 +118,7 @@ static const luaL_Reg moduleLib[] = {
 
 int luaopen_hs__asm_undocumented_bluetooth_internal(lua_State* L) {
     LuaSkin *skin = [LuaSkin sharedWithState:L] ;
-    refTable = [skin registerLibrary:moduleLib metaFunctions:nil] ;
+    refTable = [skin registerLibrary:"hs._asm.undocumented.bluetooth" functions:moduleLib metaFunctions:nil] ;
 
     return 1;
 }

@@ -2,7 +2,9 @@
 @import LuaSkin ;
 #import "coredock.h"
 
-static int refTable = LUA_NOREF ;
+static const char *USERDATA_TAG = "hs._asm.undocumented.coredock" ;
+
+static LSRefTable refTable = LUA_NOREF ;
 
 /// hs._asm.undocumented.coredock.tileSize([size]) -> float
 /// Function
@@ -241,7 +243,7 @@ static const luaL_Reg moduleLib[] = {
 
 int luaopen_hs__asm_undocumented_coredock_internal(lua_State* L) {
     LuaSkin *skin = [LuaSkin sharedWithState:L] ;
-    refTable = [skin registerLibrary:moduleLib metaFunctions:nil] ;
+    refTable = [skin registerLibrary:USERDATA_TAG functions:moduleLib metaFunctions:nil] ;
 
     coredock_options(L) ; lua_setfield(L, -2, "options") ;
     return 1 ;
