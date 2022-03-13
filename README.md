@@ -1,6 +1,10 @@
 _asm.undocumented
 =================
 
+**Over the course of the next few months, I anticipate either archiving most of these or moving them into the https://github.com/asmagill/hammerspoon_asm umbrella. With the exception of the bluetooth, touchbar, and touchdevice modules, most of this is outdated enough that it either doesn't work or at least doesn't work well.  I expect that it may be of some limited informational use, but no further maintenance is expected except for the three already listed.**
+
+- - -
+
 Organizational space for Hammerspoon modules using undocumented or Private APIs.
 
 Any module I knowingly create which uses any undocumented or private API will be listed here.  For other modules, especially those which are not part of the core Hammerspoon application please check https://github.com/asmagill/hammerspoon_asm.
@@ -17,7 +21,8 @@ The following submodules are located in this repository for organizational purpo
 | hs._asm.undocumented.bluetooth | Toggle bluetooth power and discoverability.                                     |
 | hs._asm.undocumented.cgsdebug  | Includes Hydra's hydra.shadow function and other _windowserver debug stuff |
 | hs._asm.undocumented.coredock  | Manipulate Dock features including position, tilesize, etc.                      |
-| [hs._asm.undocumented.spaces](https://github.com/asmagill/hs._asm.undocumented.spaces)    | Access OS X Spaces functionality.                                               |
+| [hs._asm.undocumented.spaces](https://github.com/asmagill/hs._asm.undocumented.spaces)    | (Archived, for informational purposes only)  |
+
 ### Installation
 
 *See https://github.com/asmagill/hammerspoon_asm/blob/master/README.md for details about building this module as a Universal library*
